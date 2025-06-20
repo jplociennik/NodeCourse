@@ -1,0 +1,108 @@
+<!-- Reusable Sidebar Component -->
+<div class="col-lg-4">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h3 class="card-title mb-0">
+                <i class="bi bi-layout-sidebar"></i> 
+                <%= typeof sidebarTitle !== 'undefined' ? sidebarTitle : 'Panel boczny' %>
+            </h3>
+        </div>
+        <div class="card-body">
+            <% if (typeof sidebarContent !== 'undefined') { %>
+                <p class="card-text"><%= sidebarContent %></p>
+            <% } else { %>
+                <p class="card-text">Tutaj mogą znajdować się dodatkowe informacje, linki lub menu.</p>
+            <% } %>
+            
+            <!-- Quick Links Section -->
+            <% if (typeof quickLinks !== 'undefined' && quickLinks && quickLinks.length > 0) { %>
+                <h5 class="text-success">
+                    <i class="bi bi-link-45deg"></i> Szybkie linki
+                </h5>
+                <div class="list-group list-group-flush mb-3">
+                    <% quickLinks.forEach(link => { %>
+                        <a href="<%= link.url %>" class="list-group-item list-group-item-action">
+                            <% if (link.icon) { %>
+                                <i class="<%= link.icon %>"></i>
+                            <% } %>
+                            <%= link.text %>
+                        </a>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <h5 class="text-success">
+                    <i class="bi bi-link-45deg"></i> Szybkie linki
+                </h5>
+                <div class="list-group list-group-flush mb-3">
+                    <a href="/profile" class="list-group-item list-group-item-action">
+                        <i class="bi bi-people"></i> Zobacz profile
+                    </a>
+                    <a href="/kontakt" class="list-group-item list-group-item-action">
+                        <i class="bi bi-envelope"></i> Skontaktuj się
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="bi bi-question-circle"></i> Pomoc
+                    </a>
+                </div>
+            <% } %>
+            
+            <!-- News/Updates Section -->
+            <% if (typeof sidebarNews !== 'undefined' && sidebarNews) { %>
+                <h5 class="text-success">
+                    <i class="bi bi-newspaper"></i> 
+                    <%= sidebarNews.title || 'Aktualności' %>
+                </h5>
+                <div class="alert alert-success" role="alert">
+                    <strong><%= sidebarNews.highlight || 'Nowa aktualizacja!' %></strong> 
+                    <%= sidebarNews.content || 'Najnowsze wiadomości i aktualizacje będą tutaj wyświetlane.' %>
+                </div>
+            <% } else { %>
+                <h5 class="text-success">
+                    <i class="bi bi-newspaper"></i> Aktualności
+                </h5>
+                <div class="alert alert-success" role="alert">
+                    <strong>Nowa aktualizacja!</strong> Najnowsze wiadomości i aktualizacje będą tutaj wyświetlane.
+                </div>
+            <% } %>
+            
+            <!-- Custom Sidebar Widgets -->
+            <% if (typeof sidebarWidgets !== 'undefined' && sidebarWidgets && sidebarWidgets.length > 0) { %>
+                <% sidebarWidgets.forEach(widget => { %>
+                    <div class="mb-3">
+                        <% if (widget.title) { %>
+                            <h6 class="text-success">
+                                <% if (widget.icon) { %>
+                                    <i class="<%= widget.icon %>"></i>
+                                <% } %>
+                                <%= widget.title %>
+                            </h6>
+                        <% } %>
+                        <% if (widget.type === 'list' && widget.items) { %>
+                            <ul class="list-unstyled">
+                                <% widget.items.forEach(item => { %>
+                                    <li>
+                                        <% if (item.link) { %>
+                                            <a href="<%= item.link %>" class="text-decoration-none">
+                                                <% if (item.icon) { %>
+                                                    <i class="<%= item.icon %>"></i>
+                                                <% } %>
+                                                <%= item.text %>
+                                            </a>
+                                        <% } else { %>
+                                            <% if (item.icon) { %>
+                                                <i class="<%= item.icon %>"></i>
+                                            <% } %>
+                                            <%= item.text %>
+                                        <% } %>
+                                    </li>
+                                <% }); %>
+                            </ul>
+                        <% } else if (widget.content) { %>
+                            <p><%= widget.content %></p>
+                        <% } %>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </div>
+</div> 

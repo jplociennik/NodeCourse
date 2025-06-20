@@ -1,0 +1,33 @@
+<% if (typeof breadcrumbs !== 'undefined' && breadcrumbs && breadcrumbs.length > 0) { %>
+<!-- Breadcrumb Navigation -->
+<div class="container mt-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/" class="text-success text-decoration-none">
+                    <i class="bi bi-house"></i> Strona główna
+                </a>
+            </li>
+            <% breadcrumbs.forEach((crumb, index) => { %>
+                <% if (index === breadcrumbs.length - 1) { %>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <% if (crumb.icon) { %>
+                            <i class="<%= crumb.icon %>"></i>
+                        <% } %>
+                        <%= crumb.text %>
+                    </li>
+                <% } else { %>
+                    <li class="breadcrumb-item">
+                        <a href="<%= crumb.link %>" class="text-success text-decoration-none">
+                            <% if (crumb.icon) { %>
+                                <i class="<%= crumb.icon %>"></i>
+                            <% } %>
+                            <%= crumb.text %>
+                        </a>
+                    </li>
+                <% } %>
+            <% }); %>
+        </ol>
+    </nav>
+</div>
+<% } %> 

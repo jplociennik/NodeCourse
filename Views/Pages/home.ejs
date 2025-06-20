@@ -1,33 +1,91 @@
-<div class="container">
-    <section class="content">
-        <h2>Główna treść</h2>
-        <p>To jest główna sekcja treści. Tutaj możesz umieścić najważniejsze informacje dla odwiedzających.</p>
+<div class="row">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <!-- Hero Section -->
+        <div class="card border-0 mb-4">
+            <div class="card-body bg-light rounded">
+                <h2 class="card-title text-success">
+                    <i class="bi bi-house-heart"></i> Główna treść
+                </h2>
+                <p class="card-text">To jest główna sekcja treści. Tutaj możesz umieścić najważniejsze informacje dla odwiedzających.</p>
+            </div>
+        </div>
         
-        <h3>Funkcjonalności</h3>
-        <ul>
-            <li>Responsywny design</li>
-            <li>Czytelna typografia</li>
-            <li>Przyjazna nawigacja</li>
-            <li>Nowoczesny wygląd</li>
-        </ul>
+        <!-- Features Cards -->
+        <h3 class="text-success mb-3">
+            <i class="bi bi-stars"></i> Funkcjonalności
+        </h3>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-success">
+                    <div class="card-body text-center">
+                        <i class="bi bi-phone text-success fs-1 mb-3 feature-card-icon"></i>
+                        <h5 class="card-title">Responsywny design</h5>
+                        <p class="card-text">Strona dostosowuje się do każdego urządzenia</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-success">
+                    <div class="card-body text-center">
+                        <i class="bi bi-fonts text-success fs-1 mb-3 feature-card-icon"></i>
+                        <h5 class="card-title">Czytelna typografia</h5>
+                        <p class="card-text">Łatwy do czytania i przyjazny dla użytkownika</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-success">
+                    <div class="card-body text-center">
+                        <i class="bi bi-compass text-success fs-1 mb-3 feature-card-icon"></i>
+                        <h5 class="card-title">Przyjazna nawigacja</h5>
+                        <p class="card-text">Intuicyjna struktura menu</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-success">
+                    <div class="card-body text-center">
+                        <i class="bi bi-palette text-success fs-1 mb-3 feature-card-icon"></i>
+                        <h5 class="card-title">Nowoczesny wygląd</h5>
+                        <p class="card-text">Stylowy i profesjonalny design</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        
-        <a href="#" class="btn">Dowiedz się więcej</a>
-    </section>
+        <!-- Content Section -->
+        <div class="card">
+            <div class="card-body">
+                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <a href="#" class="btn btn-success btn-lg me-md-2">
+                        <i class="bi bi-info-circle"></i> Dowiedz się więcej
+                    </a>
+                    <a href="/kontakt" class="btn btn-outline-success btn-lg">
+                        <i class="bi bi-envelope"></i> Kontakt
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <aside class="sidebar">
-        <h3>Panel boczny</h3>
-        <p>Tutaj mogą znajdować się dodatkowe informacje, linki lub menu.</p>
-        
-        <h4>Szybkie linki</h4>
-        <ul>
-            <li><a href="/profile">Zobacz profile</a></li>
-            <li><a href="/kontakt">Skontaktuj się</a></li>
-            <li><a href="#">Pomoc</a></li>
-        </ul>
-        
-        <h4>Aktualności</h4>
-        <p>Najnowsze wiadomości i aktualizacje będą tutaj wyświetlane.</p>
-    </aside>
+    <!-- Sidebar using partial -->
+    <%- include('../partials/sidebar') %>
+</div>
+
+<!-- Call to Action Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card bg-light cta-section">
+            <div class="card-body text-center py-5">
+                <h2 class="text-success mb-3">Gotowy na rozpoczęcie?</h2>
+                <p class="lead mb-4">Dołącz do naszej społeczności i odkryj wszystkie możliwości!</p>
+                <a href="/profile" class="btn btn-success btn-lg">
+                    <i class="bi bi-person-plus"></i> Zobacz profile użytkowników
+                </a>
+            </div>
+        </div>
+    </div>
 </div>

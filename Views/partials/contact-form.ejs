@@ -1,0 +1,97 @@
+<!-- Contact Form Component -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h4 class="mb-0">
+            <i class="bi bi-send"></i> 
+            <%= typeof formTitle !== 'undefined' ? formTitle : 'Wyślij wiadomość' %>
+        </h4>
+    </div>
+    <div class="card-body">
+        <form class="contact-form" method="<%= typeof formMethod !== 'undefined' ? formMethod : 'POST' %>" action="<%= typeof formAction !== 'undefined' ? formAction : '/kontakt' %>">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label">
+                        <i class="bi bi-person"></i> Imię i nazwisko
+                    </label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">
+                        <i class="bi bi-envelope"></i> Email
+                    </label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+            </div>
+            
+            <% if (typeof showPhone !== 'undefined' && showPhone) { %>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">
+                        <i class="bi bi-telephone"></i> Telefon (opcjonalnie)
+                    </label>
+                    <input type="tel" class="form-control" id="phone" name="phone">
+                </div>
+            <% } %>
+            
+            <div class="mb-3">
+                <label for="subject" class="form-label">
+                    <i class="bi bi-tag"></i> Temat
+                </label>
+                <% if (typeof subjectOptions !== 'undefined' && subjectOptions && subjectOptions.length > 0) { %>
+                    <select class="form-select" id="subject" name="subject" required>
+                        <option value="">Wybierz temat...</option>
+                        <% subjectOptions.forEach(option => { %>
+                            <option value="<%= option.value %>"><%= option.text %></option>
+                        <% }); %>
+                    </select>
+                <% } else { %>
+                    <input type="text" class="form-control" id="subject" name="subject" required>
+                <% } %>
+            </div>
+            
+            <div class="mb-3">
+                <label for="message" class="form-label">
+                    <i class="bi bi-chat-text"></i> Wiadomość
+                </label>
+                <textarea class="form-control" id="message" name="message" rows="5" required placeholder="Wpisz swoją wiadomość..."></textarea>
+            </div>
+            
+            <% if (typeof showPrivacyCheckbox !== 'undefined' && showPrivacyCheckbox) { %>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="privacy" name="privacy" required>
+                    <label class="form-check-label" for="privacy">
+                        Akceptuję <a href="/polityka-prywatnosci" class="text-success">politykę prywatności</a> i wyrażam zgodę na przetwarzanie moich danych osobowych.
+                    </label>
+                </div>
+            <% } %>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-send"></i> 
+                    <%= typeof submitText !== 'undefined' ? submitText : 'Wyślij wiadomość' %>
+                </button>
+            </div>
+        </form>
+        
+        <% if (typeof showContactInfo !== 'undefined' && showContactInfo) { %>
+            <div class="mt-4 pt-4 border-top">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <i class="bi bi-clock text-success fs-4"></i>
+                        <p class="mb-0 mt-2"><strong>Odpowiedź w ciągu</strong></p>
+                        <p class="text-muted">24 godzin</p>
+                    </div>
+                    <div class="col-md-4">
+                        <i class="bi bi-shield-check text-success fs-4"></i>
+                        <p class="mb-0 mt-2"><strong>Bezpieczne</strong></p>
+                        <p class="text-muted">Dane chronione</p>
+                    </div>
+                    <div class="col-md-4">
+                        <i class="bi bi-headset text-success fs-4"></i>
+                        <p class="mb-0 mt-2"><strong>Wsparcie</strong></p>
+                        <p class="text-muted">24/7 pomoc</p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div> 

@@ -1,0 +1,47 @@
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h2 class="mb-0"><i class="bi bi-person-lines-fill"></i> Szczegóły użytkownika</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h3 class="text-success mb-3"><%= user.name %></h3>
+                <div class="table-responsive">
+                    <table class="table table-striped profile-table">
+                        <tbody>
+                            <tr>
+                                <th scope="row"><i class="bi bi-hash"></i> ID:</th>
+                                <td><span class="badge bg-success"><%= user.id %></span></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><i class="bi bi-person"></i> Imię:</th>
+                                <td><%= user.name %></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><i class="bi bi-envelope"></i> Email:</th>
+                                <td><a href="mailto:<%= user.email %>" class="text-decoration-none"><%= user.email %></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <i class="bi bi-person-circle text-success profile-avatar" style="font-size: 4rem;"></i>
+                        <h5 class="mt-2"><%= user.name %></h5>
+                        <p class="text-muted">Użytkownik #<%= user.id %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2 d-md-flex mt-4 profile-actions">
+            <a href="/profile/<%= user.id %>" class="btn btn-outline-success">
+                <i class="bi bi-arrow-left"></i> Powrót do profilu
+            </a>
+            <a href="/profile" class="btn btn-success">
+                <i class="bi bi-list"></i> Wszystkie profile
+            </a>
+        </div>
+    </div>
+</div> 

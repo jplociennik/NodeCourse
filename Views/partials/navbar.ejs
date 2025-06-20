@@ -1,0 +1,37 @@
+<!-- Bootstrap Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="/img/NodeLogo.png" alt="Logo" style="height: 80px; width: auto;" class="me-2">
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'home' ? 'active' : '' %>" href="/">
+                        <i class="bi bi-house"></i> Strona główna
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'profile' ? 'active' : '' %>" href="/profile">
+                        <i class="bi bi-people"></i> Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'contact' ? 'active' : '' %>" href="/kontakt">
+                        <i class="bi bi-envelope"></i> Kontakt
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'about' ? 'active' : '' %>" href="/o-nas">
+                        <i class="bi bi-info-circle"></i> O nas
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav> 

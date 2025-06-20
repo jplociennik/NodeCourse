@@ -1,39 +1,143 @@
-<div class="container">
-    <section class="content">
-        <h2>Kontakt</h2>
-        <p><strong>Telefon:</strong> <%= phoneNumber %></p>
-        
-        <h3>Skontaktuj się z nami</h3>
-        <p>Jesteśmy dostępni, aby odpowiedzieć na Twoje pytania i pomóc Ci w każdej sprawie.</p>
-        
-        <div style="margin: 2rem 0;">
-            <h4>Dane kontaktowe:</h4>
-            <ul>
-                <li><strong>Email:</strong> kontakt@mojastrona.pl</li>
-                <li><strong>Telefon:</strong> <%= phoneNumber %></li>
-                <li><strong>Adres:</strong> ul. Przykładowa 123, 00-000 Warszawa</li>
-            </ul>
+<div class="row">
+    <!-- Main Contact Content -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h2 class="card-title mb-0">
+                    <i class="bi bi-envelope"></i> Kontakt
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success" role="alert">
+                    <strong><i class="bi bi-telephone"></i> Telefon:</strong> <%= phoneNumber %>
+                </div>
+                
+                <h3 class="text-success mb-3">
+                    <i class="bi bi-chat-dots"></i> Skontaktuj się z nami
+                </h3>
+                <p class="lead">Jesteśmy dostępni, aby odpowiedzieć na Twoje pytania i pomóc Ci w każdej sprawie.</p>
+                
+                <!-- Contact Form using partial -->
+                <%- include('../partials/contact-form') %>
+            </div>
         </div>
-        
-        <h4>Godziny pracy:</h4>
-        <p>Poniedziałek - Piątek: 9:00 - 17:00<br>
-           Sobota: 10:00 - 14:00<br>
-           Niedziela: zamknięte</p>
-    </section>
+    </div>
     
-    <aside class="sidebar">
-        <h3>Informacje dodatkowe</h3>
-        <p>Odpowiadamy na wszystkie zapytania w ciągu 24 godzin.</p>
-        
-        <h4>Najczęściej zadawane pytania</h4>
-        <ul>
-            <li>Jak mogę złożyć zamówienie?</li>
-            <li>Jakie są formy płatności?</li>
-            <li>Jak długo trwa dostawa?</li>
-        </ul>
-        
-        <div style="margin-top: 2rem;">
-            <a href="/" class="btn">Wróć do strony głównej</a>
+    <!-- Contact Info Sidebar -->
+    <div class="col-lg-4">
+        <!-- Contact Details Card -->
+        <div class="card mb-4 contact-card contact-info">
+            <div class="card-header bg-success text-white">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i> Dane kontaktowe
+                </h4>
+            </div>
+                         <div class="card-body">
+                 <div class="d-flex align-items-center mb-3 contact-method">
+                     <i class="bi bi-envelope-fill text-success fs-4 me-3"></i>
+                    <div>
+                        <strong>Email:</strong><br>
+                        <a href="mailto:kontakt@mojastrona.pl" class="text-decoration-none">kontakt@mojastrona.pl</a>
+                    </div>
+                </div>
+                                 <div class="d-flex align-items-center mb-3 contact-method">
+                     <i class="bi bi-telephone-fill text-success fs-4 me-3"></i>
+                    <div>
+                        <strong>Telefon:</strong><br>
+                        <a href="tel:<%= phoneNumber %>" class="text-decoration-none"><%= phoneNumber %></a>
+                    </div>
+                </div>
+                                 <div class="d-flex align-items-center contact-method">
+                     <i class="bi bi-geo-alt-fill text-success fs-4 me-3"></i>
+                    <div>
+                        <strong>Adres:</strong><br>
+                        ul. Przykładowa 123<br>
+                        00-000 Warszawa
+                    </div>
+                </div>
+            </div>
         </div>
-    </aside>
+        
+        <!-- Business Hours Card -->
+        <div class="card mb-4 contact-card business-hours">
+            <div class="card-header bg-success text-white">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-clock"></i> Godziny pracy
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><strong>Poniedziałek - Piątek:</strong></span>
+                    <span class="text-success">9:00 - 17:00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span><strong>Sobota:</strong></span>
+                    <span class="text-success">10:00 - 14:00</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span><strong>Niedziela:</strong></span>
+                    <span class="text-muted">zamknięte</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FAQ Card -->
+        <div class="card contact-card">
+            <div class="card-header bg-success text-white">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-question-circle"></i> Najczęściej zadawane pytania
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Jak mogę złożyć zamówienie?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Zamówienia można składać przez formularz kontaktowy lub telefonicznie.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Jakie są formy płatności?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Akceptujemy płatności kartą, przelewem oraz gotówką.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Jak długo trwa dostawa?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Standardowa dostawa trwa 2-3 dni robocze.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-success mt-3" role="alert">
+                    <i class="bi bi-clock"></i> <strong>Odpowiadamy na wszystkie zapytania w ciągu 24 godzin.</strong>
+                </div>
+                
+                <div class="d-grid mt-3">
+                    <a href="/" class="btn btn-outline-success">
+                        <i class="bi bi-house"></i> Wróć do strony głównej
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
