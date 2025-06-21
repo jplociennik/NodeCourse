@@ -1,10 +1,11 @@
 /* Contact Page Styles */
 .contact-info {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: white;
+    background: white;
+    color: #333;
     padding: 2rem;
     border-radius: 8px;
     margin-bottom: 2rem;
+    border: 1px solid #e9ecef;
 }
 
 .contact-cards {
@@ -17,21 +18,21 @@
 .contact-card {
     background-color: white;
     border: 1px solid #dee2e6;
-    border-left: 4px solid #007bff;
+    border-left: 4px solid #4CAF50;
     padding: 1.5rem;
     border-radius: 0 8px 8px 0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .contact-card h4 {
-    color: #007bff;
+    color: #4CAF50;
     margin-top: 0;
     margin-bottom: 1rem;
 }
 
 .contact-card .icon {
     font-size: 1.5rem;
-    color: #007bff;
+    color: #4CAF50;
     margin-right: 0.5rem;
 }
 

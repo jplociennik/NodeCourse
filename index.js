@@ -27,7 +27,7 @@ const users = [
       pageName: 'home',
       currentPage: 'home',
       title: 'Witaj na mojej stronie', 
-      subtitle: 'Przykładowy layout HTML',
+      subtitle: '',
       heroIcon: 'bi bi-house-door',
       sidebarTitle: 'Panel boczny',
       sidebarContent: 'Tutaj znajdziesz najważniejsze informacje i szybkie linki.',

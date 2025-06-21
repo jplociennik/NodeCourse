@@ -181,7 +181,9 @@ h1, h2, h3 {
 }
 
 .navbar-brand:hover {
-    color: var(--custom-green) !important;
+    color: inherit !important;
+    background-color: transparent !important;
+    text-decoration: none !important;
 }
 
 /* Logo styling */
@@ -191,7 +193,7 @@ h1, h2, h3 {
 }
 
 .hero-logo:hover {
-    transform: scale(1.05);
+    transform: scale(1.2);
 }
 
 .navbar-brand img {
@@ -205,7 +207,7 @@ h1, h2, h3 {
 /* Hero section responsive */
 @media (max-width: 768px) {
     .hero-logo {
-        height: 200px !important;
+        height: 160px !important;
     }
     
     .d-flex.align-items-center.justify-content-center {
@@ -214,7 +216,7 @@ h1, h2, h3 {
     
     .hero-logo.me-3 {
         margin-right: 0 !important;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.1rem;
     }
 }
 
