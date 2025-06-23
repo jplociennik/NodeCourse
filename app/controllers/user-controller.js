@@ -8,7 +8,6 @@ const UserController = {
       res.render('Pages/profile-list', {
         pageTitle: 'Profile użytkowników',
         pageName: 'profile',
-        currentPage: 'profile',
         title: 'Profile użytkowników',
         subtitle: 'Lista wszystkich zarejestrowanych użytkowników',
         heroIcon: 'bi bi-people-fill',
@@ -36,7 +35,6 @@ const UserController = {
         res.render('Pages/profile-single', {
           pageTitle: `Profil - ${user.name}`,
           pageName: 'profile',
-          currentPage: 'profile',
           title: `Profil użytkownika`,
           subtitle: user.name,
           heroIcon: 'bi bi-person-fill',
@@ -70,7 +68,6 @@ const UserController = {
         res.render('Pages/profile-details', {
           pageTitle: `Szczegóły - ${user.name}`,
           pageName: 'profile',
-          currentPage: 'profile',
           title: `Szczegóły użytkownika`,
           subtitle: user.name,
           heroIcon: 'bi bi-person-lines-fill',

@@ -4,7 +4,6 @@ const ErrorController = {
     res.status(500).render('errors/500', {
       pageTitle: 'Błąd serwera',
       pageName: 'error',
-      currentPage: 'error',
       error: error.message,
       title: 'Błąd serwera',
       subtitle: 'Wystąpił problem z bazą danych',
@@ -17,7 +16,6 @@ const ErrorController = {
     res.status(500).render('errors/500', {
       pageTitle: 'Błąd serwera',
       pageName: 'error',
-      currentPage: 'error',
       error: message,
       title: 'Błąd serwera',
       subtitle: message,
@@ -29,7 +27,6 @@ const ErrorController = {
     res.status(404).render('errors/404', {
       pageTitle: 'Strona nie znaleziona',
       pageName: 'error',
-      currentPage: 'error',
       path: path,
       title: 'Strona nie znaleziona',
       subtitle: `Nie można znaleźć strony: ${path}`,
@@ -41,7 +38,6 @@ const ErrorController = {
     res.status(404).render('errors/user-not-found', {
       pageTitle: 'Użytkownik nie znaleziony',
       pageName: 'error',
-      currentPage: 'error',
       userId: userId,
       title: 'Użytkownik nie znaleziony',
       subtitle: `Nie można znaleźć użytkownika o ID: ${userId}`,
@@ -58,10 +54,6 @@ const ErrorController = {
         }
       ]
     });
-  },
-
-  notFoundMiddleware: (req, res) => {
-    ErrorController.handle404Error(res, req.originalUrl);
   }
 };
 

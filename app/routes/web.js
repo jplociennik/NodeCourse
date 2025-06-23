@@ -1,7 +1,7 @@
 const express = require('express');
 const { HomeController } = require('../controllers/home-controller');
 const { UserController } = require('../controllers/user-controller');
-const { ErrorController } = require('../controllers/error-controller');
+const { notFoundMiddleware } = require('../middleware/error-middleware');
 
 const router = express.Router();
 
@@ -16,6 +16,6 @@ router.get('/profile/:id', UserController.getUserProfile);
 router.get('/profile/:id/details', UserController.getUserDetails);
 
 // Middleware dla 404 - musi być na końcu
-router.use(ErrorController.notFoundMiddleware);
+router.use(notFoundMiddleware);
 
 module.exports = { router };

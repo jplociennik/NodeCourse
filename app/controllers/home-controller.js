@@ -3,7 +3,6 @@ const HomeController = {
     res.render('Pages/home', { 
       pageTitle: 'Strona Główna',
       pageName: 'home',
-      currentPage: 'home',
       title: 'Witaj na mojej stronie', 
       subtitle: '',
       heroIcon: 'bi bi-house-door',
@@ -21,7 +20,6 @@ const HomeController = {
     res.render('Pages/contact', { 
       pageTitle: 'Kontakt',
       pageName: 'contact',
-      currentPage: 'contact',
       phoneNumber: '997 998 999',
       title: 'Kontakt',
       subtitle: 'Skontaktuj się z nami',

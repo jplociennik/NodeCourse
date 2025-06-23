@@ -4,6 +4,7 @@ const expressEjsLayouts = require('express-ejs-layouts');
 const path = require('path');
 const app = express();
 const { router } = require('./routes/web');
+const { viewMiddleware } = require('./middleware/view-middleware');
 
 //View Engine
 app.set('view engine','ejs');
@@ -15,6 +16,9 @@ app.set('layout', './layouts/main');
 
 //Static Files
 app.use(express.static(path.join(__dirname, '../public')));
+
+//Middleware
+app.use('/', viewMiddleware);
 
 //Router
 app.use(router);
