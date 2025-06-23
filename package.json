@@ -5,16 +5,20 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js -e -js,json",
-    "debug": "nodemon --inspect index.js -e js,json"
+    "start": "nodemon app/index.js -e -js,json",
+    "debug": "nodemon --inspect app/index.js -e js,json"
   },
   "keywords": [],
   "author": "TworcaStron.pl",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
     "express": "^5.0.1",
     "express-ejs-layouts": "^2.5.1",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.0",
     "node-fetch": "^2.6.1",
     "nodemon": "^3.1.10"
   }
