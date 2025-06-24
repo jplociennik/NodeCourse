@@ -1,0 +1,28 @@
+/* Shared List Styles - Used across all pages */
+
+/* List group items */
+.list-group-item {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.list-group-item-action {
+    color: var(--text-primary);
+}
+
+.list-group-item-action:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.list-group-item:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.list-group-item i {
+    width: 16px;
+    text-align: center;
+    margin-right: 0.5rem;
+    color: var(--text-muted);
+} 

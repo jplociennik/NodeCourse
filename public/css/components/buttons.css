@@ -1,0 +1,48 @@
+/* Shared Button Styles - Used across all pages */
+
+/* Success buttons */
+.btn-success {
+    background-color: var(--custom-green);
+    border-color: var(--custom-green);
+    color: white !important;
+    font-weight: 600;
+}
+
+.btn-success:hover {
+    background-color: var(--custom-green-dark);
+    border-color: var(--custom-green-dark);
+    color: white !important;
+}
+
+.btn-success:focus, .btn-success:active {
+    background-color: var(--custom-green);
+    border-color: var(--custom-green);
+    color: white !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+}
+
+/* Outline success buttons */
+.btn-outline-success {
+    color: var(--custom-green);
+    border-color: var(--custom-green);
+    background-color: transparent;
+}
+
+.btn-outline-success:hover {
+    background-color: var(--custom-green);
+    border-color: var(--custom-green);
+    color: white !important;
+}
+
+/* Outline danger buttons - stonowany czerwony */
+.btn-outline-danger {
+    color: #a83442;
+    border-color: #a83442;
+    background-color: transparent;
+}
+
+.btn-outline-danger:hover {
+    background-color: #a83442;
+    border-color: #a83442;
+    color: white;
+} 

@@ -12,8 +12,8 @@ const MESSAGES = {
 };
 
 const CSS_CLASSES = {
-    BADGE_SUCCESS: 'badge bg-success',
-    BADGE_WARNING: 'badge bg-warning',
+    BADGE_SUCCESS: 'badge task-status bg-success',
+    BADGE_WARNING: 'badge task-status bg-warning',
     ICON_SUCCESS: 'bi bi-check-circle text-success',
     ICON_MUTED: 'bi bi-check-circle text-muted'
 };
@@ -40,6 +40,26 @@ function setDeleteTask(taskId, taskName) {
     taskNameElement.textContent = taskName;
     confirmButton.href = TASK_API.DELETE(taskId);
 }
+
+/**
+ * Sets initial colors for task titles based on their status
+ */
+function setInitialTaskColors() {
+    // Find all task titles with muted icons (incomplete tasks)
+    const incompleteTasks = document.querySelectorAll('.bi-check-circle.text-muted');
+    
+    incompleteTasks.forEach(icon => {
+        const titleElement = icon.closest('.card-title');
+        if (titleElement) {
+            // Use !important to override Bootstrap's text-success
+            titleElement.style.setProperty('color', '#25706b', 'important');
+            titleElement.classList.add('task-incomplete');
+        }
+    });
+}
+
+// Set colors when page loads
+document.addEventListener('DOMContentLoaded', setInitialTaskColors);
 
 /**
  * Toggles task completion status via API call
@@ -97,13 +117,27 @@ function updateTaskUI(taskId, isDone) {
         statusBadge.className = isDone ? CSS_CLASSES.BADGE_SUCCESS : CSS_CLASSES.BADGE_WARNING;
     }
     
-    // Update title icon
+    // Update title icon and title color
     const titleIcon = document.querySelector(`#task-${taskId}`)
         ?.closest('.card-body')
         ?.querySelector('.bi-check-circle');
         
     if (titleIcon) {
         titleIcon.className = isDone ? CSS_CLASSES.ICON_SUCCESS : CSS_CLASSES.ICON_MUTED;
+        
+        // Update title color based on task status
+        const titleElement = titleIcon.closest('.card-title');
+        if (titleElement) {
+            if (isDone) {
+                // Remove custom color and class for completed tasks
+                titleElement.style.removeProperty('color');
+                titleElement.classList.remove('task-incomplete');
+            } else {
+                // Set turkusowy color for incomplete tasks
+                titleElement.style.setProperty('color', '#25706b', 'important');
+                titleElement.classList.add('task-incomplete');
+            }
+        }
     }
 }
 

@@ -2,10 +2,12 @@ const { User } = require('../db/mongoose');
 const { ErrorController } = require('./error-controller');
 
 const UserController = {
-  getUsersList: async (_req, res) => {
+  getUsersList: async (req, res) => {
     try {
-      const users = await User.find({});
-      await res.render('Pages/profile/profile-list', {
+      let q = req.query.q ? req.query.q.trim() : '';
+      let users = await User.find({name: { $regex: q, $options: 'i' }}) ?? null;
+
+      await res.render('pages/profile/profile-list', {
         pageTitle: 'Profile użytkowników',
         pageName: 'profile',
         title: 'Profile użytkowników',
@@ -17,7 +19,8 @@ const UserController = {
             icon: 'bi bi-people'
           }
         ],
-        users: users
+        users: users,
+        query: req.query
       });
     } catch (error) {
       ErrorController.handleError(res, error);
@@ -32,7 +35,7 @@ const UserController = {
       if (!user) {
         ErrorController.handleUserNotFound(res, id);
       } else {
-        await res.render('Pages/profile/profile-single', {
+        await res.render('pages/profile/profile-single', {
           pageTitle: `Profil - ${user.name}`,
           pageName: 'profile',
           title: `Profil użytkownika`,
@@ -65,7 +68,7 @@ const UserController = {
       if (!user) {
         ErrorController.handleUserNotFound(res, id);
       } else {
-        await res.render('Pages/profile/profile-details', {
+        await res.render('pages/profile/profile-details', {
           pageTitle: `Szczegóły - ${user.name}`,
           pageName: 'profile',
           title: `Szczegóły użytkownika`,

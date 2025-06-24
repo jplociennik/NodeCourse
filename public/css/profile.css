@@ -1,54 +1,70 @@
-/* Profile Pages Custom Styles - Bootstrap Compatible */
+/* Profile Pages Custom Styles - Bootstrap Compatible with Dark Theme Support */
 
 /* Profile cards hover effects */
 .profile-card {
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    box-shadow: 0 2px 4px var(--shadow);
+    transition: box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .profile-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
-    border-color: rgba(76, 175, 80, 0.3);
+    box-shadow: 0 4px 8px var(--shadow-hover);
 }
 
 /* Profile avatar styling */
 .profile-avatar {
     transition: transform 0.3s ease, color 0.3s ease;
+    color: var(--text-primary);
 }
 
 .profile-avatar:hover {
-    transform: scale(1.1);
-    color: #45a049 !important;
+    color: var(--custom-green) !important;
 }
 
 /* Profile info table */
+.profile-table {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
 .profile-table th {
-    background-color: rgba(76, 175, 80, 0.1);
-    color: #2e7d32;
+    background-color: var(--custom-green-bg);
+    color: var(--custom-green-dark);
     font-weight: 600;
-    border-bottom: 2px solid #4CAF50;
+    border-bottom: 2px solid var(--custom-green);
 }
 
 .profile-table td {
     padding: 1rem 0.75rem;
     vertical-align: middle;
+    color: var(--text-primary) !important;
+    background-color: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .profile-table tr:hover {
-    background-color: rgba(76, 175, 80, 0.05);
+    background-color: var(--bg-tertiary);
 }
 
 /* Profile stats cards */
 .profile-stats .card {
-    border: none;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
     transition: all 0.3s ease;
 }
 
 .profile-stats .card:hover {
-    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
-    transform: translateY(-2px);
+    background-color: var(--bg-tertiary);
+    box-shadow: 0 4px 8px var(--shadow-hover);
+}
+
+.profile-stats .card-body {
+    background-color: inherit;
+    color: var(--text-primary);
 }
 
 /* Profile action buttons */
@@ -73,6 +89,23 @@
     left: 100%;
 }
 
+/* Profile-specific button styling - inherits from components/buttons.css */
+.profile-actions .btn-success {
+    /* Inherits base styles from components/buttons.css */
+}
+
+.profile-actions .btn-outline-success {
+    color: var(--custom-green);
+    border-color: var(--custom-green);
+    background-color: transparent;
+}
+
+.profile-actions .btn-outline-success:hover {
+    background-color: var(--custom-green);
+    border-color: var(--custom-green);
+    color: white;
+}
+
 /* Profile list grid */
 .profile-grid {
     display: grid;
@@ -87,15 +120,33 @@
     padding: 0.5rem 1rem;
     border-radius: 50px;
     font-weight: 500;
+    background-color: var(--custom-green);
+    color: white;
+}
+
+.profile-badge.bg-secondary {
+    background-color: var(--text-secondary) !important;
+    color: white;
+}
+
+.profile-badge.bg-success {
+    background-color: var(--custom-green) !important;
+    color: white;
 }
 
 /* Profile search and filters */
 .profile-filters {
-    background-color: rgba(76, 175, 80, 0.05);
-    border: 1px solid rgba(76, 175, 80, 0.2);
+    background-color: var(--custom-green-bg);
+    border: 1px solid var(--custom-green);
     border-radius: 0.5rem;
     padding: 1rem;
     margin-bottom: 2rem;
+    color: var(--text-primary);
+}
+
+/* Search container spacing in profiles */
+.search-container {
+    margin-bottom: 1.5rem;
 }
 
 .profile-search {
@@ -104,13 +155,21 @@
 
 .profile-search .form-control {
     padding-left: 2.5rem;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
     transition: all 0.3s ease;
 }
 
 .profile-search .form-control:focus {
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+    border-color: var(--custom-green);
+    box-shadow: 0 0 0 0.2rem var(--custom-green-bg);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.profile-search .form-control::placeholder {
+    color: var(--text-muted);
 }
 
 .profile-search .search-icon {
@@ -118,7 +177,7 @@
     left: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #6c757d;
+    color: var(--text-muted);
     z-index: 3;
 }
 
@@ -135,7 +194,7 @@
     border-radius: 50%;
     top: -2px;
     right: -2px;
-    border: 2px solid white;
+    border: 2px solid var(--bg-primary);
 }
 
 .profile-status.online::after {
@@ -143,8 +202,10 @@
 }
 
 .profile-status.offline::after {
-    background-color: #6c757d;
+    background-color: var(--text-muted);
 }
+
+/* List group styles moved to components/lists.css */
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -164,6 +225,11 @@
     
     .profile-filters {
         padding: 0.75rem;
+    }
+    
+    .profile-header {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
     }
 }
 
@@ -191,24 +257,91 @@
 
 /* Profile details page specific */
 .profile-header {
-    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    background: linear-gradient(135deg, var(--custom-green) 0%, var(--custom-green-dark) 100%);
     color: white;
     border-radius: 0.5rem;
     padding: 2rem;
     margin-bottom: 2rem;
+    box-shadow: 0 4px 8px var(--shadow);
 }
 
+/* Profile navigation tabs */
 .profile-nav-tabs {
-    border-bottom: 2px solid #4CAF50;
+    border-bottom: 2px solid var(--border-color);
 }
 
 .profile-nav-tabs .nav-link {
-    color: #6c757d;
-    font-weight: 500;
+    color: var(--text-secondary);
+    border: none;
+    padding: 1rem 1.5rem;
     transition: all 0.3s ease;
 }
 
+.profile-nav-tabs .nav-link:hover {
+    color: var(--custom-green);
+    background-color: var(--bg-tertiary);
+}
+
 .profile-nav-tabs .nav-link.active {
-    color: #4CAF50;
-    border-bottom-color: #4CAF50;
-} 
+    color: var(--custom-green);
+    background-color: var(--bg-secondary);
+    border-bottom: 2px solid var(--custom-green);
+    font-weight: 600;
+}
+
+/* Dark theme specific adjustments */
+[data-theme="dark"] .profile-status::after {
+    border-color: var(--bg-primary);
+}
+
+/* Additional dark theme improvements */
+[data-theme="dark"] .profile-card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .profile-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Text utilities for profiles */
+.profile-text-primary {
+    color: var(--text-primary) !important;
+}
+
+.profile-text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.profile-text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Profile modals */
+.modal-content {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.modal-header {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.modal-footer {
+    background-color: var(--bg-tertiary);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Close button for dark theme */
+[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Logo styles moved to main.css */ 

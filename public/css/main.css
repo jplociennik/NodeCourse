@@ -1,17 +1,65 @@
-/* Main Layout Styles */
+/* Main Layout Styles with Dark Theme Support */
+
+/* CSS Variables for Light/Dark Theme */
+:root {
+    /* Light theme colors (default) */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #868e96;
+    --border-color: #dee2e6;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --shadow-hover: rgba(0, 0, 0, 0.15);
+    
+    /* Green theme colors */
+    --custom-green: #28a745;
+    --custom-green-dark: #218838;
+    --custom-green-light: #34ce57;
+    --custom-green-bg: rgba(40, 167, 69, 0.1);
+    
+    /* Navigation colors */
+    --nav-bg: #343a40;
+    --nav-text: #ffffff;
+    --nav-hover: #495057;
+}
+
+/* Dark theme colors */
+[data-theme="dark"] {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --text-primary: #f0f6fc;
+    --text-secondary: #7d8590;
+    --text-muted: #656d76;
+    --border-color: #30363d;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --shadow-hover: rgba(0, 0, 0, 0.6);
+    
+    /* Adjusted green colors for dark theme */
+    --custom-green: #238636;
+    --custom-green-dark: #1a7f37;
+    --custom-green-light: #2ea043;
+    --custom-green-bg: rgba(35, 134, 54, 0.15);
+    
+    /* Dark navigation */
+    --nav-bg: #010409;
+    --nav-text: #f0f6fc;
+    --nav-hover: #21262d;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     margin: 0;
     padding: 0;
     line-height: 1.6;
-    color: #333;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-nav {
-    background-color: #333;
-    padding: 0.5rem;
-}
-
+/* Navigation */
 nav ul {
     list-style-type: none;
     margin: 0;
@@ -24,20 +72,45 @@ nav li {
 }
 
 nav a {
-    color: white;
+    color: var(--text-primary);
     text-decoration: none;
     padding: 0.5rem 1rem;
     display: block;
+    transition: background-color 0.3s ease;
 }
 
 nav a:hover {
-    background-color: #555;
+    background-color: var(--bg-tertiary);
+    border-radius: 0.375rem;
 }
 
-main {
-    max-width: 1200px;
+/* Navigation styles for Bootstrap navbar */
+.navbar {
+    background-color: var(--nav-bg) !important;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s ease;
+}
+
+.navbar-nav .nav-link {
+    color: var(--nav-text) !important;
+    transition: background-color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: var(--nav-hover);
+    border-radius: 0.375rem;
+}
+
+.navbar-nav .nav-link.active {
+    color: var(--custom-green) !important;
+    font-weight: 600;
+}
+
+/* Main content */
+main.container-fluid {
+    padding: 1rem 3rem;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem;
 }
 
 .container {
@@ -46,235 +119,247 @@ main {
     gap: 2rem;
 }
 
-.content {
-    background-color: #f9f9f9;
-    padding: 1.5rem;
-    border-radius: 5px;
+/* Fix for Bootstrap containers */
+.container-fluid {
+    padding-left: 3rem;
+    padding-right: 3rem;
 }
 
-.sidebar {
-    background-color: #e9e9e9;
-    padding: 1.5rem;
-    border-radius: 5px;
+/* Breadcrumb container */
+.breadcrumb-container {
+    padding: 0 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-h1, h2, h3 {
-    color: #4CAF50;
+/* Cards - basic styles moved to components/cards.css */
+
+/* Row spacing */
+.row {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
 }
 
-.btn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
+.row > * {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--custom-green);
     border: none;
-    border-radius: 4px;
+    color: white;
+    font-size: 1.2rem;
     cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
+    box-shadow: 0 4px 12px var(--shadow-hover);
+    transition: all 0.3s ease;
+    z-index: 1000;
 }
 
-.btn:hover {
-    background-color: #45a049;
-}
-
-/* Custom Bootstrap Theme - Green Color Scheme */
-
-/* Custom Green Variables */
-:root {
-    --bs-success: #4CAF50;
-    --bs-success-rgb: 76, 175, 80;
-    --custom-green: #4CAF50;
-    --custom-green-dark: #45a049;
-    --custom-green-light: #66BB6A;
-}
-
-/* Override Bootstrap Success Color */
-.btn-success {
-    background-color: var(--custom-green);
-    border-color: var(--custom-green);
-}
-
-.btn-success:hover {
+.theme-toggle:hover {
     background-color: var(--custom-green-dark);
-    border-color: var(--custom-green-dark);
 }
 
-.btn-outline-success {
-    color: var(--custom-green);
-    border-color: var(--custom-green);
-}
-
-.btn-outline-success:hover {
-    background-color: var(--custom-green);
-    border-color: var(--custom-green);
-}
-
-.text-success {
-    color: var(--custom-green) !important;
-}
+/* Green theme colors */
+/* Button and text styles moved to components/ */
 
 .bg-success {
     background-color: var(--custom-green) !important;
 }
 
-.border-success {
-    border-color: var(--custom-green) !important;
+/* Form controls */
+.form-control, .form-select {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
 }
 
-.alert-success {
-    background-color: rgba(76, 175, 80, 0.1);
+.form-control:focus, .form-select:focus {
+    background-color: var(--bg-secondary);
     border-color: var(--custom-green);
-    color: var(--custom-green-dark);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.2rem var(--custom-green-bg);
 }
 
-/* Navigation Active State */
-.navbar-nav .nav-link.active {
-    color: var(--custom-green) !important;
-    font-weight: 600;
-    position: relative;
+.form-control::placeholder {
+    color: var(--text-muted);
 }
 
-.navbar-nav .nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 2px;
-    background-color: var(--custom-green);
-    border-radius: 1px;
+/* Tables */
+.table {
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
 }
 
-/* Breadcrumb Styling */
-.breadcrumb {
-    background-color: rgba(76, 175, 80, 0.05);
-    border: 1px solid rgba(76, 175, 80, 0.2);
-    border-radius: 0.375rem;
+.table-striped > tbody > tr:nth-of-type(odd) > td {
+    background-color: var(--bg-tertiary);
 }
 
-.breadcrumb-item + .breadcrumb-item::before {
+/* Footer */
+footer {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+footer a {
     color: var(--custom-green);
-    content: "›";
-    font-weight: bold;
+    text-decoration: none;
 }
 
-.breadcrumb-item.active {
+footer a:hover {
     color: var(--custom-green-dark);
-    font-weight: 500;
+    text-decoration: underline;
 }
 
-/* Custom Card Hover Effects */
-.card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-/* Custom Navbar Brand */
+/* Logo hover effects */
 .navbar-brand {
-    font-weight: bold;
-    font-size: 1.5rem;
-}
-
-.navbar-brand:hover {
-    color: inherit !important;
     background-color: transparent !important;
-    text-decoration: none !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
-/* Logo styling */
+.navbar-brand:hover, .navbar-brand:focus {
+    background-color: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.navbar-brand img, .hero-logo {
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
 .hero-logo {
-    transition: transform 0.3s ease;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: brightness(1.1) contrast(1.1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .hero-logo:hover {
-    transform: scale(1.2);
+    filter: brightness(1.3) contrast(1.2) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
 }
 
-.navbar-brand img {
-    transition: transform 0.3s ease;
-}
-
-.navbar-brand:hover img {
+.navbar-brand img:hover, 
+.hero-logo:hover {
     transform: scale(1.1);
 }
 
-/* Hero section responsive */
-@media (max-width: 768px) {
-    .hero-logo {
-        height: 160px !important;
-    }
-    
-    .d-flex.align-items-center.justify-content-center {
-        flex-direction: column;
-    }
-    
-    .hero-logo.me-3 {
-        margin-right: 0 !important;
-        margin-bottom: 0.1rem;
-    }
-}
-
-/* Smooth scroll behavior */
+/* Smooth scrolling */
 html {
     scroll-behavior: smooth;
 }
 
-/* Footer links hover effect */
-footer a:hover {
+/* Breadcrumb styling */
+.breadcrumb {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.breadcrumb-item {
+    color: var(--text-secondary) !important;
+    font-size: 0.95rem !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.breadcrumb-item:first-child {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
+.breadcrumb-item:first-child a {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
     color: var(--custom-green) !important;
-    transition: color 0.3s ease;
+    content: "›" !important;
+    font-weight: bold !important;
+    font-size: 1.1rem !important;
+    margin-left: 0.15rem !important;
+    margin-right: 0.15rem !important;
 }
 
-/* Form focus styles */
-.form-control:focus {
-    border-color: var(--custom-green);
-    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+.breadcrumb-item a {
+    color: var(--text-primary) !important;
+    text-decoration: none !important;
+    transition: color 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.15rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
-/* Accordion custom styling */
-.accordion-button:not(.collapsed) {
-    background-color: rgba(76, 175, 80, 0.1);
-    color: var(--custom-green-dark);
+.breadcrumb-item.active {
+    color: var(--custom-green) !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.15rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
-.accordion-button:focus {
-    border-color: var(--custom-green);
-    box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+.breadcrumb-item a:hover {
+    color: var(--custom-green) !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
-/* List group custom styling */
-.list-group-item-action:hover {
-    background-color: rgba(76, 175, 80, 0.05);
+/* Fix container alignment */
+.container-fluid.px-3 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
 }
 
-/* Badge styling */
-.badge.bg-success {
-    background-color: var(--custom-green) !important;
-}
-
-/* Table styling */
-.table-striped > tbody > tr:nth-of-type(odd) > td {
-    background-color: rgba(76, 175, 80, 0.05);
-}
-
-/* Additional spacing for mobile */
+/* Responsive design */
 @media (max-width: 768px) {
     .container {
-        padding-left: 15px;
-        padding-right: 15px;
+        grid-template-columns: 1fr;
     }
     
     .card {
         margin-bottom: 1rem;
     }
     
-    .navbar-nav .nav-link.active::after {
-        display: none;
+    main.container-fluid {
+        padding: 1rem 1.5rem;
+    }
+    
+    .container-fluid {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    
+    .breadcrumb-container {
+        padding: 0 1.5rem;
+    }
+    
+    .theme-toggle {
+        bottom: 15px;
+        right: 15px;
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+    
+    .breadcrumb {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
     }
 } 

@@ -1,11 +1,13 @@
-/* Contact Page Styles */
+/* Contact Page Styles with Dark Theme Support */
+
 .contact-info {
-    background: white;
-    color: #333;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
     padding: 2rem;
     border-radius: 8px;
     margin-bottom: 2rem;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
 }
 
 .contact-cards {
@@ -16,35 +18,43 @@
 }
 
 .contact-card {
-    background-color: white;
-    border: 1px solid #dee2e6;
-    border-left: 4px solid #4CAF50;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--custom-green);
     padding: 1.5rem;
     border-radius: 0 8px 8px 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--shadow);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.contact-card:hover {
+    box-shadow: 0 4px 8px var(--shadow-hover);
 }
 
 .contact-card h4 {
-    color: #4CAF50;
+    color: var(--custom-green);
     margin-top: 0;
     margin-bottom: 1rem;
 }
 
 .contact-card .icon {
     font-size: 1.5rem;
-    color: #4CAF50;
+    color: var(--custom-green);
     margin-right: 0.5rem;
 }
 
 .working-hours {
-    background-color: #f8f9fa;
+    background-color: var(--bg-tertiary);
     padding: 1.5rem;
     border-radius: 8px;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
 }
 
 .working-hours h4 {
-    color: #495057;
+    color: var(--text-primary);
     margin-top: 0;
 }
 
@@ -57,7 +67,8 @@
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 0;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
 }
 
 .hours-list li:last-child {
@@ -69,21 +80,27 @@
 }
 
 .faq-item {
-    background-color: #f8f9fa;
+    background-color: var(--bg-secondary);
     margin-bottom: 1rem;
     border-radius: 8px;
     padding: 1rem;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    background-color: var(--bg-tertiary);
 }
 
 .faq-question {
     font-weight: bold;
-    color: #495057;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
 .faq-answer {
-    color: #6c757d;
+    color: var(--text-secondary);
     margin: 0;
 }
 
@@ -97,6 +114,19 @@
         flex-direction: column;
         align-items: flex-start;
     }
+    
+    .contact-info {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .contact-card {
+        padding: 1rem;
+    }
+    
+    .working-hours {
+        padding: 1rem;
+    }
 }
 
 /* Contact Page Custom Styles - Bootstrap Compatible */
@@ -104,91 +134,198 @@
 /* Form enhancements */
 .form-control {
     transition: all 0.3s ease;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 .form-control:focus {
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
-    transform: translateY(-1px);
+    border-color: var(--custom-green);
+    box-shadow: 0 0 0 0.2rem var(--custom-green-bg);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
 }
 
 .form-label {
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
-/* Contact info cards */
-.contact-info .card {
-    border: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+.form-select {
+    background-color: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
 }
 
-.contact-info .card-header {
-    border-bottom: 3px solid #4CAF50;
+.form-select:focus {
+    border-color: var(--custom-green);
+    box-shadow: 0 0 0 0.2rem var(--custom-green-bg);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Contact info cards */
+.contact-info .card, .card {
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    box-shadow: 0 2px 10px var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.contact-info .card:hover, .card:hover {
+    box-shadow: 0 4px 15px var(--shadow-hover);
+}
+
+.contact-info .card-header, .card-header {
+    border-bottom: 3px solid var(--custom-green);
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.contact-info .card-body, .card-body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Green header override with better text visibility */
+.card-header.bg-success {
+    background-color: var(--custom-green) !important;
+    border-color: var(--custom-green) !important;
+    color: white !important;
+}
+
+.card-header.bg-success h4,
+.card-header.bg-success h2,
+.card-header.bg-success .card-title {
+    color: white !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* Contact method icons */
 .contact-method {
     transition: transform 0.3s ease;
+    color: var(--text-primary);
 }
 
-.contact-method:hover {
-    transform: scale(1.05);
-}
+
 
 .contact-method i {
     transition: color 0.3s ease;
+    color: var(--custom-green);
 }
 
 .contact-method:hover i {
-    color: #45a049 !important;
+    color: var(--custom-green-dark) !important;
 }
 
-/* FAQ Accordion */
+/* FAQ Accordion with slide effect */
 .accordion-item {
-    border: 1px solid rgba(76, 175, 80, 0.2);
+    border: 1px solid var(--border-color);
     margin-bottom: 0.5rem;
     border-radius: 0.375rem;
     overflow: hidden;
+    background-color: var(--bg-secondary);
+    transition: all 0.3s ease;
 }
 
 .accordion-button {
-    background-color: rgba(76, 175, 80, 0.05);
-    color: #333;
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
     font-weight: 500;
+    border: none;
+    transition: all 0.3s ease, transform 0.3s ease;
+}
+
+.accordion-button:hover {
+    background-color: var(--bg-secondary);
+    transform: translateX(8px);
 }
 
 .accordion-button:not(.collapsed) {
-    background-color: rgba(76, 175, 80, 0.15);
-    color: #2e7d32;
+    background-color: var(--custom-green-bg);
+    color: var(--custom-green-dark);
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    border-color: var(--custom-green);
+    box-shadow: 0 0 0 0.25rem var(--custom-green-bg);
 }
 
 .accordion-body {
-    background-color: #fff;
-    color: #555;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-top: 1px solid var(--border-color);
 }
 
-/* Business hours styling */
+/* Close button for dark theme */
+[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Business hours styling with better visibility */
 .business-hours .d-flex {
     padding: 0.25rem 0;
-    border-bottom: 1px solid rgba(76, 175, 80, 0.1);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
 }
 
 .business-hours .d-flex:last-child {
     border-bottom: none;
 }
 
+.business-hours .fw-bold,
+.business-hours strong {
+    color: var(--text-primary) !important;
+    font-weight: 700 !important;
+}
+
+.business-hours .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.business-hours .text-success {
+    color: var(--custom-green) !important;
+    font-weight: 600 !important;
+}
+
+/* Contact info text visibility */
+.contact-info .card-body strong,
+.contact-card .card-body strong {
+    color: var(--text-primary) !important;
+    font-weight: 700 !important;
+}
+
+.contact-info .card-body,
+.contact-card .card-body {
+    color: var(--text-primary) !important;
+}
+
+.contact-info a,
+.contact-card a {
+    color: var(--custom-green) !important;
+    font-weight: 500 !important;
+}
+
 /* Social media links in footer */
 footer .social-links a {
     display: inline-block;
     transition: transform 0.3s ease;
+    color: var(--custom-green);
 }
 
 footer .social-links a:hover {
-    transform: scale(1.2);
+    color: var(--custom-green-dark);
 }
+
+/* Button, text, logo, and alert styles moved to components/ */
 
 /* Responsive contact form */
 @media (max-width: 768px) {
@@ -209,7 +346,12 @@ footer .social-links a:hover {
 /* Animation for contact cards */
 .contact-card {
     animation: fadeInUp 0.6s ease-out;
+    animation-fill-mode: both;
 }
+
+.contact-card:nth-child(1) { animation-delay: 0.1s; }
+.contact-card:nth-child(2) { animation-delay: 0.2s; }
+.contact-card:nth-child(3) { animation-delay: 0.3s; }
 
 @keyframes fadeInUp {
     from {
@@ -222,10 +364,11 @@ footer .social-links a:hover {
     }
 }
 
-/* Form submission button */
+/* Contact form button effects */
 .contact-form .btn {
     position: relative;
     overflow: hidden;
+    transition: all 0.3s ease;
 }
 
 .contact-form .btn::before {
@@ -241,4 +384,13 @@ footer .social-links a:hover {
 
 .contact-form .btn:hover::before {
     left: 100%;
+}
+
+/* Dark theme specific adjustments */
+[data-theme="dark"] .contact-card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .contact-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 } 

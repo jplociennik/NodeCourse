@@ -1,10 +1,10 @@
 <% if (typeof breadcrumbs !== 'undefined' && breadcrumbs && breadcrumbs.length > 0) { %>
 <!-- Breadcrumb Navigation -->
-<div class="container mt-3">
+<div class="breadcrumb-container">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="/" class="text-success text-decoration-none">
+                <a href="/">
                     <i class="bi bi-house"></i> Strona główna
                 </a>
             </li>
@@ -18,7 +18,7 @@
                     </li>
                 <% } else { %>
                     <li class="breadcrumb-item">
-                        <a href="<%= crumb.link %>" class="text-success text-decoration-none">
+                        <a href="<%= crumb.link %>">
                             <% if (crumb.icon) { %>
                                 <i class="<%= crumb.icon %>"></i>
                             <% } %>

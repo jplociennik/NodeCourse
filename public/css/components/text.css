@@ -1,0 +1,32 @@
+/* Shared Text Styles - Used across all pages */
+
+/* Text color utilities */
+.text-success {
+    color: var(--custom-green) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Typography */
+.display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+    color: var(--text-primary);
+}
+
+.lead {
+    color: var(--text-secondary);
+}
+
+/* Badge styling */
+.badge {
+    color: white;
+}
+
+.badge.bg-secondary {
+    background-color: var(--text-secondary) !important;
+} 

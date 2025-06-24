@@ -4,6 +4,9 @@ const viewMiddleware = (req, res, next) => {
   res.locals.formTitle = null;
   res.locals.formAction = null;
   res.locals.errors = null;
+  res.locals.searchAction = null;
+  res.locals.query = req.query;
+  res.locals.form = {};
   next();
 };
 

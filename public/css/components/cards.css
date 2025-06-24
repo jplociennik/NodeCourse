@@ -1,0 +1,72 @@
+/* Shared Card Styles - Used across all pages */
+
+/* Base card styles */
+.card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px var(--shadow-hover);
+}
+
+.card-body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.card-header {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Fix for light background cards in dark theme */
+.card-body.bg-light {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-body.bg-light {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Green card headers */
+.card-header.bg-success {
+    background-color: var(--custom-green) !important;
+    border-color: var(--custom-green) !important;
+    color: white !important;
+}
+
+/* Card text colors */
+.card-text {
+    color: var(--text-primary) !important;
+}
+
+.card-title {
+    color: var(--text-primary);
+}
+
+.card-title.text-success {
+    color: var(--custom-green) !important;
+}
+
+/* Feature cards styling */
+.card.border-success {
+    border-color: var(--custom-green) !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+} 

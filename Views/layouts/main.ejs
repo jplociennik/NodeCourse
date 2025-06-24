@@ -7,14 +7,38 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     
     <!-- Custom CSS Files -->
     <link rel="stylesheet" href="/css/main.css">
+    
+    <!-- Shared Component Styles -->
+    <link rel="stylesheet" href="/css/components/cards.css">
+    <link rel="stylesheet" href="/css/components/buttons.css">
+    <link rel="stylesheet" href="/css/components/alerts.css">
+    <link rel="stylesheet" href="/css/components/lists.css">
+    <link rel="stylesheet" href="/css/components/text.css">
+    <link rel="stylesheet" href="/css/components/hero.css">
+    
+    <!-- Page-specific CSS -->
     <% if (typeof pageName !== 'undefined' && pageName) { %>
         <link rel="stylesheet" href="/css/<%= pageName %>.css">
     <% } %>
+    
+    <!-- Theme initialization - inline for immediate execution -->
+    <script>
+        const theme = localStorage.getItem('theme');
+        if (theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+        } else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const defaultTheme = prefersDark ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', defaultTheme);
+            localStorage.setItem('theme', defaultTheme);
+        }
+    </script>
 </head>
 <body>
     <%- include('../partials/navbar') %>
@@ -27,9 +51,25 @@
         <%- body %>
     </main>
     
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" title="Przełącz motyw">
+        <i class="bi bi-moon-fill" id="themeIcon"></i>
+    </button>
+    
     <%- include('../partials/footer') %>
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+    
+    <!-- Theme Management JS -->
+    <script src="/js/theme.js"></script>
+    
+    <!-- Theme Flash Prevention JS -->
+    <script src="/js/theme-prevention.js"></script>
+    
+
 </body>
 </html> 

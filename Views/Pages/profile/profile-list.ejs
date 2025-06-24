@@ -3,11 +3,14 @@
         <h2 class="mb-0"><i class="bi bi-people"></i> Profile użytkowników</h2>
     </div>
     <div class="card-body">
+
+        <%- include('../../partials/forms/searchbar') %>
+
         <p class="lead">Znaleziono <span class="badge bg-success"><%= users.length %></span> profili.</p>
         <div class="row">
             <% users.forEach((user, index) => { %>
                 <div class="col-md-6 mb-3 profile-item">
-                    <div class="card h-100 border-success profile-card">
+                    <div class="card h-100 profile-card">
                         <div class="card-body">
                             <h5 class="card-title text-success">
                                 <i class="bi bi-person-circle profile-avatar"></i> <%= user.name %>

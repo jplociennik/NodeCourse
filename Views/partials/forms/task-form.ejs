@@ -8,28 +8,28 @@
     </div>
 
     <div class="card-body">
-        <form class="task-form" method="POST" action="<%= typeof formAction !== 'undefined' ? formAction : '/zadania' %>">
+        <form class="task-form" method="POST" action="<%= formAction ?? '/zadania' %>">
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="taskName" class="form-label">
                         <i class="bi bi-card-text"></i> Nazwa zadania
                     </label>
-                    <input type="text" class="form-control <%= errors && errors.taskName ? 'is-invalid' : '' %>" id="taskName" name="taskName" 
+                    <input type="text" class="form-control <%= errors?.taskName ? 'is-invalid' : '' %>" id="taskName" name="taskName" 
                         value="<%= task.taskName %>" required>
                     
                     <% if (errors && errors.taskName) { %>
-                        <div class="invalid-feedback"><%= errors.taskName.message %></div>
+                        <div class="invalid-feedback"><%= errors?.taskName.message %></div>
                     <% } %>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="dateFrom" class="form-label">
                         <i class="bi bi-calendar"></i> Od kiedy
                     </label>
-                    <input type="date" class="form-control <%= errors && errors.dateFrom ? 'is-invalid' : '' %>" id="dateFrom" name="dateFrom" 
+                    <input type="date" class="form-control <%= errors?.dateFrom ? 'is-invalid' : '' %>" id="dateFrom" name="dateFrom" 
                         value="<%= task.dateFrom %>" required>
                     
                     <% if (errors && errors.dateFrom) { %>
-                        <div class="invalid-feedback"><%= errors.dateFrom.message %></div>
+                        <div class="invalid-feedback"><%= errors?.dateFrom.message %></div>
                     <% } %>
                 </div>
             </div>
@@ -38,11 +38,11 @@
                 <label for="dateTo" class="form-label">
                     <i class="bi bi-calendar-check"></i> Do kiedy
                 </label>
-                <input type="date" class="form-control <%= errors && errors.dateTo ? 'is-invalid' : '' %>" id="dateTo" name="dateTo" 
+                <input type="date" class="form-control <%= errors?.dateTo ? 'is-invalid' : '' %>" id="dateTo" name="dateTo" 
                     value="<%= task.dateTo %>">
 
                 <% if (errors && errors.dateTo) { %>
-                    <div class="invalid-feedback"><%= errors.dateTo.message %></div>
+                    <div class="invalid-feedback"><%= errors?.dateTo.message %></div>
                 <% } %>
             </div>
             

@@ -1,13 +1,61 @@
-/* Home Page Styles */
+/* Home Page Styles with Dark Theme Support */
+
+/* Hero section with darker green */
 .home-hero {
-    background: linear-gradient(135deg, #4CAF50, #45a049);
+    background: linear-gradient(135deg, #2d7a2d, #1e5f1e);
     color: white;
     padding: 2rem;
     margin-bottom: 2rem;
     border-radius: 8px;
     text-align: center;
+    box-shadow: 0 4px 8px var(--shadow);
 }
 
+/* Dark theme hero - even darker */
+[data-theme="dark"] .home-hero {
+    background: linear-gradient(135deg, #1a5d1a, #0f4a0f);
+}
+
+/* Logo hover effect with improved visibility */
+.hero-logo {
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: brightness(1.1) contrast(1.1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.hero-logo:hover {
+    transform: scale(1.1);
+    filter: brightness(1.3) contrast(1.2) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+}
+
+/* Main content section - green background */
+.main-content-section {
+    background: linear-gradient(135deg, var(--custom-green), var(--custom-green-light));
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.main-content-section h2 {
+    color: white !important;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.main-content-section .card-header {
+    background: linear-gradient(135deg, var(--custom-green), var(--custom-green-light));
+    border: none;
+    color: white;
+}
+
+.main-content-section .card-header h2 {
+    color: white !important;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Features grid */
 .home-features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -16,77 +64,49 @@
 }
 
 .feature-card {
-    background-color: white;
-    border: 1px solid #ddd;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
     border-radius: 8px;
     padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+    box-shadow: 0 2px 4px var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease;
 }
 
 .feature-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 8px var(--shadow-hover);
 }
 
 .feature-icon {
     font-size: 2.5rem;
-    color: #4CAF50;
+    color: var(--custom-green);
     margin-bottom: 1rem;
 }
 
 .cta-section {
-    background-color: #f8f9fa;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
     padding: 2rem;
     border-radius: 8px;
     text-align: center;
     margin-top: 2rem;
+    transition: background-color 0.3s ease;
 }
 
 /* Home Page Custom Styles - Bootstrap Compatible */
 
-/* Enhanced animations for cards */
-.card {
-    transition: all 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.15);
-}
-
-/* Feature cards special styling */
+/* Feature icons - unique to home page */
 .feature-card-icon {
+    color: var(--custom-green);
     transition: transform 0.3s ease;
 }
 
-.card:hover .feature-card-icon {
-    transform: scale(1.1);
-}
+/* Button styles moved to components/buttons.css */
 
-/* Call to action section */
-.cta-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-}
-
-/* Enhanced buttons */
-.btn-success {
-    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
-    transition: all 0.3s ease;
-}
-
-.btn-success:hover {
-    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
-    transform: translateY(-1px);
-}
-
-.btn-outline-success:hover {
-    transform: translateY(-1px);
-}
-
-/* Alert enhancements */
-.alert-success {
-    border-left: 4px solid #4CAF50;
+/* Alert styles moved to components/alerts.css - keeping unique animation only for main content */
+.main-content .alert-success,
+.cta-section .alert-success {
     animation: slideIn 0.5s ease-out;
 }
 
@@ -101,20 +121,40 @@
     }
 }
 
-/* List group enhancements */
-.list-group-item-action {
-    transition: all 0.2s ease;
-}
-
+/* List group - unique home page enhancement */
 .list-group-item-action:hover {
-    border-left: 4px solid #4CAF50;
+    border-left: 4px solid var(--custom-green);
     padding-left: 1.2rem;
 }
 
-/* Responsive improvements */
+/* Text and component styles moved to components/ */
+
+/* Jumbotron - unique to home page */
+.jumbotron {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 2rem;
+    border-radius: 8px;
+}
+
+/* Progress bars - unique styling for home */
+.progress {
+    background-color: var(--bg-tertiary);
+}
+
+.progress-bar {
+    background-color: var(--custom-green);
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
     .display-4 {
-        font-size: 2.5rem;
+        font-size: 2rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
     }
     
     .card-body {
@@ -122,10 +162,23 @@
     }
     
     .container {
-        grid-template-columns: 1fr;
+        padding: 0 1rem;
     }
     
     .home-features {
         grid-template-columns: 1fr;
+    }
+    
+    .home-hero {
+        padding: 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .feature-card {
+        padding: 1rem;
+    }
+    
+    .cta-section {
+        padding: 1.5rem;
     }
 } 

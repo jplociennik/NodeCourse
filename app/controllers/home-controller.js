@@ -3,7 +3,7 @@ const { ErrorController } = require('./error-controller');
 const HomeController = {
   getHomePage: async (_req, res) => {
     try {
-      await res.render('Pages/home', { 
+      await res.render('pages/home', { 
         pageTitle: 'Strona Główna',
         pageName: 'home',
         title: 'Witaj na mojej stronie', 
@@ -24,7 +24,7 @@ const HomeController = {
 
   getContactPage: async (_req, res) => {
     try {
-      await res.render('Pages/contact', { 
+      await res.render('pages/contact', { 
         pageTitle: 'Kontakt',
         pageName: 'contact',
         phoneNumber: '997 998 999',
@@ -56,12 +56,18 @@ const HomeController = {
 
   getAboutPage: async (_req, res) => {
     try {
-      await res.render('Pages/home', { 
+      await res.render('pages/home', { 
         pageTitle: 'O nas',
         pageName: 'about',
         title: 'O nas',
         subtitle: 'Poznaj naszą historię',
         heroIcon: 'bi bi-info-circle',
+        breadcrumbs: [
+          {
+            text: 'O nas',
+            icon: 'bi bi-info-circle'
+          }
+        ],
         sidebarTitle: 'Nasze wartości',
         sidebarContent: 'Jesteśmy zespołem pasjonatów technologii, którzy dążą do tworzenia innowacyjnych rozwiązań.',
         sidebarNews: {

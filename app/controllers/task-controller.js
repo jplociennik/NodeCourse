@@ -7,7 +7,7 @@ const TaskController = {
     const isEdit = type === 'edit';
     
     return {
-      template: isEdit ? 'Pages/task/task-edit' : 'Pages/task/task-add',
+      template: isEdit ? 'pages/task/task-edit' : 'pages/task/task-add',
       pageTitle: isEdit ? 'Edytuj zadanie' : 'Dodaj zadanie',
       pageName: 'tasks',
       formTitle: isEdit ? 'Edytuj zadanie' : 'Dodaj nowe zadanie',
@@ -17,15 +17,23 @@ const TaskController = {
     };
   },
 
-  getTasksPage: async (_req, res) => {
+  getTasksPage: async (req, res) => {
     try {
-      const tasks = await Task.find({}) ?? null;
-      await res.render('Pages/task/tasks', { 
+      let q = req.query.q ? req.query.q.trim() : '';
+      let tasks = await Task.find({taskName: { $regex: q, $options: 'i' }}) ?? null;
+
+      await res.render('pages/task/tasks', { 
         pageTitle: 'Zadania',
         pageName: 'tasks',
         title: 'Lista zadań',
         subtitle: 'Przegląd aktualnych zadań',
         heroIcon: 'bi bi-list-check',
+        breadcrumbs: [
+          {
+            text: 'Zadania',
+            icon: 'bi bi-list-check'
+          }
+        ],
         sidebarTitle: 'Status zadań',
         sidebarContent: 'Tutaj znajdziesz informacje o postępie w realizacji zadań.',
         sidebarNews: {
@@ -33,7 +41,8 @@ const TaskController = {
           highlight: 'Nowe zadanie!',
           content: 'Właśnie dodano nowe zadanie do listy. Sprawdź szczegóły poniżej.'
         },
-        tasks: tasks
+        tasks: tasks,
+        query: req.query
       });
     } catch (error) {
       ErrorController.handleError(res, error);
@@ -57,7 +66,7 @@ const TaskController = {
         taskName,  
         dateFrom,  
         dateTo: dateTo || null,
-        isDone: false // Nowe zadania są zawsze niewykonane
+        isDone: false
       });
 
       await task.save();
