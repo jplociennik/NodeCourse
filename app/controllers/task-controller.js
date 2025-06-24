@@ -4,7 +4,6 @@ const { ErrorController } = require('./error-controller');
 const TaskController = {
   
   getFormConfig: (type, req, task = null) => {
-    const { taskName, dateFrom, dateTo } = req.body || {};
     const isEdit = type === 'edit';
     
     return {
@@ -14,12 +13,7 @@ const TaskController = {
       formTitle: isEdit ? 'Edytuj zadanie' : 'Dodaj nowe zadanie',
       formAction: isEdit ? `/zadania/admin/${req.params?.id || task?._id}/edytuj` : '/zadania/admin/dodaj',
       submitText: isEdit ? 'Zaktualizuj zadanie' : 'Dodaj zadanie',
-      task: task || (req.body ? {
-        _id: req.params?.id,
-        taskName, 
-        dateFrom, 
-        dateTo
-      } : null)
+      task: task || req.body || {}
     };
   },
 
@@ -101,12 +95,13 @@ const TaskController = {
         taskName,  
         dateFrom,  
         dateTo: dateTo || null
-        // isDone nie jest aktualizowane z formularza
       }, { runValidators: true });
 
       res.redirect('/zadania');
     } catch (error) {
-      const formConfig = TaskController.getFormConfig('edit', req);
+      // Pobierz zadanie ponownie dla formularza błędu
+      const task = await Task.findById(req.params.id);
+      const formConfig = TaskController.getFormConfig('edit', req, task);
       ErrorController.handleValidationError(res, error, formConfig);
     }
   },

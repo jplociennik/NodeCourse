@@ -32,7 +32,7 @@ async function initializeDatabase() {
     try {
         await User.insertMany(users);
         console.log('Użytkownicy zostali zapisani');
-        console.log('Tabela zadań została wyczyszczona');
+        
         return true;
     }
     catch (e) {
