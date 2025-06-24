@@ -1,0 +1,150 @@
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h2 class="mb-0"><i class="bi bi-list-check"></i> Lista zadań</h2>
+        <a href="/zadania/admin/dodaj" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Dodaj zadanie
+        </a>
+    </div>
+    <div class="card-body">
+        <% if (tasks.length > 0) { %>
+            <p class="lead">Znaleziono <span class="badge bg-success"><%= tasks.length %></span> zadań.</p>
+            <div class="row">
+                <% tasks.forEach((task, index) => { %>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 border-success">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title text-success mb-0">
+                                        <i class="bi bi-check-circle <%= task.isDone ? 'text-success' : 'text-muted' %>"></i> 
+                                        <%= task.taskName %>
+                                    </h5>
+                                    <div class="form-check">
+                                        <input 
+                                            class="form-check-input" 
+                                            type="checkbox" 
+                                            id="task-<%= task._id %>" 
+                                            <%= task.isDone ? 'checked' : '' %>
+                                            onchange="toggleTaskStatus('<%= task._id %>', this)"
+                                        >
+                                        <label class="form-check-label" for="task-<%= task._id %>">
+                                            <small class="text-muted">Wykonane</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <p class="card-text"><small class="text-muted">ID: <%= task._id %></small></p>
+                                <p class="card-text">
+                                    <i class="bi bi-calendar-event"></i> 
+                                    Od: <%= task.dateFrom %>
+                                </p>
+                                <% if (task.dateTo) { %>
+                                    <p class="card-text">
+                                        <i class="bi bi-calendar-check"></i> 
+                                        Do: <%= task.dateTo %>
+                                    </p>
+                                <% } %>
+                                <p class="card-text">
+                                    <span class="badge <%= task.isDone ? 'bg-success' : 'bg-warning' %>" id="status-<%= task._id %>">
+                                        <%= task.isDone ? 'Wykonane' : 'Do wykonania' %>
+                                    </span>
+                                </p>
+                                <div class="d-grid gap-2 d-md-flex">
+                                    <a href="/zadania/admin/<%= task._id %>/edytuj" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-pencil"></i> Edytuj
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="setDeleteTask('<%= task._id %>', '<%= task.taskName %>')">
+                                        <i class="bi bi-trash"></i> Usuń
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="text-center py-5">
+                <i class="bi bi-list-check display-1 text-muted"></i>
+                <h3 class="text-muted mt-3">Brak zadań</h3>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<% if (tasks.length > 0) { %>
+    <!-- Sidebar using partial - tylko gdy są zadania -->
+    <%- include('../../partials/sidebar') %>
+<% } %>
+
+<!-- Modal potwierdzający usunięcie -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="bi bi-exclamation-triangle text-warning"></i> Potwierdź usunięcie
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Czy na pewno chcesz usunąć zadanie:</p>
+                <p class="fw-bold text-danger" id="taskToDelete"></p>
+                <p class="text-muted">Ta operacja jest nieodwracalna.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Anuluj
+                </button>
+                <a href="#" id="confirmDeleteBtn" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Usuń zadanie
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setDeleteTask(taskId, taskName) {
+    document.getElementById('taskToDelete').textContent = taskName;
+    document.getElementById('confirmDeleteBtn').href = '/zadania/admin/' + taskId + '/usun';
+}
+
+function toggleTaskStatus(taskId, checkbox) {
+    fetch('/zadania/admin/' + taskId + '/toggle', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Aktualizuj badge statusu
+            const statusBadge = document.getElementById('status-' + taskId);
+            if (data.isDone) {
+                statusBadge.textContent = 'Wykonane';
+                statusBadge.className = 'badge bg-success';
+            } else {
+                statusBadge.textContent = 'Do wykonania';
+                statusBadge.className = 'badge bg-warning';
+            }
+            
+            // Aktualizuj ikonę w tytule
+            const titleIcon = document.querySelector('#task-' + taskId).closest('.card-body').querySelector('.bi-check-circle');
+            if (data.isDone) {
+                titleIcon.className = 'bi bi-check-circle text-success';
+            } else {
+                titleIcon.className = 'bi bi-check-circle text-muted';
+            }
+        } else {
+            // Cofnij checkbox jeśli błąd
+            checkbox.checked = !checkbox.checked;
+            alert('Błąd podczas aktualizacji zadania');
+        }
+    })
+    .catch(error => {
+        // Cofnij checkbox jeśli błąd
+        checkbox.checked = !checkbox.checked;
+        alert('Błąd podczas aktualizacji zadania');
+        console.error('Error:', error);
+    });
+}
+</script>

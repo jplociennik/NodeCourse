@@ -12,23 +12,28 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'home' ? 'active' : '' %>" href="/">
+                    <a class="nav-link <%= (currentPage === '/' || currentPage === '/home') ? 'active' : '' %>" href="/">
                         <i class="bi bi-house"></i> Strona główna
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'profile' ? 'active' : '' %>" href="/profile">
+                    <a class="nav-link <%= currentPage && currentPage.startsWith('/profile') ? 'active' : '' %>" href="/profile">
                         <i class="bi bi-people"></i> Profile
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'contact' ? 'active' : '' %>" href="/kontakt">
+                    <a class="nav-link <%= currentPage === '/kontakt' ? 'active' : '' %>" href="/kontakt">
                         <i class="bi bi-envelope"></i> Kontakt
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'about' ? 'active' : '' %>" href="/o-nas">
+                    <a class="nav-link <%= currentPage === '/o-nas' ? 'active' : '' %>" href="/o-nas">
                         <i class="bi bi-info-circle"></i> O nas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPage === '/zadania' ? 'active' : '' %>" href="/zadania">
+                        <i class="bi bi-list-check"></i> Zadania
                     </a>
                 </li>
             </ul>

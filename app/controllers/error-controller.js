@@ -1,7 +1,7 @@
 const ErrorController = {
-  handleError: (res, error) => {
+  handleError: async (res, error) => {
     console.error('Database error:', error);
-    res.status(500).render('errors/500', {
+    await res.status(500).render('errors/500', {
       pageTitle: 'Błąd serwera',
       pageName: 'error',
       error: error.message,
@@ -11,9 +11,27 @@ const ErrorController = {
     });
   },
 
-  handleServerError: (res, error, message = 'Wystąpił błąd serwera') => {
+  handleValidationError: async (res, error, formConfig) => {
+    // Jeśli to błąd walidacji Mongoose, przekaż błędy do formularza
+    if (error.name === 'ValidationError') {
+      return res.render(formConfig.template, {
+        pageTitle: formConfig.pageTitle,
+        pageName: formConfig.pageName,
+        formTitle: formConfig.formTitle,
+        formAction: formConfig.formAction,
+        submitText: formConfig.submitText,
+        task: formConfig.task,
+        errors: error.errors
+      });
+    }
+    
+    // Jeśli to nie błąd walidacji, użyj standardowej obsługi błędów
+    return ErrorController.handleError(res, error);
+  },
+
+  handleServerError: async (res, error, message = 'Wystąpił błąd serwera') => {
     console.error('Server error:', error);
-    res.status(500).render('errors/500', {
+    await res.status(500).render('errors/500', {
       pageTitle: 'Błąd serwera',
       pageName: 'error',
       error: message,
@@ -23,8 +41,8 @@ const ErrorController = {
     });
   },
 
-  handle404Error: (res, path) => {
-    res.status(404).render('errors/404', {
+  handle404Error: async (res, path) => {
+    await res.status(404).render('errors/404', {
       pageTitle: 'Strona nie znaleziona',
       pageName: 'error',
       path: path,
@@ -34,8 +52,8 @@ const ErrorController = {
     });
   },
 
-  handleUserNotFound: (res, userId) => {
-    res.status(404).render('errors/user-not-found', {
+  handleUserNotFound: async (res, userId) => {
+    await res.status(404).render('errors/user-not-found', {
       pageTitle: 'Użytkownik nie znaleziony',
       pageName: 'error',
       userId: userId,

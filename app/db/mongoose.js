@@ -1,10 +1,13 @@
 const mongoose  = require('mongoose');
 const { userSchema } = require('./user');
+const { taskSchema } = require('./task');
 const { databaseConnectionString } = require('../config')
 
 mongoose.connect(databaseConnectionString);
 
+//models
 const User = mongoose.model('User', userSchema);
+const Task = mongoose.model('Task', taskSchema);
 
 const users = [
     new User({ name: 'Janek', email: 'janek@gmail.com', password: 'Zbyszek42#' }),
@@ -29,6 +32,7 @@ async function initializeDatabase() {
     try {
         await User.insertMany(users);
         console.log('Użytkownicy zostali zapisani');
+        console.log('Tabela zadań została wyczyszczona');
         return true;
     }
     catch (e) {
@@ -40,4 +44,4 @@ async function initializeDatabase() {
     }
 }
 
-module.exports = { User, initializeDatabase }
+module.exports = { User, Task, initializeDatabase }

@@ -1,0 +1,63 @@
+<!-- Task Form Component -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h4 class="mb-0">
+            <i class="bi bi-send"></i> 
+            <%= typeof formTitle !== 'undefined' ? formTitle : 'Zadanie' %>
+        </h4>
+    </div>
+
+    <div class="card-body">
+        <form class="task-form" method="POST" action="<%= typeof formAction !== 'undefined' ? formAction : '/zadania' %>">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="taskName" class="form-label">
+                        <i class="bi bi-card-text"></i> Nazwa zadania
+                    </label>
+                    <input type="text" class="form-control <%= errors && errors.taskName ? 'is-invalid' : '' %>" id="taskName" name="taskName" 
+                        value="<%= typeof task !== 'undefined' && task ? task.taskName : '' %>" required>
+                    
+                    <% if (errors && errors.taskName) { %>
+                        <div class="invalid-feedback"><%= errors.taskName.message %></div>
+                    <% } %>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="dateFrom" class="form-label">
+                        <i class="bi bi-calendar"></i> Od kiedy
+                    </label>
+                    <input type="date" class="form-control <%= errors && errors.dateFrom ? 'is-invalid' : '' %>" id="dateFrom" name="dateFrom" 
+                        value="<%= typeof task !== 'undefined' && task ? task.dateFrom : '' %>" required>
+                    
+                    <% if (errors && errors.dateFrom) { %>
+                        <div class="invalid-feedback"><%= errors.dateFrom.message %></div>
+                    <% } %>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="dateTo" class="form-label">
+                    <i class="bi bi-calendar-check"></i> Do kiedy
+                </label>
+                <input type="date" class="form-control <%= errors && errors.dateTo ? 'is-invalid' : '' %>" id="dateTo" name="dateTo" 
+                    value="<%= typeof task !== 'undefined' && task ? task.dateTo : '' %>">
+
+                <% if (errors && errors.dateTo) { %>
+                    <div class="invalid-feedback"><%= errors.dateTo.message %></div>
+                <% } %>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-plus-circle"></i> 
+                    <%= typeof submitText !== 'undefined' ? submitText : 'Zapisz zadanie' %>
+                </button>
+            </div>
+        </form>
+
+        <% if (errors && Object.keys(errors).length > 0) { %>
+        <div class="alert alert-danger mt-3">
+            <i class="bi bi-exclamation-triangle"></i> Błąd podczas przetwarzania zadania!
+        </div>
+        <% } %>
+    </div>
+</div> 

@@ -17,6 +17,9 @@ app.set('layout', './layouts/main');
 //Static Files
 app.use(express.static(path.join(__dirname, '../public')));
 
+//Body Parser
+app.use(express.urlencoded({ extended: true }));
+
 //Middleware
 app.use('/', viewMiddleware);
 
