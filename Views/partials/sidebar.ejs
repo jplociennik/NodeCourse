@@ -3,70 +3,81 @@
     <div class="card">
         <div class="card-header bg-success text-white">
             <h3 class="card-title mb-0">
-                <i class="bi bi-layout-sidebar"></i> 
+                <% if (typeof sidebarIcon !== 'undefined' && sidebarIcon) { %>
+                    <i class="<%= sidebarIcon %>"></i> 
+                <% } else { %>
+                    <i class="bi bi-layout-sidebar"></i> 
+                <% } %>
                 <%= typeof sidebarTitle !== 'undefined' ? sidebarTitle : 'Panel boczny' %>
             </h3>
         </div>
         <div class="card-body">
-            <% if (typeof sidebarContent !== 'undefined') { %>
+            <% if (typeof useCustomContent !== 'undefined' && useCustomContent === true && typeof customContent !== 'undefined') { %>
+                <!-- Render whatever custom content was passed -->
+                <%- customContent %>
+            <% } else if (typeof sidebarContent !== 'undefined') { %>
                 <p class="card-text"><%= sidebarContent %></p>
             <% } else { %>
                 <p class="card-text">Tutaj mogą znajdować się dodatkowe informacje, linki lub menu.</p>
             <% } %>
             
-            <!-- Quick Links Section -->
-            <% if (typeof quickLinks !== 'undefined' && quickLinks && quickLinks.length > 0) { %>
-                <h5 class="text-success">
-                    <i class="bi bi-link-45deg"></i> Szybkie linki
-                </h5>
-                <div class="list-group list-group-flush mb-3">
-                    <% quickLinks.forEach(link => { %>
-                        <a href="<%= link.url %>" class="list-group-item list-group-item-action">
-                            <% if (link.icon) { %>
-                                <i class="<%= link.icon %>"></i>
-                            <% } %>
-                            <%= link.text %>
+            <!-- Quick Links Section - only show if not using custom content -->
+            <% if (typeof useCustomContent === 'undefined' || useCustomContent !== true) { %>
+                <% if (typeof quickLinks !== 'undefined' && quickLinks && quickLinks.length > 0) { %>
+                    <h5 class="text-success">
+                        <i class="bi bi-link-45deg"></i> Szybkie linki
+                    </h5>
+                    <div class="list-group list-group-flush mb-3">
+                        <% quickLinks.forEach(link => { %>
+                            <a href="<%= link.url %>" class="list-group-item list-group-item-action">
+                                <% if (link.icon) { %>
+                                    <i class="<%= link.icon %>"></i>
+                                <% } %>
+                                <%= link.text %>
+                            </a>
+                        <% }); %>
+                    </div>
+                <% } else if (typeof showQuickLinks === 'undefined' || showQuickLinks !== false) { %>
+                    <h5 class="text-success">
+                        <i class="bi bi-link-45deg"></i> Szybkie linki
+                    </h5>
+                    <div class="list-group list-group-flush mb-3">
+                        <a href="/profile" class="list-group-item list-group-item-action">
+                            <i class="bi bi-people"></i> Zobacz profile
                         </a>
-                    <% }); %>
-                </div>
-            <% } else { %>
-                <h5 class="text-success">
-                    <i class="bi bi-link-45deg"></i> Szybkie linki
-                </h5>
-                <div class="list-group list-group-flush mb-3">
-                    <a href="/profile" class="list-group-item list-group-item-action">
-                        <i class="bi bi-people"></i> Zobacz profile
-                    </a>
-                    <a href="/kontakt" class="list-group-item list-group-item-action">
-                        <i class="bi bi-envelope"></i> Skontaktuj się
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="bi bi-question-circle"></i> Pomoc
-                    </a>
-                </div>
+                        <a href="/kontakt" class="list-group-item list-group-item-action">
+                            <i class="bi bi-envelope"></i> Skontaktuj się
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="bi bi-question-circle"></i> Pomoc
+                        </a>
+                    </div>
+                <% } %>
             <% } %>
             
-            <!-- News/Updates Section -->
-            <% if (typeof sidebarNews !== 'undefined' && sidebarNews) { %>
-                <h5 class="text-success">
-                    <i class="bi bi-newspaper"></i> 
-                    <%= sidebarNews.title || 'Aktualności' %>
-                </h5>
-                <div class="alert alert-success" role="alert">
-                    <strong><%= sidebarNews.highlight || 'Nowa aktualizacja!' %></strong> 
-                    <%= sidebarNews.content || 'Najnowsze wiadomości i aktualizacje będą tutaj wyświetlane.' %>
-                </div>
-            <% } else { %>
-                <h5 class="text-success">
-                    <i class="bi bi-newspaper"></i> Aktualności
-                </h5>
-                <div class="alert alert-success" role="alert">
-                    <strong>Nowa aktualizacja!</strong> Najnowsze wiadomości i aktualizacje będą tutaj wyświetlane.
-                </div>
+            <!-- News/Updates Section - only show if not using custom content -->
+            <% if (typeof useCustomContent === 'undefined' || useCustomContent !== true) { %>
+                <% if (typeof sidebarNews !== 'undefined' && sidebarNews) { %>
+                    <h5 class="text-success">
+                        <i class="bi bi-newspaper"></i> 
+                        <%= sidebarNews.title || 'Aktualności' %>
+                    </h5>
+                    <div class="alert alert-success" role="alert">
+                        <strong><%= sidebarNews.highlight || 'Nowa aktualizacja!' %></strong> 
+                        <%= sidebarNews.content || 'Najnowsze wiadomości i aktualizacje będą tutaj wyświetlane.' %>
+                    </div>
+                <% } else if (typeof showNews === 'undefined' || showNews !== false) { %>
+                    <h5 class="text-success">
+                        <i class="bi bi-newspaper"></i> Aktualności
+                    </h5>
+                    <div class="alert alert-success" role="alert">
+                        <strong>Nowa aktualizacja!</strong> Najnowsze wiadomości i aktualizacje będą tutaj wyświetlane.
+                    </div>
+                <% } %>
             <% } %>
             
-            <!-- Custom Sidebar Widgets -->
-            <% if (typeof sidebarWidgets !== 'undefined' && sidebarWidgets && sidebarWidgets.length > 0) { %>
+            <!-- Custom Sidebar Widgets - only show if not using custom content -->
+            <% if ((typeof useCustomContent === 'undefined' || useCustomContent !== true) && typeof sidebarWidgets !== 'undefined' && sidebarWidgets && sidebarWidgets.length > 0) { %>
                 <% sidebarWidgets.forEach(widget => { %>
                     <div class="mb-3">
                         <% if (widget.title) { %>

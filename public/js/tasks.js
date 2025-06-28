@@ -52,7 +52,7 @@ function setInitialTaskColors() {
         const titleElement = icon.closest('.card-title');
         if (titleElement) {
             // Use !important to override Bootstrap's text-success
-            titleElement.style.setProperty('color', '#25706b', 'important');
+            titleElement.style.setProperty('color', '#369992', 'important');
             titleElement.classList.add('task-incomplete');
         }
     });
@@ -134,10 +134,39 @@ function updateTaskUI(taskId, isDone) {
                 titleElement.classList.remove('task-incomplete');
             } else {
                 // Set turkusowy color for incomplete tasks
-                titleElement.style.setProperty('color', '#25706b', 'important');
+                titleElement.style.setProperty('color', '#369992', 'important');
                 titleElement.classList.add('task-incomplete');
             }
         }
+    }
+    
+    // Update statistics
+    updateStatistics();
+}
+
+/**
+ * Updates the statistics counters in the sidebar
+ */
+function updateStatistics() {
+    const todoCountElement = document.getElementById('todoCount');
+    const doneCountElement = document.getElementById('doneCount');
+    
+    if (todoCountElement && doneCountElement) {
+        // Count only visible checkboxes and their states
+        const visibleCheckboxes = document.querySelectorAll('.col-md-6:not([style*="display: none"]) input[type="checkbox"][id^="task-"]');
+        let todoCount = 0;
+        let doneCount = 0;
+        
+        visibleCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                doneCount++;
+            } else {
+                todoCount++;
+            }
+        });
+        
+        todoCountElement.textContent = todoCount;
+        doneCountElement.textContent = doneCount;
     }
 }
 
@@ -150,6 +179,8 @@ function showErrorMessage(message) {
     // like toast notifications, modal alerts, etc.
     alert(message);
 }
+
+
 
 // Initialize any event listeners when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {

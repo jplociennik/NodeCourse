@@ -7,6 +7,7 @@ const viewMiddleware = (req, res, next) => {
   res.locals.searchAction = null;
   res.locals.query = req.query;
   res.locals.form = {};
+  res.locals.filterConfig = {};
   next();
 };
 

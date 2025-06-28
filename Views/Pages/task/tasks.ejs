@@ -1,82 +1,96 @@
 <div class="row">
-    <!-- Main Content -->
-    <div class="<%= tasks.length > 0 ? 'col-lg-8' : 'col-12' %>">
-        <div class="card">
-            <div class="card-header tasks-header text-white d-flex justify-content-between align-items-center">
-                <h2 class="mb-0"><i class="bi bi-kanban"></i> Lista zadań</h2>
+        <!-- Search and Sort Sidebar -->
+        <% 
+        // Generate filter content and statistics
+        const filterContent = include('../../partials/filtering/main-filter', { 
+            config: filterConfig, 
+            query: query, 
+            tasks: tasks 
+        });
+        const statisticsContent = include('../../partials/filtering/statistics', { 
+            tasks: tasks 
+        });
+        const fullContent = filterContent + statisticsContent;
+        %>
+        <%- include('../../partials/sidebar', { 
+            sidebarTitle: filterConfig.title,
+            sidebarIcon: filterConfig.icon,
+            useCustomContent: true,
+            customContent: fullContent
+        }) %>
+        
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header tasks-header text-white d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0"><i class="bi bi-kanban"></i> Lista zadań</h2>
 
-                <%- include('../../partials/forms/searchbar') %>
-
-                <a href="/zadania/admin/dodaj" class="btn btn-light">
-                    <i class="bi bi-plus-lg"></i> Dodaj zadanie
-                </a>
-            </div>
-            <div class="card-body">
-                <% if (tasks.length > 0) { %>
-                    <p class="lead">Znaleziono <span class="badge task-count"><%= tasks.length %></span> zadań.</p>
-                    <div class="row">
-                        <% tasks.forEach((task, index) => { %>
-                            <div class="col-md-6 mb-3">
-                                <div class="card h-100 task-card">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h5 class="card-title text-success mb-0">
-                                                <i class="bi bi-check-circle <%= task.isDone ? 'text-success' : 'text-muted' %>"></i> 
-                                                <%= task.taskName %>
-                                            </h5>
-                                            <div class="form-check">
-                                                <input 
-                                                    class="form-check-input" 
-                                                    type="checkbox" 
-                                                    id="task-<%= task._id %>" 
-                                                    <%= task.isDone ? 'checked' : '' %>
-                                                    onchange="toggleTaskStatus('<%= task._id %>', this)"
-                                                >
-                                                <label class="form-check-label" for="task-<%= task._id %>">
-                                                    <small class="text-muted">Wykonane</small>
-                                                </label>
+                    <a href="/zadania/admin/dodaj" class="btn btn-light">
+                        <i class="bi bi-plus-lg"></i> Dodaj zadanie
+                    </a>
+                </div>
+                <div class="card-body">
+                    <% if (tasks.length > 0) { %>
+                        <p class="lead">Znaleziono <span class="badge task-count"><%= tasks.length %></span> zadań.</p>
+                        <div class="row tasks-container">
+                            <% tasks.forEach((task, index) => { %>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 task-card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h5 class="card-title text-success mb-0">
+                                                    <i class="bi bi-check-circle <%= task.isDone ? 'text-success' : 'text-muted' %>"></i> 
+                                                    <%= task.taskName %>
+                                                </h5>
+                                                <div class="form-check">
+                                                    <input 
+                                                        class="form-check-input" 
+                                                        type="checkbox" 
+                                                        id="task-<%= task._id %>" 
+                                                        <%= task.isDone ? 'checked' : '' %>
+                                                        onchange="toggleTaskStatus('<%= task._id %>', this)"
+                                                    >
+                                                    <label class="form-check-label" for="task-<%= task._id %>">
+                                                        <small class="text-muted">Wykonane</small>
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="task-meta">
-                                            <i class="bi bi-calendar3"></i> <%= task.dateFrom %>
-                                            <% if (task.dateTo) { %>
-                                                <span class="mx-2">→</span>
-                                                <i class="bi bi-calendar-check"></i> <%= task.dateTo %>
-                                            <% } %>
-                                        </div>
-                                        <div class="mb-3">
-                                            <span class="badge task-status <%= task.isDone ? 'bg-success' : 'bg-warning' %>" id="status-<%= task._id %>">
-                                                <%= task.isDone ? 'Wykonane' : 'Do wykonania' %>
-                                            </span>
-                                        </div>
-                                        <div class="d-grid gap-2 d-md-flex task-actions">
-                                            <a href="/zadania/admin/<%= task._id %>/edytuj" class="btn btn-outline-primary btn-sm">
-                                                <i class="bi bi-pencil"></i> Edytuj
-                                            </a>
-                                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="setDeleteTask('<%= task._id %>', '<%= task.taskName %>')">
-                                                <i class="bi bi-trash"></i> Usuń
-                                            </button>
+                                            <div class="task-meta">
+                                                <i class="bi bi-calendar3"></i> <%= task.dateFrom %>
+                                                <% if (task.dateTo) { %>
+                                                    <span class="mx-2">→</span>
+                                                    <i class="bi bi-calendar-check"></i> <%= task.dateTo %>
+                                                <% } %>
+                                            </div>
+                                            <div class="mb-3">
+                                                <span class="badge task-status <%= task.isDone ? 'bg-success' : 'bg-warning' %>" id="status-<%= task._id %>">
+                                                    <%= task.isDone ? 'Wykonane' : 'Do wykonania' %>
+                                                </span>
+                                            </div>
+                                            <div class="d-grid gap-2 d-md-flex task-actions">
+                                                <a href="/zadania/admin/<%= task._id %>/edytuj" class="btn btn-outline-primary btn-sm">
+                                                    <i class="bi bi-pencil"></i> Edytuj
+                                                </a>
+                                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="setDeleteTask('<%= task._id %>', '<%= task.taskName %>')">
+                                                    <i class="bi bi-trash"></i> Usuń
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        <% }); %>
-                    </div>
-                <% } else { %>
-                    <div class="text-center py-5 empty-state">
-                        <i class="bi bi-clipboard-x display-1 text-muted"></i>
-                        <h3 class="text-muted mt-3">Brak zadań</h3>
-                    </div>
-                <% } %>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-5 empty-state">
+                            <i class="bi bi-clipboard-x display-1 text-muted"></i>
+                            <h3 class="text-muted mt-3">Brak zadań</h3>
+                        </div>
+                    <% } %>
+                </div>
             </div>
         </div>
-    </div>
-
-    <% if (tasks.length > 0) { %>
-        <!-- Sidebar using partial - tylko gdy są zadania -->
-        <%- include('../../partials/sidebar') %>
-    <% } %>
 </div>
+<!-- Koniec głównego row -->
 
 <!-- Modal potwierdzający usunięcie -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -104,6 +118,5 @@
         </div>
     </div>
 </div>
-
 
 <script src="/js/tasks.js"></script>

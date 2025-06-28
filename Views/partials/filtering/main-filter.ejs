@@ -1,0 +1,67 @@
+<%
+// Default configuration - will be overridden by passed config
+const filterConfig = {
+    features: ['search', 'sort'],
+    title: 'Wyszukiwanie i sortowanie',
+    searchConfig: {
+        placeholder: 'Szukaj...',
+        label: 'Szukaj zadań'
+    },
+    sortConfig: {
+        label: 'Sortuj według',
+        options: []
+    },
+    ...config
+};
+
+const hasSearch = filterConfig.features.includes('search');
+const hasSort = filterConfig.features.includes('sort');
+const hasFilter = filterConfig.features.includes('filter');
+%>
+
+<!-- Filter content without card wrapper - will be rendered inside sidebar -->
+        
+        <% if (hasSearch) { %>
+        <!-- Search Section -->
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="bi bi-search"></i> <%= filterConfig.searchConfig.label %>
+            </label>
+            <%- include('./searchbar', { config: filterConfig.searchConfig, query: typeof query !== 'undefined' ? query : {} }) %>
+        </div>
+        <% } %>
+
+        <% if (hasSort) { %>
+        <!-- Sort Section -->
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="bi bi-sort-alpha-down"></i> <%= filterConfig.sortConfig.label %>
+            </label>
+            <%- include('./sortbar', { config: filterConfig.sortConfig, query: typeof query !== 'undefined' ? query : {} }) %>
+        </div>
+        <% } %>
+
+        <% if (hasFilter) { %>
+        <!-- Advanced Filters Section -->
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="bi bi-filter"></i> Filtry zaawansowane
+            </label>
+            <!-- Placeholder for future advanced filters -->
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> Filtry zaawansowane będą dostępne wkrótce.
+            </div>
+        </div>
+        <% } %>
+
+
+
+<!-- Store config for FilterManager -->
+<script type="application/json" id="filterConfig"><%- JSON.stringify(filterConfig) %></script>
+
+<!-- Load FilterManager and modules -->
+<script src="/js/filtering/search-module.js"></script>
+<script src="/js/filtering/sort-module.js"></script>
+<script src="/js/filtering/filter-module.js"></script>
+<script src="/js/filtering/filter-manager.js"></script>
+<script src="/js/filtering/filter-init.js"></script> 

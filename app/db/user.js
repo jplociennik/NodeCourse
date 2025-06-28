@@ -27,6 +27,8 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     }
+}, {
+    timestamps: true // Adds createdAt and updatedAt fields
 });
 
 userSchema.pre('save', async function(next) {

@@ -3,6 +3,49 @@ const { ErrorController } = require('./error-controller');
 
 const TaskController = {
   
+  // Private functions
+    getSortOptions: () => {
+    return [
+      { value: '', text: 'Domyślne', field: null, direction: null },
+      { value: 'taskName|asc', text: 'Nazwa A-Z', field: 'taskName', direction: 'asc' },
+      { value: 'taskName|desc', text: 'Nazwa Z-A', field: 'taskName', direction: 'desc' },
+      { value: 'dateFrom|asc', text: 'Data od najstarszej', field: 'dateFrom', direction: 'asc' },
+      { value: 'dateFrom|desc', text: 'Data od najnowszej', field: 'dateFrom', direction: 'desc' },
+      { value: 'isDone|asc', text: 'Nie wykonane najpierw', field: 'isDone', direction: 'asc' },
+      { value: 'isDone|desc', text: 'Wykonane najpierw', field: 'isDone', direction: 'desc' }
+    ];
+  },
+
+  getSortFieldsForJS: () => {
+    return TaskController.getSortOptions()
+      .filter(option => option.value) // Skip empty option
+      .reduce((acc, option) => {
+        acc[option.value] = { field: option.field, direction: option.direction };
+        return acc;
+      }, {});
+  },
+
+  getFilterConfig: () => {
+    return {
+      features: ['search', 'sort'],
+      title: 'Wyszukiwanie i sortowanie',
+      icon: 'bi bi-funnel',
+      searchConfig: {
+        placeholder: 'Wpisz nazwę zadania...',
+        label: 'Szukaj zadań'
+      },
+      sortConfig: {
+        label: 'Sortuj według',
+        options: TaskController.getSortOptions()
+      },
+      showStatistics: true,
+      containerClass: 'tasks-container',
+      itemClass: 'col-md-6',
+      searchFields: ['title'], // Search in .card-title content
+      sortFields: TaskController.getSortFieldsForJS()
+    };
+  },
+
   getFormConfig: (type, req, task = null) => {
     const isEdit = type === 'edit';
     
@@ -17,10 +60,20 @@ const TaskController = {
     };
   },
 
+  // Routing functions
   getTasksPage: async (req, res) => {
     try {
-      let q = req.query.q ? req.query.q.trim() : '';
-      let tasks = await Task.find({taskName: { $regex: q, $options: 'i' }}) ?? null;
+      let q = req.query.q ? req.query.q : '';
+      let sort = req.query.sort ? req.query.sort : '';
+
+      let query = Task.find({taskName: { $regex: q, $options: 'i' }}) ?? null;
+      if(sort) {
+        const s = sort.split('|');
+        const sortDirection = s[1] === 'desc' ? -1 : 1; // MongoDB needs -1 for desc, 1 for asc
+        query = query.sort({ [s[0]]: sortDirection });
+      }
+
+      const tasks = await query.exec();
 
       await res.render('pages/task/tasks', { 
         pageTitle: 'Zadania',
@@ -34,15 +87,9 @@ const TaskController = {
             icon: 'bi bi-list-check'
           }
         ],
-        sidebarTitle: 'Status zadań',
-        sidebarContent: 'Tutaj znajdziesz informacje o postępie w realizacji zadań.',
-        sidebarNews: {
-          title: 'Aktualizacje',
-          highlight: 'Nowe zadanie!',
-          content: 'Właśnie dodano nowe zadanie do listy. Sprawdź szczegóły poniżej.'
-        },
         tasks: tasks,
-        query: req.query
+        query: req.query,
+        filterConfig: TaskController.getFilterConfig()
       });
     } catch (error) {
       ErrorController.handleError(res, error);
@@ -108,10 +155,9 @@ const TaskController = {
 
       res.redirect('/zadania');
     } catch (error) {
-      // Pobierz zadanie ponownie dla formularza błędu
-      const task = await Task.findById(req.params.id);
-      const formConfig = TaskController.getFormConfig('edit', req, task);
-      ErrorController.handleValidationError(res, error, formConfig);
+        const task = await Task.findById(req.params.id);
+        const formConfig = TaskController.getFormConfig('edit', req, task);
+        ErrorController.handleValidationError(res, error, formConfig);
     }
   },
 

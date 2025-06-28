@@ -89,17 +89,17 @@
 
 /* Turkusowy kolor dla ikon niewykonanych zadań */
 .bi-check-circle.text-muted {
-    color: #25706b !important;
+    color: #369992 !important;
 }
 
 /* Turkusowy kolor dla nazw niewykonanych zadań - nadpisanie Bootstrap */
 .task-card .card-title.text-success:has(.bi-check-circle.text-muted) {
-    color: #25706b !important;
+    color: #369992 !important;
 }
 
 /* Fallback dla przeglądarek bez :has() */
 .task-card .card-title.text-success.task-incomplete {
-    color: #25706b !important;
+    color: #369992 !important;
 }
 
 .task-meta {
@@ -129,7 +129,7 @@
 }
 
 .task-status.bg-warning {
-    background-color: #25706b !important;
+    background-color: #369992 !important;
     color: white;
 }
 

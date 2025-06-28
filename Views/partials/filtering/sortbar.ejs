@@ -1,0 +1,35 @@
+<%
+const sortConfig = {
+    options: [],
+    ...config
+};
+%>
+
+<% if (sortConfig.options && sortConfig.options.length > 0) { %>
+    <div>
+        <select name="sort" id="sortSelect" class="form-select">
+            <% sortConfig.options.forEach(option => { %>
+                <option value="<%= option.value %>" <%= query.sort === option.value ? 'selected' : '' %>>
+                    <%= option.text || option.label %>
+                </option>
+            <% }); %>
+        </select>
+        <div class="d-grid gap-2 mt-3">
+            <button type="button" 
+                    class="btn btn-success" 
+                    onclick="applyFilters()">
+                <i class="bi bi-check-circle"></i> Zastosuj filtry
+            </button>
+            <button type="button" 
+                    class="btn btn-outline-secondary" 
+                    onclick="clearFilters()">
+                <i class="bi bi-x-circle"></i> Wyczyść filtry
+            </button>
+        </div>
+    </div>
+<% } else { %>
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i>
+        Sortowanie nie jest dostępne - brak opcji sortowania.
+    </div>
+<% } %> 
