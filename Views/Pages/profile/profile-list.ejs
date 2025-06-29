@@ -7,8 +7,8 @@
         query: query, 
         users: users 
     });
-    const statisticsContent = include('../../partials/filtering/profile-statistics', { 
-        users: users 
+    const statisticsContent = include('../../partials/filtering/statistics', { 
+        statisticsConfig: statisticsConfig 
     });
     const fullContent = filterContent + statisticsContent;
     %>

@@ -44,24 +44,54 @@ const hasFilter = filterConfig.features.includes('filter');
         <% if (hasFilter) { %>
         <!-- Advanced Filters Section -->
         <div class="mb-4">
-            <label class="form-label fw-bold">
-                <i class="bi bi-filter"></i> Filtry zaawansowane
+            <label class="form-label fw-bold" style="cursor: pointer;" data-action="toggle-advanced-filters">
+                <i class="bi bi-filter"></i> <%= filterConfig.filterConfig.label %>
+                <i id="filterToggleIcon" class="bi bi-chevron-down ms-1"></i>
             </label>
-            <!-- Placeholder for future advanced filters -->
-            <div class="alert alert-info">
-                <i class="bi bi-info-circle"></i> Filtry zaawansowane będą dostępne wkrótce.
-            </div>
+            <%- include('./filter', { config: filterConfig.filterConfig, query: typeof query !== 'undefined' ? query : {} }) %>
         </div>
         <% } %>
 
+        <!-- Action Buttons -->
+        <% if (hasSearch || hasSort || hasFilter) { %>
+        <div class="d-grid gap-2 mt-4">
+            <button type="button" 
+                    class="btn btn-success" 
+                    data-action="apply-filters">
+                <i class="bi bi-check-circle"></i> Zastosuj filtry
+            </button>
+            <button type="button" 
+                    class="btn btn-outline-secondary" 
+                    data-action="clear-filters">
+                <i class="bi bi-x-circle"></i> Wyczyść filtry
+            </button>
+        </div>
+        <% } %>
 
 
 <!-- Store config for FilterManager -->
 <script type="application/json" id="filterConfig"><%- JSON.stringify(filterConfig) %></script>
 
-<!-- Load FilterManager and modules -->
-<script src="/js/filtering/search-module.js"></script>
-<script src="/js/filtering/sort-module.js"></script>
-<script src="/js/filtering/filter-module.js"></script>
-<script src="/js/filtering/filter-manager.js"></script>
-<script src="/js/filtering/filter-init.js"></script> 
+<!-- Load FilterManager and modules in proper order -->
+<!-- Global utilities are loaded in main.ejs layout -->
+<!-- Load statistics module (used by filtering system) -->
+<script type="module" src="/js/utils/statistics.js"></script>
+
+<!-- Load fallback system -->
+<script type="module" src="/js/filtering/filters.js"></script>
+
+<!-- Load UI utilities -->
+<script type="module" src="/js/filtering/filter-ui.js"></script>
+
+<!-- Load modules -->
+<script type="module" src="/js/filtering/search-module.js"></script>
+<script type="module" src="/js/filtering/sort-module.js"></script>
+<script type="module" src="/js/filtering/filter-module.js"></script>
+
+<!-- Load main manager -->
+<script type="module" src="/js/filtering/filter-manager.js"></script>
+
+<!-- Initialize everything -->
+<script type="module" src="/js/filtering/filter-init.js"></script>
+
+ 

@@ -14,18 +14,6 @@ const sortConfig = {
                 </option>
             <% }); %>
         </select>
-        <div class="d-grid gap-2 mt-3">
-            <button type="button" 
-                    class="btn btn-success" 
-                    onclick="applyFilters()">
-                <i class="bi bi-check-circle"></i> Zastosuj filtry
-            </button>
-            <button type="button" 
-                    class="btn btn-outline-secondary" 
-                    onclick="clearFilters()">
-                <i class="bi bi-x-circle"></i> Wyczyść filtry
-            </button>
-        </div>
     </div>
 <% } else { %>
     <div class="alert alert-warning">

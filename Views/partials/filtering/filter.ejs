@@ -1,0 +1,58 @@
+<%
+const filterConfig = {
+    options: [],
+    ...config
+};
+%>
+
+<% if (filterConfig.options && filterConfig.options.length > 0) { %>
+    <div id="advancedFilters" style="display: none;">
+        <% filterConfig.options.forEach(filterOption => { %>
+            <% if (filterOption.type === 'checkbox-group') { %>
+                <!-- Checkbox Group Filter -->
+                <% filterOption.options.forEach(option => { %>
+                    <div class="form-check mb-1">
+                        <input class="form-check-input form-check-input-sm" 
+                               type="checkbox" 
+                               id="filter_<%= option.value %>" 
+                               name="filter[<%= filterOption.id %>][]"
+                               value="<%= option.value %>"
+                               data-field="<%= option.field %>"
+                               data-filter-value="<%= option.filterValue %>">
+                        <label class="form-check-label small" for="filter_<%= option.value %>">
+                            <%= option.label %>
+                        </label>
+                    </div>
+                <% }); %>
+
+            <% } else if (filterOption.type === 'date') { %>
+                <!-- Date Filter -->
+                <div class="form-check mb-1">
+                    <input class="form-check-input form-check-input-sm" 
+                           type="checkbox" 
+                           id="enable_<%= filterOption.id %>" 
+                           data-action="toggle-date-input"
+                           data-filter-id="<%= filterOption.id %>">
+                    <label class="form-check-label small" for="enable_<%= filterOption.id %>">
+                        <%= filterOption.label %>
+                    </label>
+                </div>
+                <div id="input_<%= filterOption.id %>" class="mt-1 mb-2" style="display: none;">
+                    <input type="date" 
+                           class="form-control form-control-sm" 
+                           id="filter_<%= filterOption.id %>" 
+                           name="filter[<%= filterOption.id %>]"
+                           data-field="<%= filterOption.field %>"
+                           placeholder="<%= filterOption.placeholder %>">
+                </div>
+
+            <% } %>
+        <% }); %>
+    </div>
+
+<% } else { %>
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i>
+        Filtrowanie nie jest dostępne - brak opcji filtrowania.
+    </div>
+<% } %> 

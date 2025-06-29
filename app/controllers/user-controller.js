@@ -2,28 +2,47 @@ const { User } = require('../db/mongoose');
 const { ErrorController } = require('./error-controller');
 
 const UserController = {
-  getSortOptions: () => {
+  getSortOptions: async () => {
     return [
       { value: '', text: 'Domyślne', field: null, direction: null },
-      { value: 'name|asc', text: 'Nazwa A-Z', field: 'name', direction: 'asc' },
-      { value: 'name|desc', text: 'Nazwa Z-A', field: 'name', direction: 'desc' },
-      { value: 'createdAt|asc', text: 'Najstarsze', field: 'created', direction: 'asc' },
-      { value: 'createdAt|desc', text: 'Najnowsze', field: 'created', direction: 'desc' }
+      { value: 'name|asc', text: 'Nazwa A-Z', field: 'data-name', direction: 'asc' },
+      { value: 'name|desc', text: 'Nazwa Z-A', field: 'data-name', direction: 'desc' },
+      { value: 'createdAt|asc', text: 'Najstarsze', field: 'data-created', direction: 'asc' },
+      { value: 'createdAt|desc', text: 'Najnowsze', field: 'data-created', direction: 'desc' }
     ];
   },
 
-  getSortFieldsForJS: () => {
-    return UserController.getSortOptions()
-      .filter(option => option.value) // Skip empty option
-      .reduce((acc, option) => {
-        acc[option.value] = { field: option.field, direction: option.direction };
-        return acc;
-      }, {});
+  getFilterOptions: async () => {
+    return [
+      {
+        id: 'role',
+        label: 'Rola użytkownika',
+        type: 'checkbox-group',
+        options: [
+          { value: 'admin', label: 'Administratorzy', field: 'isAdmin', filterValue: true },
+          { value: 'user', label: 'Zwykli użytkownicy', field: 'isAdmin', filterValue: false }
+        ]
+      },
+      {
+        id: 'createdFrom',
+        label: 'Dołączył od',
+        type: 'date',
+        field: 'createdAt',
+        placeholder: 'Wybierz datę od'
+      },
+      {
+        id: 'createdTo',
+        label: 'Dołączył do', 
+        type: 'date',
+        field: 'createdAt',
+        placeholder: 'Wybierz datę do'
+      }
+    ];
   },
 
-  getFilterConfig: () => {
+  getFilterConfig: async () => {
     return {
-      features: ['search', 'sort'],
+      features: ['search', 'sort', 'filter'],
       title: 'Wyszukiwanie i sortowanie',
       icon: 'bi bi-funnel',
       searchConfig: {
@@ -32,13 +51,17 @@ const UserController = {
       },
       sortConfig: {
         label: 'Sortuj według',
-        options: UserController.getSortOptions()
+        options: await UserController.getSortOptions()
+      },
+      filterConfig: {
+        label: 'Filtry zaawansowane',
+        options: await UserController.getFilterOptions()
       },
       showStatistics: false,
       containerClass: 'profiles-container',
       itemClass: 'profile-item',
       searchFields: ['data-name'], // Search in data-name attribute
-      sortFields: UserController.getSortFieldsForJS()
+      sortFields: await UserController.getSortOptions()
     };
   },
 
@@ -70,7 +93,23 @@ const UserController = {
         ],
         users: users,
         query: req.query,
-        filterConfig: UserController.getFilterConfig()
+        filterConfig: await UserController.getFilterConfig(),
+        statisticsConfig: {
+          show: users.length > 0,
+          title: 'Statystyki użytkowników',
+          items: [
+            {
+              id: 'totalCount',
+              value: users.length,
+              label: 'Wszystkich'
+            },
+            {
+              id: 'visibleCount',
+              value: users.length,
+              label: 'Widocznych'
+            }
+          ]
+        }
       });
     } catch (error) {
       ErrorController.handleError(res, error);

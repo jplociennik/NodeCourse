@@ -1,6 +1,2 @@
-// Main JavaScript file for global functionality
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Add any global JavaScript functionality here
-    console.log('Main JavaScript loaded');
-}); 
+// Main JavaScript file - Entry point for global functionality
+// Currently unused - all functionality is handled by specialized modules 

@@ -1,6 +1,19 @@
-// Task management JavaScript functions
+// =============================================================================
+// TASK MANAGEMENT MODULE
+// =============================================================================
 
-// Constants for better maintainability
+// =============================================================================
+// IMPORTS
+// =============================================================================
+
+import { d, setText, setHref, apiPost } from './utils/helpers.js';
+import DOMUtils from './utils/dom-utils.js';
+import { StatisticsUtils } from './utils/statistics.js';
+
+// =============================================================================
+// CONSTANTS & CONFIGURATION
+// =============================================================================
+
 const TASK_API = {
     TOGGLE: (id) => `/zadania/admin/${id}/toggle`,
     DELETE: (id) => `/zadania/admin/${id}/usun`
@@ -23,30 +36,71 @@ const TASK_STATUS = {
     TODO: 'Do wykonania'
 };
 
-/**
- * Sets up the delete confirmation modal with task information
- * @param {string} taskId - The ID of the task to delete
- * @param {string} taskName - The name of the task to display in modal
- */
-function setDeleteTask(taskId, taskName) {
-    const taskNameElement = document.getElementById('taskToDelete');
-    const confirmButton = document.getElementById('confirmDeleteBtn');
+const SELECTORS = {
+    INCOMPLETE_TASKS: '.bi-check-circle.text-muted',
+    VISIBLE_CHECKBOXES: '.col-md-6:not([style*="display: none"]) input[type="checkbox"][id^="task-"]',
+    FIRST_CHECKBOX: 'input[type="checkbox"][id^="task-"]'
+};
+
+const TASK_ITEM_CLASS = 'col-md-6';
+const TASK_COUNT_SELECTOR = '.task-count';
+
+// =============================================================================
+// TASK-SPECIFIC DOM UTILITY WRAPPERS
+// =============================================================================
+
+// Task-specific wrappers using global DOMUtils
+const TaskDOMUtils = {
+    // Task item functions
+    getAllTaskItems: () => DOMUtils.getAllItems(TASK_ITEM_CLASS),
+    getVisibleTaskItems: () => DOMUtils.getVisibleItems(TASK_ITEM_CLASS),
+    showAllTaskItems: () => DOMUtils.showAllItems(TASK_ITEM_CLASS),
+    resetTaskOrdering: () => DOMUtils.resetItemOrdering(TASK_ITEM_CLASS),
     
-    if (!taskNameElement || !confirmButton) {
-        console.error('Delete modal elements not found');
-        return;
+    // Task-specific content getters
+    getTaskTitle: (taskItem) => DOMUtils.getItemText(taskItem, '.card-title'),
+    getTaskMeta: (taskItem) => DOMUtils.getItemText(taskItem, '.task-meta'),
+    isTaskCompleted: (taskItem) => DOMUtils.isItemChecked(taskItem, 'input[type="checkbox"]'),
+    
+    // Task count update
+    updateTaskCount: () => {
+        const count = DOMUtils.updateItemCounter(TASK_ITEM_CLASS, TASK_COUNT_SELECTOR);
+        
+        // Update statistics using the statistics module
+        StatisticsUtils.updateStatistics();
+        
+        return count;
     }
+};
+
+// =============================================================================
+// PRIVATE HELPER FUNCTIONS
+// =============================================================================
+
+/**
+ * Shows an error message to the user using Bootstrap modal
+ * @param {string} message - The error message to display
+ * @param {string} title - Optional title for the error modal
+ */
+const showErrorMessage = (message, title = 'Błąd') => {
+    const errorModal = d.querySelector('#errorModal');
+    const errorTitle = d.querySelector('#errorModalTitle');
+    const errorMessage = d.querySelector('#errorModalMessage');
     
-    taskNameElement.textContent = taskName;
-    confirmButton.href = TASK_API.DELETE(taskId);
-}
+    if (errorModal && setText(errorTitle, title) && setText(errorMessage, message)) {
+        new bootstrap.Modal(errorModal).show();
+    } else {
+        console.error('Error modal elements not found, falling back to alert');
+        alert(`${title}: ${message}`);
+    }
+};
 
 /**
  * Sets initial colors for task titles based on their status
  */
-function setInitialTaskColors() {
-    // Find all task titles with muted icons (incomplete tasks)
-    const incompleteTasks = document.querySelectorAll('.bi-check-circle.text-muted');
+const setInitialTaskColors = () => {
+    // Find all task titles with muted icons (incomplete tasks)  
+    const incompleteTasks = d.querySelectorAll(SELECTORS.INCOMPLETE_TASKS);
     
     incompleteTasks.forEach(icon => {
         const titleElement = icon.closest('.card-title');
@@ -56,32 +110,36 @@ function setInitialTaskColors() {
             titleElement.classList.add('task-incomplete');
         }
     });
-}
+};
 
-// Set colors when page loads
-document.addEventListener('DOMContentLoaded', setInitialTaskColors);
+// =============================================================================
+// PUBLIC API FUNCTIONS
+// =============================================================================
+
+/**
+ * Sets up the delete confirmation modal with task information
+ * @param {string} taskId - The ID of the task to delete
+ * @param {string} taskName - The name of the task to display in modal
+ */
+const setDeleteTask = (taskId, taskName) => {
+    const taskNameElement = d.querySelector('#taskToDelete');
+    const confirmButton = d.querySelector('#confirmDeleteBtn');
+    
+    if (!setText(taskNameElement, taskName) || !setHref(confirmButton, TASK_API.DELETE(taskId))) {
+        console.error('Delete modal elements not found');
+    }
+};
 
 /**
  * Toggles task completion status via API call
  * @param {string} taskId - The ID of the task to toggle
  * @param {HTMLInputElement} checkbox - The checkbox element that triggered the change
  */
-async function toggleTaskStatus(taskId, checkbox) {
+const toggleTaskStatus = async (taskId, checkbox) => {
     const originalState = checkbox.checked;
     
     try {
-        const response = await fetch(TASK_API.TOGGLE(taskId), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await apiPost(TASK_API.TOGGLE(taskId));
         
         if (data.success) {
             updateTaskUI(taskId, data.isDone);
@@ -102,28 +160,26 @@ async function toggleTaskStatus(taskId, checkbox) {
             
         showErrorMessage(errorMessage);
     }
-}
+};
 
 /**
  * Updates the UI elements to reflect the new task status
  * @param {string} taskId - The ID of the task
  * @param {boolean} isDone - Whether the task is completed
  */
-function updateTaskUI(taskId, isDone) {
+const updateTaskUI = (taskId, isDone) => {
     // Update status badge
-    const statusBadge = document.getElementById(`status-${taskId}`);
-    if (statusBadge) {
-        statusBadge.textContent = isDone ? TASK_STATUS.DONE : TASK_STATUS.TODO;
-        statusBadge.className = isDone ? CSS_CLASSES.BADGE_SUCCESS : CSS_CLASSES.BADGE_WARNING;
-    }
+    const statusBadge = d.querySelector(`#status-${taskId}`);
+    setText(statusBadge, isDone ? TASK_STATUS.DONE : TASK_STATUS.TODO);
+    setClass(statusBadge, isDone ? CSS_CLASSES.BADGE_SUCCESS : CSS_CLASSES.BADGE_WARNING);
     
     // Update title icon and title color
-    const titleIcon = document.querySelector(`#task-${taskId}`)
+    const titleIcon = d.querySelector(`#task-${taskId}`)
         ?.closest('.card-body')
         ?.querySelector('.bi-check-circle');
         
     if (titleIcon) {
-        titleIcon.className = isDone ? CSS_CLASSES.ICON_SUCCESS : CSS_CLASSES.ICON_MUTED;
+        setClass(titleIcon, isDone ? CSS_CLASSES.ICON_SUCCESS : CSS_CLASSES.ICON_MUTED);
         
         // Update title color based on task status
         const titleElement = titleIcon.closest('.card-title');
@@ -140,62 +196,76 @@ function updateTaskUI(taskId, isDone) {
         }
     }
     
-    // Update statistics
-    updateStatistics();
-}
+    // Update statistics using the statistics module
+    StatisticsUtils.updateStatistics();
+};
+
+// Statistics functionality moved to utils/statistics.js
+
+// =============================================================================
+// EVENT HANDLERS
+// =============================================================================
 
 /**
- * Updates the statistics counters in the sidebar
+ * Handles keyboard shortcuts
+ * @param {KeyboardEvent} e - The keyboard event
  */
-function updateStatistics() {
-    const todoCountElement = document.getElementById('todoCount');
-    const doneCountElement = document.getElementById('doneCount');
-    
-    if (todoCountElement && doneCountElement) {
-        // Count only visible checkboxes and their states
-        const visibleCheckboxes = document.querySelectorAll('.col-md-6:not([style*="display: none"]) input[type="checkbox"][id^="task-"]');
-        let todoCount = 0;
-        let doneCount = 0;
-        
-        visibleCheckboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                doneCount++;
-            } else {
-                todoCount++;
-            }
-        });
-        
-        todoCountElement.textContent = todoCount;
-        doneCountElement.textContent = doneCount;
-    }
-}
-
-/**
- * Shows an error message to the user
- * @param {string} message - The error message to display
- */
-function showErrorMessage(message) {
-    // You could replace this with a more sophisticated notification system
-    // like toast notifications, modal alerts, etc.
-    alert(message);
-}
-
-
-
-// Initialize any event listeners when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Task management script loaded');
-    
-    // You could add global error handling, keyboard shortcuts, etc. here
-    // Example: Add keyboard shortcut for quick task completion
-    document.addEventListener('keydown', function(e) {
-        // Ctrl/Cmd + Enter to toggle first visible task (example)
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            const firstCheckbox = document.querySelector('input[type="checkbox"][id^="task-"]');
-            if (firstCheckbox) {
-                firstCheckbox.click();
-                e.preventDefault();
-            }
+const handleKeyboardShortcuts = (e) => {
+    // Ctrl/Cmd + Enter to toggle first visible task
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        const firstCheckbox = d.querySelector(SELECTORS.FIRST_CHECKBOX);
+        if (firstCheckbox) {
+            firstCheckbox.click();
+            e.preventDefault();
         }
-    });
-}); 
+    }
+};
+
+/**
+ * Handles initial page setup
+ */
+const handleDOMContentLoaded = () => {
+    setInitialTaskColors();
+    
+    // You could add more initialization here:
+    // - Global error handling
+    // - Additional keyboard shortcuts
+    // - Task drag & drop functionality
+    // - Auto-save functionality
+};
+
+// Task action handlers moved to universal event delegation system (utils/event-handlers.js)
+
+// =============================================================================
+// EVENT LISTENERS SETUP
+// =============================================================================
+
+/**
+ * Sets up all event listeners for the task management module
+ */
+const setupTaskEventListeners = () => {
+    // Main DOM loaded event
+    d.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
+    
+    // Keyboard shortcuts
+    d.addEventListener('keydown', handleKeyboardShortcuts);
+    
+    // Task actions now handled by universal event delegation system
+    // You could add more event listeners here:
+    // - Window resize handling
+    // - Visibility change handling
+    // - Online/offline status
+};
+
+// =============================================================================
+// MODULE EXPORTS
+// =============================================================================
+
+// Export functions for use by universal event delegation system
+export { setDeleteTask, toggleTaskStatus, updateTaskUI };
+
+// =============================================================================
+// MODULE INITIALIZATION
+// =============================================================================
+
+setupTaskEventListeners(); 

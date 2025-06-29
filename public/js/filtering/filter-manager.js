@@ -1,242 +1,248 @@
+import { d } from '../utils/helpers.js';
+import DOMUtils from '../utils/dom-utils.js';
+import { StatisticsUtils } from '../utils/statistics.js';
+
 /**
- * FilterManager - Main class for coordinating search, sort, and filter functionality
- * Avoids code duplication and manages component interactions
+ * FilterManager - Coordinates search, sort, and advanced filtering
+ * Replaces individual classes with arrow function modules
  */
-class FilterManager {
-    constructor(config = {}) {
-        this.config = {
-            features: config.features || [], // ['search', 'sort', 'filter']
-            searchConfig: config.searchConfig || {},
-            sortConfig: config.sortConfig || {},
-            filterConfig: config.filterConfig || {},
-            ...config
-        };
-        
-        this.modules = {};
-        this.isInitialized = false;
-        // Removed complex DOM ordering - keeping it simple
-        
-        this.init();
-    }
+
+// Import modules that FilterManager will use
+let SearchModule, SortModule, FilterModule;
+let filterManagerConfig = {};
+let filterManagerModules = {};
+
+const initFilterManager = (config = {}) => {
+    filterManagerConfig = {
+        features: ['search', 'sort'], // default features
+        itemClass: 'col-md-6', // default item class
+        searchFields: ['title'], // default search fields
+        ...config
+    };
     
-    async init() {
-        if (this.isInitialized) return;
-        
-        // Load required modules based on enabled features
-        if (this.hasFeature('search')) {
-            this.modules.search = new SearchModule(this);
+    // Initialize modules based on enabled features
+    filterManagerModules = {};
+};
+
+const init = async () => {
+    try {
+        // Import modules dynamically
+        if (hasFeature('search')) {
+            const { default: SearchModuleClass } = await import('./search-module.js');
+            SearchModule = SearchModuleClass;
         }
         
-        if (this.hasFeature('sort')) {
-            this.modules.sort = new SortModule(this);
+        if (hasFeature('sort')) {
+            const { default: SortModuleClass } = await import('./sort-module.js');
+            SortModule = SortModuleClass;
         }
         
-        if (this.hasFeature('filter')) {
-            this.modules.filter = new FilterModule(this);
+        if (hasFeature('advancedFilters')) {
+            const { default: FilterModuleClass } = await import('./filter-module.js');
+            FilterModule = FilterModuleClass;
         }
         
-        // Simple initialization - no complex DOM manipulation
+        const managerInterface = getFilterManagerInterface();
         
-        // Initialize URL state
-        this.initializeFromURL();
-        
-        // Setup event listeners
-        this.setupEventListeners();
-        
-        this.isInitialized = true;
-        console.log('FilterManager initialized with features:', this.config.features);
-    }
-    
-    hasFeature(feature) {
-        return this.config.features.includes(feature);
-    }
-    
-    // Main action methods - delegates to appropriate modules
-    search(query = null) {
-        if (!this.hasFeature('search')) return;
-        
-        const searchQuery = query || this.getSearchValue();
-        this.modules.search?.performSearch(searchQuery);
-        this.updateURL();
-        this.updateCounts();
-    }
-    
-    sort(sortValue = null) {
-        if (!this.hasFeature('sort')) return;
-        
-        const sortOption = sortValue || this.getSortValue();
-        this.modules.sort?.performSort(sortOption);
-        this.updateURL();
-    }
-    
-    applyFilters() {
-        // Apply all enabled filters in correct order
-        const searchQuery = this.getSearchValue();
-        const sortOption = this.getSortValue();
-        
-        console.log('ApplyFilters called:', { searchQuery, sortOption });
-        
-        // If no filters are specified, just ensure all tasks are visible
-        if (!searchQuery && !sortOption) {
-            this.showAllTasks();
-            this.updateURL();
-            this.updateCounts();
-            return;
+        // Initialize search module if enabled
+        if (hasFeature('search') && SearchModule) {
+            filterManagerModules.search = SearchModule(managerInterface);
         }
         
-        // Reset to clean state before applying filters
-        this.showAllTasks();
-        
-        // First filter by search
-        if (this.hasFeature('search') && searchQuery) {
-            this.modules.search?.performSearch(searchQuery, false); // false = don't update URL yet
+        // Initialize sort module if enabled  
+        if (hasFeature('sort') && SortModule) {
+            filterManagerModules.sort = SortModule(managerInterface);
         }
         
-        // Then sort visible results (only if we have visible tasks)
-        if (this.hasFeature('sort') && sortOption) {
-            this.modules.sort?.performSort(sortOption, false); // false = don't update URL yet
+        // Initialize advanced filters if enabled
+        if (hasFeature('advancedFilters') && FilterModule) {
+            filterManagerModules.advancedFilters = FilterModule(managerInterface);
         }
         
-        this.updateURL();
-        this.updateCounts();
-    }
-    
-    clearAll() {
-        // Clear all inputs
-        if (this.hasFeature('search')) {
-            this.modules.search?.clear();
-        }
+        // Set up event listeners
+        setupFilterEventListeners();
         
-        if (this.hasFeature('sort')) {
-            this.modules.sort?.clear();
-        }
+        // Initialize from URL parameters
+        initializeFromURL();
         
-        // Reset to clean state
-        this.resetToCleanState();
-        this.updateURL();
-        this.updateCounts();
+        console.log('FilterManager initialized successfully');
+        
+        return true;
+    } catch (error) {
+        console.error('FilterManager initialization failed:', error);
+        return false;
+    }
+};
+
+const hasFeature = (feature) => {
+    return filterManagerConfig.features.includes(feature);
+};
+
+const search = (query = null) => {
+    if (!hasFeature('search')) return;
+    
+    const searchQuery = query || getSearchValue();
+    filterManagerModules.search?.performSearch(searchQuery);
+    updateManagerURL();
+    updateCounts();
+};
+
+const sort = (sortValue = null) => {
+    if (!hasFeature('sort')) return;
+    
+    const sortOption = sortValue || getSortValue();
+    filterManagerModules.sort?.performSort(sortOption);
+    updateManagerURL();
+};
+
+const applyAllFilters = () => {
+    // Apply all enabled filters in correct order
+    const searchQuery = getSearchValue();
+    const sortOption = getSortValue();
+    
+    // If no filters are specified, just ensure all tasks are visible
+    if (!searchQuery && !sortOption) {
+        showAllTasks();
+        updateManagerURL();
+        updateCounts();
+        return;
     }
     
-    // Helper methods
-    getSearchValue() {
-        const input = document.getElementById('searchInput');
-        return input ? input.value.trim() : '';
+    // Reset to clean state before applying filters
+    showAllTasks();
+    
+    // First filter by search
+    if (hasFeature('search') && searchQuery) {
+        filterManagerModules.search?.performSearch(searchQuery, false); // false = don't update URL yet
     }
     
-    getSortValue() {
-        const select = document.getElementById('sortSelect');
-        return select ? select.value : '';
+    // Then sort visible results (only if we have visible tasks)
+    if (hasFeature('sort') && sortOption) {
+        filterManagerModules.sort?.performSort(sortOption, false); // false = don't update URL yet
     }
     
-    // Simple helper - just show all tasks without DOM manipulation
-    resetToCleanState() {
-        this.showAllTasks();
+    updateManagerURL();
+    updateCounts();
+};
+
+const clearAll = () => {
+    // Clear all inputs
+    if (hasFeature('search')) {
+        filterManagerModules.search?.clear();
     }
     
-    showAllTasks() {
-        const itemClass = this.config.itemClass || 'col-md-6';
-        const allItems = document.querySelectorAll(`.${itemClass}`);
-        allItems.forEach(item => {
-            item.style.display = 'block';
+    if (hasFeature('sort')) {
+        filterManagerModules.sort?.clear();
+    }
+    
+    // Reset to clean state
+    resetToCleanState();
+    updateManagerURL();
+    updateCounts();
+};
+
+// Helper methods - now using DOMUtils
+const getSearchValue = () => {
+    return DOMUtils.getSearchInputValue();
+};
+
+const getSortValue = () => {
+    return DOMUtils.getSortSelectValue();
+};
+
+// Simple helper - just show all tasks without DOM manipulation
+const resetToCleanState = () => {
+    showAllTasks();
+};
+
+const showAllTasks = () => {
+    const itemClass = filterManagerConfig.itemClass || 'col-md-6';
+    DOMUtils.showAllItems(itemClass);
+};
+
+const updateManagerURL = () => {
+    const searchValue = getSearchValue();
+    const sortValue = getSortValue();
+    
+    // Use DOMUtils for URL updating
+    DOMUtils.updateSearchSortURL(searchValue, sortValue);
+};
+
+const updateCounts = () => {
+    // Update task count and statistics using the statistics module
+    StatisticsUtils.updateStatistics();
+};
+
+const initializeFromURL = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Set search value
+    const searchValue = urlParams.get('q') || '';
+    const searchInput = d.querySelector('#searchInput');
+    if (searchInput && searchValue) {
+        searchInput.value = searchValue;
+    }
+    
+    // Set sort value
+    const sortValue = urlParams.get('sort') || '';
+    const sortSelect = d.querySelector('#sortSelect');
+    if (sortSelect && sortValue) {
+        sortSelect.value = sortValue;
+    }
+    
+    // Apply filters if there are parameters
+    if (searchValue || sortValue) {
+        applyAllFilters();
+    } else {
+        // Even if no filters, update counts to get correct initial statistics
+        updateCounts();
+    }
+};
+
+const setupFilterEventListeners = () => {
+    // Only add Enter key listener for search input
+    const searchInput = d.querySelector('#searchInput');
+    if (searchInput && hasFeature('search')) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                applyAllFilters(); // Use applyFilters instead of search to handle both search and sort
+            }
         });
     }
     
-    updateURL() {
-        const params = new URLSearchParams();
-        
-        const searchValue = this.getSearchValue();
-        if (searchValue) {
-            params.set('q', searchValue);
-        }
-        
-        const sortValue = this.getSortValue();
-        if (sortValue) {
-            params.set('sort', sortValue);
-        }
-        
-        const currentPath = window.location.pathname;
-        const newUrl = params.toString() ? `${currentPath}?${params.toString()}` : currentPath;
-        history.replaceState(null, '', newUrl);
-    }
+    // No automatic listeners for sort select - only manual button clicks
+};
+
+// Interface object to pass to modules
+const getFilterManagerInterface = () => ({
+    config: filterManagerConfig,
+    modules: filterManagerModules,
+    updateURL: updateManagerURL,
+    updateCounts
+});
+
+// Create FilterManager as a function that returns an object with arrow functions
+const FilterManager = function(config = {}) {
+    initFilterManager(config);
     
-    updateCounts() {
-        // Update task count - use configured item class
-        const itemClass = this.config.itemClass || 'col-md-6';
-        const visibleItems = document.querySelectorAll(`.${itemClass}:not([style*="display: none"])`);
-        const taskCountBadge = document.querySelector('.task-count');
-        
-        if (taskCountBadge) {
-            taskCountBadge.textContent = visibleItems.length;
-        }
-        
-        // Update statistics if function exists
-        if (typeof updateStatistics === 'function') {
-            updateStatistics();
-        }
-    }
-    
-    initializeFromURL() {
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        // Set search value
-        const searchValue = urlParams.get('q') || '';
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput && searchValue) {
-            searchInput.value = searchValue;
-        }
-        
-        // Set sort value
-        const sortValue = urlParams.get('sort') || '';
-        const sortSelect = document.getElementById('sortSelect');
-        if (sortSelect && sortValue) {
-            sortSelect.value = sortValue;
-        }
-        
-        // Apply filters if there are parameters
-        if (searchValue || sortValue) {
-            this.applyFilters();
-        } else {
-            // Even if no filters, update counts to get correct initial statistics
-            this.updateCounts();
-        }
-    }
-    
-    setupEventListeners() {
-        // Search input enter key
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput && this.hasFeature('search')) {
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    this.search();
-                }
-            });
-        }
-    }
-}
-
-// Global methods for compatibility with existing buttons
-window.performSearch = function() {
-    if (window.filterManager) {
-        window.filterManager.search();
-    }
+    return {
+        init,
+        hasFeature,
+        search,
+        sort,
+        applyFilters: applyAllFilters,
+        clearAll,
+        getSearchValue,
+        getSortValue,
+        updateURL: updateManagerURL,
+        updateCounts,
+        modules: filterManagerModules
+    };
 };
 
-window.performSort = function() {
-    if (window.filterManager) {
-        window.filterManager.sort();
-    }
-};
+// All global functions removed - using universal event delegation system instead!
+// No more window pollution needed
 
-window.applyFilters = function() {
-    if (window.filterManager) {
-        window.filterManager.applyFilters();
-    }
-};
-
-window.clearFilters = function() {
-    if (window.filterManager) {
-        window.filterManager.clearAll();
-    }
-};
-
-window.clearSort = window.clearFilters; 
+// Export FilterManager and global functions
+export { FilterManager };
+export default FilterManager; 

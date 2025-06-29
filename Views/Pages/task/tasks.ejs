@@ -7,9 +7,11 @@
             query: query, 
             tasks: tasks 
         });
+
         const statisticsContent = include('../../partials/filtering/statistics', { 
-            tasks: tasks 
+            statisticsConfig: statisticsConfig 
         });
+        
         const fullContent = filterContent + statisticsContent;
         %>
         <%- include('../../partials/sidebar', { 
@@ -48,7 +50,8 @@
                                                         type="checkbox" 
                                                         id="task-<%= task._id %>" 
                                                         <%= task.isDone ? 'checked' : '' %>
-                                                        onchange="toggleTaskStatus('<%= task._id %>', this)"
+                                                        data-task-id="<%= task._id %>"
+                                                        data-action="toggle-status"
                                                     >
                                                     <label class="form-check-label" for="task-<%= task._id %>">
                                                         <small class="text-muted">Wykonane</small>
@@ -71,7 +74,10 @@
                                                 <a href="/zadania/admin/<%= task._id %>/edytuj" class="btn btn-outline-primary btn-sm">
                                                     <i class="bi bi-pencil"></i> Edytuj
                                                 </a>
-                                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="setDeleteTask('<%= task._id %>', '<%= task.taskName %>')">
+                                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                                                        data-task-id="<%= task._id %>" 
+                                                        data-task-name="<%= task.taskName %>"
+                                                        data-action="delete-task">
                                                     <i class="bi bi-trash"></i> Usuń
                                                 </button>
                                             </div>
@@ -119,4 +125,36 @@
     </div>
 </div>
 
-<script src="/js/tasks.js"></script>
+<!-- Modal z błędami -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="errorModalLabel">
+                    <i class="bi bi-exclamation-triangle"></i> <span id="errorModalTitle">Błąd</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-x-circle-fill text-danger fs-2"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <p class="mb-0" id="errorModalMessage">Wystąpił nieoczekiwany błąd.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-check-circle"></i> OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Global utilities are loaded in main.ejs layout -->
+<!-- Statistics module is loaded by main-filter.ejs -->
+<!-- Load task management -->
+<script type="module" src="/js/tasks.js"></script>

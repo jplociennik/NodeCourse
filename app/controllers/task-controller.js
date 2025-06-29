@@ -4,7 +4,7 @@ const { ErrorController } = require('./error-controller');
 const TaskController = {
   
   // Private functions
-    getSortOptions: () => {
+    getSortOptions: async () => {
     return [
       { value: '', text: 'Domyślne', field: null, direction: null },
       { value: 'taskName|asc', text: 'Nazwa A-Z', field: 'taskName', direction: 'asc' },
@@ -16,18 +16,37 @@ const TaskController = {
     ];
   },
 
-  getSortFieldsForJS: () => {
-    return TaskController.getSortOptions()
-      .filter(option => option.value) // Skip empty option
-      .reduce((acc, option) => {
-        acc[option.value] = { field: option.field, direction: option.direction };
-        return acc;
-      }, {});
+  getFilterOptions: async () => {
+    return [
+      {
+        id: 'status',
+        label: 'Status zadania',
+        type: 'checkbox-group',
+        options: [
+          { value: 'done', label: 'Wykonane', field: 'isDone', filterValue: true },
+          { value: 'todo', label: 'Do wykonania', field: 'isDone', filterValue: false }
+        ]
+      },
+      {
+        id: 'dateFrom',
+        label: 'Data od',
+        type: 'date',
+        field: 'dateFrom',
+        placeholder: 'Wybierz datę od'
+      },
+      {
+        id: 'dateTo', 
+        label: 'Data do',
+        type: 'date',
+        field: 'dateTo',
+        placeholder: 'Wybierz datę do'
+      }
+    ];
   },
 
-  getFilterConfig: () => {
+  getFilterConfig: async () => {
     return {
-      features: ['search', 'sort'],
+      features: ['search', 'sort', 'filter'],
       title: 'Wyszukiwanie i sortowanie',
       icon: 'bi bi-funnel',
       searchConfig: {
@@ -36,17 +55,21 @@ const TaskController = {
       },
       sortConfig: {
         label: 'Sortuj według',
-        options: TaskController.getSortOptions()
+        options: await TaskController.getSortOptions()
+      },
+      filterConfig: {
+        label: 'Filtry zaawansowane',
+        options: await TaskController.getFilterOptions()
       },
       showStatistics: true,
       containerClass: 'tasks-container',
       itemClass: 'col-md-6',
       searchFields: ['title'], // Search in .card-title content
-      sortFields: TaskController.getSortFieldsForJS()
+      sortFields: await TaskController.getSortOptions()
     };
   },
 
-  getFormConfig: (type, req, task = null) => {
+  getFormConfig: async (type, req, task = null) => {
     const isEdit = type === 'edit';
     
     return {
@@ -66,10 +89,21 @@ const TaskController = {
       let q = req.query.q ? req.query.q : '';
       let sort = req.query.sort ? req.query.sort : '';
 
-      let query = Task.find({taskName: { $regex: q, $options: 'i' }}) ?? null;
+      const where = {};
+      if (q) { where.taskName = { $regex: q, $options: 'i' }; }
+      if (req.query.dateFrom) { where.dateFrom = { $gte: req.query.dateFrom }; } 
+      if (req.query.dateTo) { where.$or = [ { dateTo: { $lte: req.query.dateTo } }, { dateTo: null, dateFrom: { $lte: req.query.dateTo } } ]; }
+      
+      const statusFilters = [];
+      if (req.query.done === 'on') statusFilters.push(true);
+      if (req.query.todo === 'on') statusFilters.push(false);
+      
+      if (statusFilters.length > 0 && statusFilters.length < 2) { where.isDone = statusFilters[0]; }
+
+      let query = Task.find(where);
       if(sort) {
         const s = sort.split('|');
-        const sortDirection = s[1] === 'desc' ? -1 : 1; // MongoDB needs -1 for desc, 1 for asc
+        const sortDirection = s[1] === 'desc' ? -1 : 1;
         query = query.sort({ [s[0]]: sortDirection });
       }
 
@@ -89,7 +123,23 @@ const TaskController = {
         ],
         tasks: tasks,
         query: req.query,
-        filterConfig: TaskController.getFilterConfig()
+        filterConfig: await TaskController.getFilterConfig(),
+        statisticsConfig: {
+          show: tasks.length > 0,
+          title: 'Statystyki zadań',
+          items: [
+            {
+              id: 'todoCount',
+              value: tasks.filter(t => !t.isDone).length,
+              label: 'Do zrobienia'
+            },
+            {
+              id: 'doneCount', 
+              value: tasks.filter(t => t.isDone).length,
+              label: 'Wykonane'
+            }
+          ]
+        }
       });
     } catch (error) {
       ErrorController.handleError(res, error);
@@ -98,7 +148,7 @@ const TaskController = {
 
   showAddTaskForm: async (req, res) => {
     try {
-      const formConfig = TaskController.getFormConfig('add', req);
+      const formConfig = await TaskController.getFormConfig('add', req);
       await res.render(formConfig.template, formConfig);
         
     } catch (error) {
@@ -119,7 +169,7 @@ const TaskController = {
       await task.save();
       res.redirect('/zadania');
     } catch (error) {
-      const formConfig = TaskController.getFormConfig('add', req);
+      const formConfig = await TaskController.getFormConfig('add', req);
       ErrorController.handleValidationError(res, error, formConfig);
     }
   },
@@ -135,7 +185,7 @@ const TaskController = {
         });
       }
 
-      const formConfig = TaskController.getFormConfig('edit', req, task);
+      const formConfig = await TaskController.getFormConfig('edit', req, task);
       await res.render(formConfig.template, formConfig);
 
     } catch (error) {
@@ -156,7 +206,7 @@ const TaskController = {
       res.redirect('/zadania');
     } catch (error) {
         const task = await Task.findById(req.params.id);
-        const formConfig = TaskController.getFormConfig('edit', req, task);
+        const formConfig = await TaskController.getFormConfig('edit', req, task);
         ErrorController.handleValidationError(res, error, formConfig);
     }
   },

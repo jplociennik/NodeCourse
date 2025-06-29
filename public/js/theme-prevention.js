@@ -1,8 +1,11 @@
 /* Theme Flash Prevention - Additional Logic */
 
+import { onReady } from './utils/helpers.js';
+
 // This runs after the critical inline script in <head>
 // Additional background color setting for extra protection
-document.addEventListener('DOMContentLoaded', function() {
+// Prevent theme flash
+onReady(() => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     
     // Set body background color based on current theme (not default)
