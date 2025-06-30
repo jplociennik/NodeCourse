@@ -13,6 +13,7 @@ const d = document;
 const setText = (element, text) => element && (element.textContent = text);
 const setClass = (element, className) => element && (element.className = className);
 const setHref = (element, href) => element && (element.href = href);
+const setStyle = (element, property, value, priority = '') => element && element.style.setProperty(property, value, priority);
 
 // =============================================================================
 // UTILITY FUNCTIONS
@@ -38,4 +39,4 @@ const apiPost = async (url, data = null) => {
 // EXPORTS
 // =============================================================================
 
-export { d, setText, setClass, setHref, onReady, apiPost }; 
+export { d, setText, setClass, setHref, setStyle, onReady, apiPost }; 

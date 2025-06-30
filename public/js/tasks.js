@@ -6,8 +6,7 @@
 // IMPORTS
 // =============================================================================
 
-import { d, setText, setHref, apiPost } from './utils/helpers.js';
-import DOMUtils from './utils/dom-utils.js';
+import { d, setText, setClass, setHref, setStyle, apiPost } from './utils/helpers.js';
 import { StatisticsUtils } from './utils/statistics.js';
 
 // =============================================================================
@@ -37,45 +36,74 @@ const TASK_STATUS = {
 };
 
 const SELECTORS = {
-    INCOMPLETE_TASKS: '.bi-check-circle.text-muted',
-    VISIBLE_CHECKBOXES: '.col-md-6:not([style*="display: none"]) input[type="checkbox"][id^="task-"]',
-    FIRST_CHECKBOX: 'input[type="checkbox"][id^="task-"]'
+    TASK_CHECKBOXES: '[data-action="toggle-status"]',
+    TASK_CHECKBOX_BY_ID: (taskId) => `[data-task-id="${taskId}"]`,
+    TASK_ICON_BY_ID: (taskId) => `[data-task-icon="${taskId}"]`,
+    INCOMPLETE_TASK_ICONS: '[data-task-icon]',
+    FIRST_CHECKBOX: '[data-action="toggle-status"]'
 };
 
-const TASK_ITEM_CLASS = 'col-md-6';
-const TASK_COUNT_SELECTOR = '.task-count';
 
-// =============================================================================
-// TASK-SPECIFIC DOM UTILITY WRAPPERS
-// =============================================================================
 
-// Task-specific wrappers using global DOMUtils
-const TaskDOMUtils = {
-    // Task item functions
-    getAllTaskItems: () => DOMUtils.getAllItems(TASK_ITEM_CLASS),
-    getVisibleTaskItems: () => DOMUtils.getVisibleItems(TASK_ITEM_CLASS),
-    showAllTaskItems: () => DOMUtils.showAllItems(TASK_ITEM_CLASS),
-    resetTaskOrdering: () => DOMUtils.resetItemOrdering(TASK_ITEM_CLASS),
-    
-    // Task-specific content getters
-    getTaskTitle: (taskItem) => DOMUtils.getItemText(taskItem, '.card-title'),
-    getTaskMeta: (taskItem) => DOMUtils.getItemText(taskItem, '.task-meta'),
-    isTaskCompleted: (taskItem) => DOMUtils.isItemChecked(taskItem, 'input[type="checkbox"]'),
-    
-    // Task count update
-    updateTaskCount: () => {
-        const count = DOMUtils.updateItemCounter(TASK_ITEM_CLASS, TASK_COUNT_SELECTOR);
-        
-        // Update statistics using the statistics module
-        StatisticsUtils.updateStatistics();
-        
-        return count;
-    }
-};
 
 // =============================================================================
 // PRIVATE HELPER FUNCTIONS
 // =============================================================================
+
+/**
+ * Gets all task checkboxes on the page
+ * @returns {NodeList} All task checkboxes
+ */
+const getAllTaskCheckboxes = () => {
+    return d.querySelectorAll(SELECTORS.TASK_CHECKBOXES);
+};
+
+/**
+ * Gets a specific task checkbox by task ID
+ * @param {string} taskId - The task ID
+ * @returns {Element|null} The checkbox element or null
+ */
+const getTaskCheckbox = (taskId) => {
+    return d.querySelector(SELECTORS.TASK_CHECKBOX_BY_ID(taskId));
+};
+
+/**
+ * Gets task ID from a checkbox element
+ * @param {Element} checkbox - The checkbox element
+ * @returns {string|null} The task ID or null
+ */
+const getTaskIdFromCheckbox = (checkbox) => {
+    return checkbox?.dataset?.taskId || null;
+};
+
+/**
+ * Gets a task icon by task ID
+ * @param {string} taskId - The task ID
+ * @returns {Element|null} The icon element or null
+ */
+const getTaskIcon = (taskId) => {
+    return d.querySelector(SELECTORS.TASK_ICON_BY_ID(taskId));
+};
+
+/**
+ * Sets task title color for incomplete tasks
+ * @param {Element} titleElement - The title element
+ * @param {boolean} isIncomplete - Whether the task is incomplete
+ */
+const setTaskTitleColor = (titleElement, isIncomplete) => {
+    if (!titleElement) return;
+    
+    if (isIncomplete) {
+        // Set turkusowy color for incomplete tasks
+        setStyle(titleElement, 'color', '#369992', 'important');
+        titleElement.classList.add('task-incomplete');
+    } else {
+        // Remove custom color and class for completed tasks
+        titleElement.style.removeProperty('color');
+        titleElement.classList.remove('task-incomplete');
+    }
+};
+
 
 /**
  * Shows an error message to the user using Bootstrap modal
@@ -99,15 +127,12 @@ const showErrorMessage = (message, title = 'Błąd') => {
  * Sets initial colors for task titles based on their status
  */
 const setInitialTaskColors = () => {
-    // Find all task titles with muted icons (incomplete tasks)  
-    const incompleteTasks = d.querySelectorAll(SELECTORS.INCOMPLETE_TASKS);
+    const taskIcons = d.querySelectorAll(SELECTORS.INCOMPLETE_TASK_ICONS);
     
-    incompleteTasks.forEach(icon => {
-        const titleElement = icon.closest('.card-title');
-        if (titleElement) {
-            // Use !important to override Bootstrap's text-success
-            titleElement.style.setProperty('color', '#369992', 'important');
-            titleElement.classList.add('task-incomplete');
+    taskIcons.forEach(icon => {
+        if (icon.classList.contains('text-muted')) {
+            const titleElement = icon.closest('.card-title');
+            setTaskTitleColor(titleElement, true);
         }
     });
 };
@@ -170,30 +195,19 @@ const toggleTaskStatus = async (taskId, checkbox) => {
 const updateTaskUI = (taskId, isDone) => {
     // Update status badge
     const statusBadge = d.querySelector(`#status-${taskId}`);
-    setText(statusBadge, isDone ? TASK_STATUS.DONE : TASK_STATUS.TODO);
-    setClass(statusBadge, isDone ? CSS_CLASSES.BADGE_SUCCESS : CSS_CLASSES.BADGE_WARNING);
+    if (statusBadge) {
+        setText(statusBadge, isDone ? TASK_STATUS.DONE : TASK_STATUS.TODO);
+        setClass(statusBadge, isDone ? CSS_CLASSES.BADGE_SUCCESS : CSS_CLASSES.BADGE_WARNING);
+    }
     
-    // Update title icon and title color
-    const titleIcon = d.querySelector(`#task-${taskId}`)
-        ?.closest('.card-body')
-        ?.querySelector('.bi-check-circle');
-        
+    // Update task icon
+    const titleIcon = getTaskIcon(taskId);
     if (titleIcon) {
         setClass(titleIcon, isDone ? CSS_CLASSES.ICON_SUCCESS : CSS_CLASSES.ICON_MUTED);
         
         // Update title color based on task status
         const titleElement = titleIcon.closest('.card-title');
-        if (titleElement) {
-            if (isDone) {
-                // Remove custom color and class for completed tasks
-                titleElement.style.removeProperty('color');
-                titleElement.classList.remove('task-incomplete');
-            } else {
-                // Set turkusowy color for incomplete tasks
-                titleElement.style.setProperty('color', '#369992', 'important');
-                titleElement.classList.add('task-incomplete');
-            }
-        }
+        setTaskTitleColor(titleElement, !isDone);
     }
     
     // Update statistics using the statistics module
@@ -262,7 +276,16 @@ const setupTaskEventListeners = () => {
 // =============================================================================
 
 // Export functions for use by universal event delegation system
-export { setDeleteTask, toggleTaskStatus, updateTaskUI };
+export { 
+    setDeleteTask, 
+    toggleTaskStatus, 
+    updateTaskUI,
+    getAllTaskCheckboxes,
+    getTaskCheckbox,
+    getTaskIdFromCheckbox,
+    getTaskIcon,
+    setTaskTitleColor
+};
 
 // =============================================================================
 // MODULE INITIALIZATION

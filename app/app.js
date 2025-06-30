@@ -24,12 +24,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     res.setHeader('Content-Security-Policy', 
         "default-src 'self'; " +
-        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; " +
         "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
         "font-src 'self' https://cdn.jsdelivr.net; " +
         "img-src 'self' data: https:; " +
         "form-action 'self'; " +
-        "frame-ancestors 'none';"
+        "frame-ancestors 'none'; " +
+        "connect-src 'self';"
     );
     
     // Additional security headers

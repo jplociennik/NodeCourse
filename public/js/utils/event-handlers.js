@@ -69,7 +69,10 @@ const setupTaskActions = () => {
         if (eventType !== 'change') return;
         
         const { taskId } = data;
-        if (!taskId) return;
+        if (!taskId) {
+            console.warn('No task ID found for toggle-status action');
+            return;
+        }
         
         // Dynamic import for code splitting and performance optimization
         const { toggleTaskStatus } = await import('../tasks.js');
@@ -81,7 +84,10 @@ const setupTaskActions = () => {
         if (eventType !== 'click') return;
         
         const { taskId, taskName } = data;
-        if (!taskId || !taskName) return;
+        if (!taskId || !taskName) {
+            console.warn('Missing task ID or name for delete-task action', data);
+            return;
+        }
         
         // Dynamic import for code splitting and performance optimization
         const { setDeleteTask } = await import('../tasks.js');
