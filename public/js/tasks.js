@@ -2,11 +2,7 @@
 // TASK MANAGEMENT MODULE
 // =============================================================================
 
-// =============================================================================
-// IMPORTS
-// =============================================================================
-
-import { d, setText, setClass, setHref, setStyle, apiPost } from './utils/helpers.js';
+import { d, setText, setClass, setHref, setStyle, apiPost, onReady } from './utils/helpers.js';
 import { StatisticsUtils } from './utils/statistics.js';
 
 // =============================================================================
@@ -30,51 +26,15 @@ const CSS_CLASSES = {
     ICON_MUTED: 'bi bi-check-circle text-muted'
 };
 
-const TASK_STATUS = {
-    DONE: 'Wykonane',
-    TODO: 'Do wykonania'
-};
-
 const SELECTORS = {
-    TASK_CHECKBOXES: '[data-action="toggle-status"]',
-    TASK_CHECKBOX_BY_ID: (taskId) => `[data-task-id="${taskId}"]`,
     TASK_ICON_BY_ID: (taskId) => `[data-task-icon="${taskId}"]`,
     INCOMPLETE_TASK_ICONS: '[data-task-icon]',
     FIRST_CHECKBOX: '[data-action="toggle-status"]'
 };
 
-
-
-
 // =============================================================================
 // PRIVATE HELPER FUNCTIONS
 // =============================================================================
-
-/**
- * Gets all task checkboxes on the page
- * @returns {NodeList} All task checkboxes
- */
-const getAllTaskCheckboxes = () => {
-    return d.querySelectorAll(SELECTORS.TASK_CHECKBOXES);
-};
-
-/**
- * Gets a specific task checkbox by task ID
- * @param {string} taskId - The task ID
- * @returns {Element|null} The checkbox element or null
- */
-const getTaskCheckbox = (taskId) => {
-    return d.querySelector(SELECTORS.TASK_CHECKBOX_BY_ID(taskId));
-};
-
-/**
- * Gets task ID from a checkbox element
- * @param {Element} checkbox - The checkbox element
- * @returns {string|null} The task ID or null
- */
-const getTaskIdFromCheckbox = (checkbox) => {
-    return checkbox?.dataset?.taskId || null;
-};
 
 /**
  * Gets a task icon by task ID
@@ -148,11 +108,16 @@ const setInitialTaskColors = () => {
  */
 const setDeleteTask = (taskId, taskName) => {
     const taskNameElement = d.querySelector('#taskToDelete');
-    const confirmButton = d.querySelector('#confirmDeleteBtn');
+    const deleteForm = d.querySelector('#deleteTaskForm');
     
-    if (!setText(taskNameElement, taskName) || !setHref(confirmButton, TASK_API.DELETE(taskId))) {
-        console.error('Delete modal elements not found');
+    if (!setText(taskNameElement, taskName)) {
+        console.error('Task name element not found'); return;
     }
+    if (!deleteForm) {
+        console.error('Delete form element not found'); return;
+    }
+
+    deleteForm.action = TASK_API.DELETE(taskId);
 };
 
 /**
@@ -166,24 +131,14 @@ const toggleTaskStatus = async (taskId, checkbox) => {
     try {
         const data = await apiPost(TASK_API.TOGGLE(taskId));
         
-        if (data.success) {
-            updateTaskUI(taskId, data.isDone);
-        } else {
-            throw new Error(data.error || MESSAGES.ERROR);
-        }
+        if (data.success)  updateTaskUI(taskId, data.isDone);
+        else throw new Error(data.error || MESSAGES.ERROR);
         
     } catch (error) {
         console.error('Error toggling task status:', error);
         
-        // Revert checkbox state
-        checkbox.checked = !originalState;
-        
-        // Show user-friendly error message
-        const errorMessage = error.message.includes('Failed to fetch') 
-            ? MESSAGES.NETWORK_ERROR 
-            : MESSAGES.ERROR;
-            
-        showErrorMessage(errorMessage);
+        checkbox.checked = !originalState;               
+        showErrorMessage(error.message.includes('Failed to fetch') ? MESSAGES.NETWORK_ERROR : MESSAGES.ERROR);
     }
 };
 
@@ -193,28 +148,23 @@ const toggleTaskStatus = async (taskId, checkbox) => {
  * @param {boolean} isDone - Whether the task is completed
  */
 const updateTaskUI = (taskId, isDone) => {
-    // Update status badge
+
     const statusBadge = d.querySelector(`#status-${taskId}`);
     if (statusBadge) {
-        setText(statusBadge, isDone ? TASK_STATUS.DONE : TASK_STATUS.TODO);
+        setText(statusBadge, isDone ? 'Wykonane' : 'Do wykonania');
         setClass(statusBadge, isDone ? CSS_CLASSES.BADGE_SUCCESS : CSS_CLASSES.BADGE_WARNING);
     }
     
-    // Update task icon
     const titleIcon = getTaskIcon(taskId);
     if (titleIcon) {
         setClass(titleIcon, isDone ? CSS_CLASSES.ICON_SUCCESS : CSS_CLASSES.ICON_MUTED);
         
-        // Update title color based on task status
         const titleElement = titleIcon.closest('.card-title');
         setTaskTitleColor(titleElement, !isDone);
     }
     
-    // Update statistics using the statistics module
     StatisticsUtils.updateStatistics();
 };
-
-// Statistics functionality moved to utils/statistics.js
 
 // =============================================================================
 // EVENT HANDLERS
@@ -225,7 +175,6 @@ const updateTaskUI = (taskId, isDone) => {
  * @param {KeyboardEvent} e - The keyboard event
  */
 const handleKeyboardShortcuts = (e) => {
-    // Ctrl/Cmd + Enter to toggle first visible task
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         const firstCheckbox = d.querySelector(SELECTORS.FIRST_CHECKBOX);
         if (firstCheckbox) {
@@ -236,59 +185,26 @@ const handleKeyboardShortcuts = (e) => {
 };
 
 /**
- * Handles initial page setup
+ * Handles initial page setup and event listeners when DOM is ready
  */
 const handleDOMContentLoaded = () => {
+    
     setInitialTaskColors();
-    
-    // You could add more initialization here:
-    // - Global error handling
-    // - Additional keyboard shortcuts
-    // - Task drag & drop functionality
-    // - Auto-save functionality
-};
-
-// Task action handlers moved to universal event delegation system (utils/event-handlers.js)
-
-// =============================================================================
-// EVENT LISTENERS SETUP
-// =============================================================================
-
-/**
- * Sets up all event listeners for the task management module
- */
-const setupTaskEventListeners = () => {
-    // Main DOM loaded event
-    d.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
-    
-    // Keyboard shortcuts
-    d.addEventListener('keydown', handleKeyboardShortcuts);
-    
-    // Task actions now handled by universal event delegation system
-    // You could add more event listeners here:
-    // - Window resize handling
-    // - Visibility change handling
-    // - Online/offline status
-};
-
-// =============================================================================
-// MODULE EXPORTS
-// =============================================================================
-
-// Export functions for use by universal event delegation system
-export { 
-    setDeleteTask, 
-    toggleTaskStatus, 
-    updateTaskUI,
-    getAllTaskCheckboxes,
-    getTaskCheckbox,
-    getTaskIdFromCheckbox,
-    getTaskIcon,
-    setTaskTitleColor
+    d.addEventListener('keydown', handleKeyboardShortcuts);   
+    console.log('Tasks module fully initialized');
 };
 
 // =============================================================================
 // MODULE INITIALIZATION
 // =============================================================================
 
-setupTaskEventListeners(); 
+onReady(handleDOMContentLoaded); 
+
+// =============================================================================
+// MODULE EXPORTS
+// =============================================================================
+
+export { 
+    setDeleteTask, 
+    toggleTaskStatus
+};

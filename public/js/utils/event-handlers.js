@@ -3,7 +3,7 @@
 // Handles all data-action events across the application
 // =============================================================================
 
-import { d } from './helpers.js';
+import { d, onReady } from './helpers.js';
 
 // =============================================================================
 // ACTION HANDLERS REGISTRY
@@ -96,6 +96,27 @@ const setupTaskActions = () => {
 };
 
 /**
+ * Theme-related action handlers
+ */
+const setupThemeActions = () => {
+    // Theme toggle
+    registerActionHandler('toggle-theme', async (element, eventType, data) => {
+        if (eventType !== 'click') return;
+        
+        // Find theme icon within the button
+        const themeIcon = element.querySelector('#themeIcon');
+        if (!themeIcon) {
+            console.warn('Theme icon not found in toggle button');
+            return;
+        }
+        
+        // Dynamic import for code splitting and performance optimization
+        const { handleThemeToggle } = await import('../theme.js');
+        handleThemeToggle(themeIcon);
+    });
+};
+
+/**
  * Filter-related action handlers
  */
 const setupFilterActions = () => {
@@ -149,6 +170,7 @@ const setupFilterActions = () => {
 const initializeEventDelegation = () => {
     // Setup built-in handlers
     setupTaskActions();
+    setupThemeActions();
     setupFilterActions();
     
     // Add universal event listeners
@@ -163,12 +185,8 @@ const initializeEventDelegation = () => {
 // AUTO-INITIALIZATION
 // =============================================================================
 
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeEventDelegation);
-} else {
-    initializeEventDelegation();
-}
+// Initialize when DOM is ready using utility helper
+onReady(initializeEventDelegation);
 
 // =============================================================================
 // EXPORTS

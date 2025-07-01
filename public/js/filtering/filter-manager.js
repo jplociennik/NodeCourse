@@ -7,7 +7,6 @@ import { StatisticsUtils } from '../utils/statistics.js';
  * Replaces individual classes with arrow function modules
  */
 
-// Import modules that FilterManager will use
 let SearchModule, SortModule, FilterModule;
 let filterManagerConfig = {};
 let filterManagerModules = {};
