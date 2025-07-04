@@ -16,17 +16,13 @@ const actionHandlers = new Map();
  * @param {string} actionName - The action name (from data-action)
  * @param {Function} handler - Handler function (element, eventType, data)
  */
-const registerActionHandler = (actionName, handler) => {
-    actionHandlers.set(actionName, handler);
-};
+const registerActionHandler = (actionName, handler) => actionHandlers.set(actionName, handler);
 
 /**
  * Unregister an action handler
  * @param {string} actionName - The action name to remove
  */
-const unregisterActionHandler = (actionName) => {
-    actionHandlers.delete(actionName);
-};
+const unregisterActionHandler = (actionName) => actionHandlers.delete(actionName);
 
 // =============================================================================
 // MAIN EVENT DELEGATION HANDLER
@@ -168,12 +164,10 @@ const setupFilterActions = () => {
  * Initialize the universal event delegation system
  */
 const initializeEventDelegation = () => {
-    // Setup built-in handlers
     setupTaskActions();
     setupThemeActions();
     setupFilterActions();
     
-    // Add universal event listeners
     d.addEventListener('click', handleUniversalActions);
     d.addEventListener('change', handleUniversalActions);
     d.addEventListener('input', handleUniversalActions);
@@ -185,16 +179,4 @@ const initializeEventDelegation = () => {
 // AUTO-INITIALIZATION
 // =============================================================================
 
-// Initialize when DOM is ready using utility helper
 onReady(initializeEventDelegation);
-
-// =============================================================================
-// EXPORTS
-// =============================================================================
-
-export { 
-    registerActionHandler, 
-    unregisterActionHandler, 
-    initializeEventDelegation,
-    handleUniversalActions 
-}; 

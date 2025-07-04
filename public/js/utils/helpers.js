@@ -6,6 +6,14 @@
 
 const d = document;
 
+// CSS Classes
+const CSS_CLASSES = {
+    TASK_ITEM: 'col-md-6',
+    TASK_CHECKBOX: 'input[type="checkbox"][id^="task-"]',
+    CARD_TITLE: '.card-title',
+    TASK_META: '.task-meta'
+};
+
 // =============================================================================
 // DOM HELPER FUNCTIONS
 // =============================================================================
@@ -46,4 +54,4 @@ const apiPost = async (url, data = null) => {
 // EXPORTS
 // =============================================================================
 
-export { d, setText, setClass, setHref, setStyle, removeStyle, onReady, apiPost }; 
+export { d, setText, setClass, setHref, setStyle, removeStyle, onReady, apiPost, CSS_CLASSES }; 

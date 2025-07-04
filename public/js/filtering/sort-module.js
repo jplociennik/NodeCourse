@@ -1,4 +1,5 @@
 import DOMUtils from '../utils/dom-utils.js';
+import { CSS_CLASSES } from '../utils/helpers.js';
 
 /**
  * SortModule - Handles sort functionality
@@ -12,70 +13,108 @@ const initSortModule = (manager) => {
     sortModuleConfig = manager.config.sortConfig;
 };
 
+/**
+ * Parses sort value into field and direction
+ */
+const parseSortValue = (sortValue) => {
+    const [field, direction] = sortValue.split('|');
+    return { field, direction };
+};
+
+/**
+ * Gets sort value for a specific field from an item using field configuration
+ */
+const getSortValue = (item, field) => {
+    // Get field configuration from manager
+    const fieldConfig = sortModuleManager.config.sortFields?.[field];
+    
+    if (!fieldConfig) {
+        console.warn('Unknown sort field:', field);
+        return '';
+    }
+    
+    const { selector, type, transform, regex, attribute } = fieldConfig;
+    
+    switch (type) {
+        case 'text':
+            let value;
+            if (attribute) {
+                // Get value from data attribute
+                value = DOMUtils.getItemAttribute(item, selector, attribute) || '';
+            } else {
+                // Get value from element text content
+                value = DOMUtils.getItemText(item, selector);
+            }
+            return transform ? transform(value) : value;
+            
+        case 'date':
+            const meta = DOMUtils.getItemText(item, selector);
+            const match = regex ? meta.match(regex) : [meta];
+            return transform ? transform(match) : (match?.[0] ? new Date(match[0]) : new Date(0));
+            
+        case 'checkbox':
+            const checked = DOMUtils.isItemChecked(item, selector);
+            return transform ? transform(checked) : (checked ? 1 : 0);
+            
+        default:
+            console.warn('Unknown field type:', type);
+            return '';
+    }
+};
+
+/**
+ * Compares two sort values based on direction
+ */
+const compareSortValues = (valueA, valueB, direction) => {
+    if (valueA < valueB) return direction === 'asc' ? -1 : 1;
+    if (valueA > valueB) return direction === 'asc' ? 1 : -1;
+    return 0;
+};
+
+/**
+ * Sorts items based on field and direction
+ */
+const sortItems = (items, field, direction) => {
+    return items.sort((a, b) => {
+        const valueA = getSortValue(a, field);
+        const valueB = getSortValue(b, field);
+        return compareSortValues(valueA, valueB, direction);
+    });
+};
+
+/**
+ * Updates URL and counts if needed
+ */
+const updateSortState = (shouldUpdateURL) => {
+    if (shouldUpdateURL && sortModuleManager.updateURL)
+        sortModuleManager.updateURL();
+    
+    if (shouldUpdateURL && sortModuleManager.updateCounts)
+        sortModuleManager.updateCounts();
+};
+
 const performSort = (sortValue, shouldUpdateURL = true) => {
     if (!sortValue) {
         clearSort();
         return;
     }
     
-    const [field, direction] = sortValue.split('|');
-    
-    // Get container class and item class from config
-    const itemClass = sortModuleManager.config.itemClass || 'col-md-6';
-    
-    // Get visible items using DOMUtils
+    const { field, direction } = parseSortValue(sortValue);
+    const itemClass = sortModuleManager.config.itemClass || CSS_CLASSES.TASK_ITEM;
     const visibleItems = Array.from(DOMUtils.getVisibleItems(itemClass));
     
     if (visibleItems.length === 0) return;
     
-    // Sort visible items - always use task-specific logic for reliability
-    visibleItems.sort((a, b) => {
-        let valueA, valueB;
-        
-        switch (field) {
-            case 'taskName':
-                valueA = DOMUtils.getItemText(a, '.card-title').toLowerCase();
-                valueB = DOMUtils.getItemText(b, '.card-title').toLowerCase();
-                break;
-            case 'dateFrom':
-                // Look for date in task meta or data attributes
-                const metaA = DOMUtils.getItemText(a, '.task-meta');
-                const metaB = DOMUtils.getItemText(b, '.task-meta');
-                const dateA = metaA.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '';
-                const dateB = metaB.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '';
-                valueA = dateA ? new Date(dateA) : new Date(0);
-                valueB = dateB ? new Date(dateB) : new Date(0);
-                break;
-            case 'isDone':
-                valueA = DOMUtils.isItemChecked(a, 'input[type="checkbox"]') ? 1 : 0;
-                valueB = DOMUtils.isItemChecked(b, 'input[type="checkbox"]') ? 1 : 0;
-                break;
-            default:
-                console.warn('Unknown sort field:', field);
-                return 0;
-        }
-        
-        if (valueA < valueB) return direction === 'asc' ? -1 : 1;
-        if (valueA > valueB) return direction === 'asc' ? 1 : -1;
-        return 0;
-    });
+    const sortedItems = sortItems(visibleItems, field, direction);
+    DOMUtils.reorderItems(sortedItems);
     
-    // Reorder DOM elements using DOMUtils
-    DOMUtils.reorderItems(visibleItems);
-    
-    if (shouldUpdateURL && sortModuleManager.updateURL) {
-        sortModuleManager.updateURL();
-    }
-    if (shouldUpdateURL && sortModuleManager.updateCounts) {
-        sortModuleManager.updateCounts();
-    }
+    updateSortState(shouldUpdateURL);
 };
 
 const clearSort = () => {
     DOMUtils.clearSortSelect();
     
-    // Reset CSS ordering using DOMUtils
-    const itemClass = sortModuleManager.config.itemClass || 'col-md-6';
+    const itemClass = sortModuleManager.config.itemClass || CSS_CLASSES.TASK_ITEM;
     DOMUtils.resetItemOrdering(itemClass);
 };
 
@@ -83,8 +122,7 @@ const getSortModuleValue = () => {
     return DOMUtils.getSortSelectValue();
 };
 
-// Create SortModule as an object with arrow functions
-const SortModule = function(manager) {
+const SortModule = (manager) => {
     initSortModule(manager);
     
     return {
@@ -94,5 +132,4 @@ const SortModule = function(manager) {
     };
 };
 
-// Export as default
 export default SortModule; 

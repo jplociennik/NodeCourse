@@ -16,6 +16,27 @@ const TaskController = {
     ];
   },
 
+  getSortFieldsConfig: async () => {
+    return {
+      'taskName': {
+        selector: '.card-title',
+        type: 'text',
+        transform: (text) => text.toLowerCase()
+      },
+      'dateFrom': {
+        selector: '.task-meta',
+        type: 'date',
+        regex: /\d{4}-\d{2}-\d{2}/,
+        transform: (match) => match?.[0] ? new Date(match[0]) : new Date(0)
+      },
+      'isDone': {
+        selector: 'input[type="checkbox"]',
+        type: 'checkbox',
+        transform: (checked) => checked ? 1 : 0
+      }
+    };
+  },
+
   getFilterOptions: async () => {
     return [
       {
@@ -46,7 +67,7 @@ const TaskController = {
 
   getFilterConfig: async () => {
     return {
-      features: ['search', 'sort', 'filter'],
+      features: ['search', 'sort', 'advancedFilters'],
       title: 'Wyszukiwanie i sortowanie',
       icon: 'bi bi-funnel',
       searchConfig: {
@@ -65,7 +86,7 @@ const TaskController = {
       containerClass: 'tasks-container',
       itemClass: 'col-md-6',
       searchFields: ['title'], // Search in .card-title content
-      sortFields: await TaskController.getSortOptions()
+      sortFields: await TaskController.getSortFieldsConfig()
     };
   },
 
@@ -86,63 +107,61 @@ const TaskController = {
   // Routing functions
   getTasksPage: async (req, res) => {
     try {
-      let q = req.query.q ? req.query.q : '';
-      let sort = req.query.sort ? req.query.sort : '';
+        let q = req.query.q ? req.query.q : '';
+        let sort = req.query.sort ? req.query.sort : '';
 
-      const where = {};
-      if (q) { where.taskName = { $regex: q, $options: 'i' }; }
-      if (req.query.dateFrom) { where.dateFrom = { $gte: req.query.dateFrom }; } 
-      if (req.query.dateTo) { where.$or = [ { dateTo: { $lte: req.query.dateTo } }, { dateTo: null, dateFrom: { $lte: req.query.dateTo } } ]; }
-      
-      const statusFilters = [];
-      if (req.query.done === 'on') statusFilters.push(true);
-      if (req.query.todo === 'on') statusFilters.push(false);
-      
-      if (statusFilters.length > 0 && statusFilters.length < 2) { where.isDone = statusFilters[0]; }
+        const where = {};
+        if (q) { where.taskName = { $regex: q, $options: 'i' }; }
+        if (req.query.dateFrom) { where.dateFrom = { $gte: req.query.dateFrom }; } 
+        if (req.query.dateTo) { where.$or = [ { dateTo: { $lte: req.query.dateTo } }, { dateTo: null, dateFrom: { $lte: req.query.dateTo } } ]; }
+        
+        // Handle status filters
+        if (req.query.done === 'on') where.isDone = true;
+        if (req.query.todo === 'on') where.isDone = false;
 
-      let query = Task.find(where);
-      if(sort) {
-        const s = sort.split('|');
-        const sortDirection = s[1] === 'desc' ? -1 : 1;
-        query = query.sort({ [s[0]]: sortDirection });
-      }
-
-      const tasks = await query.exec();
-
-      await res.render('pages/task/tasks', { 
-        pageTitle: 'Zadania',
-        pageName: 'tasks',
-        title: 'Lista zadań',
-        subtitle: 'Przegląd aktualnych zadań',
-        heroIcon: 'bi bi-list-check',
-        breadcrumbs: [
-          {
-            text: 'Zadania',
-            icon: 'bi bi-list-check'
-          }
-        ],
-        tasks: tasks,
-        query: req.query,
-        filterConfig: await TaskController.getFilterConfig(),
-        statisticsConfig: {
-          show: tasks.length > 0,
-          title: 'Statystyki zadań',
-          items: [
-            {
-              id: 'todoCount',
-              value: tasks.filter(t => !t.isDone).length,
-              label: 'Do zrobienia'
-            },
-            {
-              id: 'doneCount', 
-              value: tasks.filter(t => t.isDone).length,
-              label: 'Wykonane'
-            }
-          ]
+        let query = Task.find(where);
+        if(sort) {
+            const s = sort.split('|');
+            const sortDirection = s[1] === 'desc' ? -1 : 1;
+            query = query.sort({ [s[0]]: sortDirection });
         }
-      });
+
+        const tasks = await query.exec();
+
+        await res.render('pages/task/tasks', { 
+            pageTitle: 'Zadania',
+            pageName: 'tasks',
+            title: 'Lista zadań',
+            subtitle: 'Przegląd aktualnych zadań',
+            heroIcon: 'bi bi-list-check',
+            breadcrumbs: [
+                {
+                    text: 'Zadania',
+                    icon: 'bi bi-list-check'
+                }
+            ],
+            tasks: tasks,
+            query: req.query,
+            filterConfig: await TaskController.getFilterConfig(),
+            statisticsConfig: {
+                show: tasks.length > 0,
+                title: 'Statystyki zadań',
+                items: [
+                    {
+                        id: 'todoCount',
+                        value: tasks.filter(t => !t.isDone).length,
+                        label: 'Do zrobienia'
+                    },
+                    {
+                        id: 'doneCount', 
+                        value: tasks.filter(t => t.isDone).length,
+                        label: 'Wykonane'
+                    }
+                ]
+            }
+        });
     } catch (error) {
-      ErrorController.handleError(res, error);
+        ErrorController.handleError(res, error);
     }
   },
 

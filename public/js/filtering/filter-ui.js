@@ -21,8 +21,10 @@ const toggleDateInput = (filterId) => {
  * @param {HTMLElement} toggleIcon - Icon element to update
  */
 const showAdvancedFilters = (filtersContainer, toggleIcon) => {
-    filtersContainer.style.display = 'block';
-    setClass(toggleIcon, FILTER_CLASSES.CHEVRON_UP);
+    if (filtersContainer && toggleIcon) {
+        filtersContainer.style.display = 'block';
+        setClass(toggleIcon, FILTER_CLASSES.CHEVRON_UP);
+    }
 };
 
 /**
@@ -46,7 +48,7 @@ const hideDateContainers = (c) => c.querySelectorAll(FILTER_SELECTORS.INPUT_CONT
 /**
  * Reapplies filters to refresh the display
  */
-const reapplyFilters = () => import('../filtering/filters.js').then(({ applyFilters }) => { applyFilters(); });
+const reapplyFilters = () => import('../filtering/filters.js').then(({ applyFilters }) => applyFilters());
 
 /**
  * Hides advanced filters and clears all selections
@@ -54,20 +56,27 @@ const reapplyFilters = () => import('../filtering/filters.js').then(({ applyFilt
  * @param {HTMLElement} toggleIcon - Icon element to update
  */
 const hideAdvancedFilters = (filtersContainer, toggleIcon) => {
-    filtersContainer.style.display = 'none';
-    setClass(toggleIcon, FILTER_CLASSES.CHEVRON_DOWN);
-    
-    clearFilterCheckboxes(filtersContainer);
-    clearDateInputs(filtersContainer);
-    hideDateContainers(filtersContainer);
-    reapplyFilters();
+    if (filtersContainer && toggleIcon) {
+        filtersContainer.style.display = 'none';
+        setClass(toggleIcon, FILTER_CLASSES.CHEVRON_DOWN);
+        
+        clearFilterCheckboxes(filtersContainer);
+        clearDateInputs(filtersContainer);
+        hideDateContainers(filtersContainer);
+        reapplyFilters();
+    }
 };
 
 const toggleAdvancedFilters = () => {
     const filtersContainer = d.querySelector('#advancedFilters');
     const toggleIcon = d.querySelector('#filterToggleIcon');
     
-    if (filtersContainer.style.display === 'none') {
+    if (!filtersContainer || !toggleIcon) {
+        console.warn('Advanced filters elements not found');
+        return;
+    }
+    
+    if (filtersContainer.style.display === 'none' || filtersContainer.style.display === '') {
         showAdvancedFilters(filtersContainer, toggleIcon);
     } else {
         hideAdvancedFilters(filtersContainer, toggleIcon);

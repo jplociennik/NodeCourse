@@ -12,6 +12,23 @@ const UserController = {
     ];
   },
 
+  getSortFieldsConfig: async () => {
+    return {
+      'name': {
+        selector: '[data-name]',
+        type: 'text',
+        attribute: 'data-name',
+        transform: (text) => text.toLowerCase()
+      },
+      'createdAt': {
+        selector: '[data-created]',
+        type: 'text',
+        attribute: 'data-created',
+        transform: (text) => new Date(text)
+      }
+    };
+  },
+
   getFilterOptions: async () => {
     return [
       {
@@ -42,7 +59,7 @@ const UserController = {
 
   getFilterConfig: async () => {
     return {
-      features: ['search', 'sort', 'filter'],
+      features: ['search', 'sort','advancedFilters'],
       title: 'Wyszukiwanie i sortowanie',
       icon: 'bi bi-funnel',
       searchConfig: {
@@ -61,7 +78,7 @@ const UserController = {
       containerClass: 'profiles-container',
       itemClass: 'profile-item',
       searchFields: ['data-name'], // Search in data-name attribute
-      sortFields: await UserController.getSortOptions()
+      sortFields: await UserController.getSortFieldsConfig()
     };
   },
 

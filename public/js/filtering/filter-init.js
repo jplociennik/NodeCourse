@@ -27,6 +27,9 @@ const parseFilterConfig = (configElement) => {
 const initializeFilterSystem = (config) => {
     const filterManager = FilterManager(config);
     filterManager.init();
+    // Attach to window for global access
+    window.filterManager = filterManager;
+    console.log('Filter manager initialized and attached to window:', window.filterManager);
 };
 
 // =============================================================================

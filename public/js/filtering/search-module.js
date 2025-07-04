@@ -1,4 +1,5 @@
 import DOMUtils from '../utils/dom-utils.js';
+import { CSS_CLASSES } from '../utils/helpers.js';
 
 /**
  * SearchModule - Handles search functionality
@@ -12,73 +13,93 @@ const initSearchModule = (manager) => {
     searchModuleConfig = manager.config.searchConfig;
 };
 
-const performSearch = (searchQuery, shouldUpdateURL = true) => {
-    const searchValue = searchQuery.toLowerCase();
+/**
+ * Gets the text to search from an item based on field configuration
+ */
+const getTextToSearch = (item, field) => {
+    if (field.startsWith('data-')) {
+        const attributeName = field.replace('data-', '');
+        return DOMUtils.getItemAttribute(item, `[data-${attributeName}]`, `data-${attributeName}`) || '';
+    } else {
+        if (field === 'title') {
+            return DOMUtils.getItemText(item, '.card-title');
+        }
+    }
+    return '';
+};
+
+/**
+ * Checks if a single item matches the search query
+ */
+const checkItemMatch = (item, searchValue, searchFields) => {
+    if (!searchValue) return true;
     
-    // Get item class from config
-    const itemClass = searchModuleManager.config.itemClass || 'col-md-6';
-    const searchFields = searchModuleManager.config.searchFields || ['title'];
-    
-    // Get all items using DOMUtils
-    const items = DOMUtils.getAllItems(itemClass);
-    
+    for (const field of searchFields) {
+        const textToSearch = getTextToSearch(item, field);  
+        if (textToSearch.toLowerCase().includes(searchValue)) 
+            return true;     
+    } 
+    return false;
+};
+
+/**
+ * Processes search results by showing/hiding items and counting matches
+ */
+const processSearchResults = (items, searchValue, searchFields) => {
     let matchedCount = 0;
     
-    // Filter items based on search
     items.forEach(item => {
-        let matchesSearch = false;
-        
-        if (!searchValue) {
-            matchesSearch = true;
-        } else {
-            // Check each configured search field
-            for (const field of searchFields) {
-                let textToSearch = '';
-                
-                if (field.startsWith('data-')) {
-                    // Search in data attribute
-                    const attributeName = field.replace('data-', '');
-                    textToSearch = DOMUtils.getItemAttribute(item, `[data-${attributeName}]`, `data-${attributeName}`) || '';
-                } else {
-                    // Search in element content (for tasks)
-                    if (field === 'title') {
-                        textToSearch = DOMUtils.getItemText(item, '.card-title');
-                    }
-                }
-                
-                if (textToSearch.toLowerCase().includes(searchValue)) {
-                    matchesSearch = true;
-                    break;
-                }
-            }
-        }
+        const matchesSearch = checkItemMatch(item, searchValue, searchFields);
         
         if (matchesSearch) {
             DOMUtils.showItem(item);
             matchedCount++;
-        } else {
+        } else 
             DOMUtils.hideItem(item);
-        }
     });
-    
-    if (shouldUpdateURL && searchModuleManager.updateURL) {
+    return matchedCount;
+};
+
+/**
+ * Updates URL and counts if needed
+ */
+const updateSearchState = (shouldUpdateURL) => {
+    if (shouldUpdateURL && searchModuleManager.updateURL) 
         searchModuleManager.updateURL();
-    }
-    if (shouldUpdateURL && searchModuleManager.updateCounts) {
+
+    if (shouldUpdateURL && searchModuleManager.updateCounts) 
         searchModuleManager.updateCounts();
-    }
+};
+
+const performSearch = (searchQuery, shouldUpdateURL = true) => {
+    const searchValue = searchQuery.toLowerCase();
+    const itemClass = searchModuleManager.config.itemClass || CSS_CLASSES.TASK_ITEM;
+    const searchFields = searchModuleManager.config.searchFields || ['title'];
+    const items = DOMUtils.getAllItems(itemClass);
+    const matchedCount = processSearchResults(items, searchValue, searchFields);
+    
+    updateSearchState(shouldUpdateURL);
+    return matchedCount;
 };
 
 const clearSearch = () => {
+    // Clear input
     DOMUtils.clearSearchInput();
+    
+    // Show all items
+    const itemClass = searchModuleManager.config.itemClass || CSS_CLASSES.TASK_ITEM;
+    const items = DOMUtils.getAllItems(itemClass);
+    items.forEach(item => DOMUtils.showItem(item));
+    
+    // Update state
+    updateSearchState(true);
 };
 
 const getSearchModuleValue = () => {
     return DOMUtils.getSearchInputValue();
 };
 
-// Create SearchModule as an object with arrow functions
-const SearchModule = function(manager) {
+const SearchModule = (manager) => {
     initSearchModule(manager);
     
     return {
@@ -88,5 +109,4 @@ const SearchModule = function(manager) {
     };
 };
 
-// Export as default
 export default SearchModule; 

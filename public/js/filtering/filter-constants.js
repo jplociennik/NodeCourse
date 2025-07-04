@@ -7,7 +7,7 @@ const FILTER_SELECTORS = {
     CHECKBOXES: 'input[type="checkbox"]',
     DATE_INPUTS: 'input[type="date"]',
     INPUT_CONTAINERS: '[id^="input_"]',   
-    STATUS_CHECKBOXES: 'input[name="filter[status][]"]:checked',
+    STATUS_CHECKBOXES: '#advancedFilters input[type="checkbox"]:checked:not([data-action])',
     ADVANCED_CHECKBOXES: '#advancedFilters input[type="checkbox"]',
     ADVANCED_DATE_INPUTS: '#advancedFilters input[type="date"]'
 };
