@@ -166,9 +166,9 @@ const clearSelect = (selectId) => {
 
 // Convenience functions for common inputs
 const getSearchInputValue = () => getInputValue('searchInput');
-const getSortSelectValue = () => getSelectValue('sortSelect');
+const getSortSelectValue = () => getInputValue('sortSelect');
 const clearSearchInput = () => clearInput('searchInput');
-const clearSortSelect = () => clearSelect('sortSelect');
+const clearSortSelect = () => clearInput('sortSelect');
 
 // =============================================================================
 // URL MANAGEMENT FUNCTIONS
@@ -226,10 +226,9 @@ const updateItemCounter = (itemClass, counterSelector) => {
 };
 
 // =============================================================================
-// INTERNAL MODULE API
+// EXPORTS
 // =============================================================================
 
-// Export all functions as part of DOMUtils object for internal module use
 const DOMUtils = {
     // Constants
     selectors: DOM_SELECTORS,
@@ -266,5 +265,4 @@ const DOMUtils = {
     updateItemCounter
 };
 
-// Export DOMUtils as default export
 export default DOMUtils; 

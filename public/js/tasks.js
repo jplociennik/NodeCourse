@@ -2,7 +2,7 @@
 // TASK MANAGEMENT MODULE
 // =============================================================================
 
-import { d, setText, setClass, setHref, setStyle, apiPost } from './utils/helpers.js';
+import { d, setText, setClass, setHref, setStyle, apiPost, onReady } from './utils/helpers.js';
 import { StatisticsUtils } from './utils/statistics.js';
 
 // =============================================================================
@@ -26,14 +26,7 @@ const CSS_CLASSES = {
     ICON_MUTED: 'bi bi-check-circle text-muted'
 };
 
-const TASK_STATUS = {
-    DONE: 'Wykonane',
-    TODO: 'Do wykonania'
-};
-
 const SELECTORS = {
-    TASK_CHECKBOXES: '[data-action="toggle-status"]',
-    TASK_CHECKBOX_BY_ID: (taskId) => `[data-task-id="${taskId}"]`,
     TASK_ICON_BY_ID: (taskId) => `[data-task-icon="${taskId}"]`,
     INCOMPLETE_TASK_ICONS: '[data-task-icon]',
     FIRST_CHECKBOX: '[data-action="toggle-status"]'
@@ -44,6 +37,15 @@ const SELECTORS = {
 // =============================================================================
 
 /**
+ * Gets a task icon by task ID
+ * @param {string} taskId - The task ID
+ * @returns {Element|null} The icon element or null
+ */
+const getTaskIcon = (taskId) => {
+    return d.querySelector(SELECTORS.TASK_ICON_BY_ID(taskId));
+};
+
+/**
  * Sets task title color for incomplete tasks
  * @param {Element} titleElement - The title element
  * @param {boolean} isIncomplete - Whether the task is incomplete
@@ -52,13 +54,16 @@ const setTaskTitleColor = (titleElement, isIncomplete) => {
     if (!titleElement) return;
     
     if (isIncomplete) {
+        // Set turkusowy color for incomplete tasks
         setStyle(titleElement, 'color', '#369992', 'important');
         titleElement.classList.add('task-incomplete');
     } else {
+        // Remove custom color and class for completed tasks
         titleElement.style.removeProperty('color');
         titleElement.classList.remove('task-incomplete');
     }
 };
+
 
 /**
  * Shows an error message to the user using Bootstrap modal
@@ -103,11 +108,16 @@ const setInitialTaskColors = () => {
  */
 const setDeleteTask = (taskId, taskName) => {
     const taskNameElement = d.querySelector('#taskToDelete');
-    const confirmButton = d.querySelector('#confirmDeleteBtn');
+    const deleteForm = d.querySelector('#deleteTaskForm');
     
-    if (!setText(taskNameElement, taskName) || !setHref(confirmButton, TASK_API.DELETE(taskId))) {
-        console.error('Delete modal elements not found');
+    if (!setText(taskNameElement, taskName)) {
+        console.error('Task name element not found'); return;
     }
+    if (!deleteForm) {
+        console.error('Delete form element not found'); return;
+    }
+
+    deleteForm.action = TASK_API.DELETE(taskId);
 };
 
 /**
@@ -116,29 +126,34 @@ const setDeleteTask = (taskId, taskName) => {
  * @param {HTMLInputElement} checkbox - The checkbox element that triggered the change
  */
 const toggleTaskStatus = async (taskId, checkbox) => {
+    console.log('toggleTaskStatus called:', { taskId, checked: checkbox.checked });
     const originalState = checkbox.checked;
     
     try {
+        console.log('Making API request to:', TASK_API.TOGGLE(taskId));
         const data = await apiPost(TASK_API.TOGGLE(taskId));
+        console.log('API response:', data);
         
         if (data.success) {
             updateTaskUI(taskId, data.isDone);
-        } else {
-            throw new Error(data.error || MESSAGES.ERROR);
-        }
+            console.log('Task UI updated, checking for filter manager...');
+            // Trigger filter reapplication
+            if (window.filterManager?.modules?.filter) {
+                console.log('Filter manager found, applying filters...');
+                window.filterManager.modules.filter.applyFilters();
+            } else {
+                console.log('Filter manager not found:', { 
+                    filterManager: window.filterManager,
+                    modules: window.filterManager?.modules
+                });
+            }
+        } else throw new Error(data.error || MESSAGES.ERROR);
         
     } catch (error) {
         console.error('Error toggling task status:', error);
         
-        // Revert checkbox state
-        checkbox.checked = !originalState;
-        
-        // Show user-friendly error message
-        const errorMessage = error.message.includes('Failed to fetch') 
-            ? MESSAGES.NETWORK_ERROR 
-            : MESSAGES.ERROR;
-            
-        showErrorMessage(errorMessage);
+        checkbox.checked = !originalState;               
+        showErrorMessage(error.message.includes('Failed to fetch') ? MESSAGES.NETWORK_ERROR : MESSAGES.ERROR);
     }
 };
 
@@ -148,28 +163,23 @@ const toggleTaskStatus = async (taskId, checkbox) => {
  * @param {boolean} isDone - Whether the task is completed
  */
 const updateTaskUI = (taskId, isDone) => {
-    // Update status badge
+
     const statusBadge = d.querySelector(`#status-${taskId}`);
     if (statusBadge) {
-        setText(statusBadge, isDone ? TASK_STATUS.DONE : TASK_STATUS.TODO);
+        setText(statusBadge, isDone ? 'Wykonane' : 'Do wykonania');
         setClass(statusBadge, isDone ? CSS_CLASSES.BADGE_SUCCESS : CSS_CLASSES.BADGE_WARNING);
     }
     
-    // Update task icon
-    const titleIcon = d.querySelector(SELECTORS.TASK_ICON_BY_ID(taskId));
+    const titleIcon = getTaskIcon(taskId);
     if (titleIcon) {
         setClass(titleIcon, isDone ? CSS_CLASSES.ICON_SUCCESS : CSS_CLASSES.ICON_MUTED);
         
-        // Update title color based on task status
         const titleElement = titleIcon.closest('.card-title');
         setTaskTitleColor(titleElement, !isDone);
     }
     
-    // Update statistics using the statistics module
     StatisticsUtils.updateStatistics();
 };
-
-// Statistics functionality moved to utils/statistics.js
 
 // =============================================================================
 // EVENT HANDLERS
@@ -180,7 +190,6 @@ const updateTaskUI = (taskId, isDone) => {
  * @param {KeyboardEvent} e - The keyboard event
  */
 const handleKeyboardShortcuts = (e) => {
-    // Ctrl/Cmd + Enter to toggle first visible task
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         const firstCheckbox = d.querySelector(SELECTORS.FIRST_CHECKBOX);
         if (firstCheckbox) {
@@ -191,55 +200,26 @@ const handleKeyboardShortcuts = (e) => {
 };
 
 /**
- * Handles initial page setup
+ * Handles initial page setup and event listeners when DOM is ready
  */
 const handleDOMContentLoaded = () => {
+    
     setInitialTaskColors();
-    
-    // You could add more initialization here:
-    // - Global error handling
-    // - Additional keyboard shortcuts
-    // - Task drag & drop functionality
-    // - Auto-save functionality
-};
-
-// Task action handlers moved to universal event delegation system (utils/event-handlers.js)
-
-// =============================================================================
-// EVENT LISTENERS SETUP
-// =============================================================================
-
-/**
- * Sets up all event listeners for the task management module
- */
-const setupTaskEventListeners = () => {
-    // Main DOM loaded event
-    d.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
-    
-    // Keyboard shortcuts
-    d.addEventListener('keydown', handleKeyboardShortcuts);
-    
-    // Task actions now handled by universal event delegation system
-    // You could add more event listeners here:
-    // - Window resize handling
-    // - Visibility change handling
-    // - Online/offline status
-};
-
-// =============================================================================
-// MODULE EXPORTS
-// =============================================================================
-
-// Export functions for use by universal event delegation system
-export { 
-    setDeleteTask, 
-    toggleTaskStatus, 
-    updateTaskUI,
-    setTaskTitleColor
+    d.addEventListener('keydown', handleKeyboardShortcuts);   
+    console.log('Tasks module fully initialized');
 };
 
 // =============================================================================
 // MODULE INITIALIZATION
 // =============================================================================
 
-setupTaskEventListeners(); 
+onReady(handleDOMContentLoaded); 
+
+// =============================================================================
+// MODULE EXPORTS
+// =============================================================================
+
+export { 
+    setDeleteTask, 
+    toggleTaskStatus
+};

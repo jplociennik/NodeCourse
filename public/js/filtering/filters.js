@@ -1,23 +1,19 @@
-import { d, onReady } from '../utils/helpers.js';
+import { d, onReady, CSS_CLASSES } from '../utils/helpers.js';
 import DOMUtils from '../utils/dom-utils.js';
 import { StatisticsUtils } from '../utils/statistics.js';
-
-// Search and Sort functionality for tasks page - Client-side filtering
 
 /**
  * Applies search and sort filters without page reload
  */
 const applyFilters = () => {
-    const searchValue = getFallbackSearchValue();
-    const sortValue = getFallbackSortValue();
+    const searchValue = DOMUtils.getSearchInputValue();
+    const sortValue = DOMUtils.getSortSelectValue();
     
-    // Get all task cards
-    const tasks = d.querySelectorAll('.col-md-6');
+    // Get all task cards and show them initially
+    const tasks = d.querySelectorAll(`.${CSS_CLASSES.TASK_ITEM}`);
+    DOMUtils.showAllItems(CSS_CLASSES.TASK_ITEM);
     
-    // First, show all tasks
-    DOMUtils.showAllItems('col-md-6');
-    
-    // Apply search filter
+    // Apply search filter if search value exists
     if (searchValue) {
         tasks.forEach(task => {
             const title = DOMUtils.getItemText(task, '.card-title');
@@ -27,12 +23,9 @@ const applyFilters = () => {
         });
     }
     
-    // Apply sort to visible tasks
+    // Apply sort to visible tasks if sort value exists
     if (sortValue) {
-        const visibleTasks = Array.from(tasks).filter(task => 
-            task.style.display !== 'none'
-        );
-        
+        const visibleTasks = Array.from(tasks).filter(task => task.style.display !== 'none');
         const [field, direction] = sortValue.split('|');
         
         visibleTasks.sort((a, b) => {
@@ -59,17 +52,16 @@ const applyFilters = () => {
                     return 0;
             }
             
-            if (valueA < valueB) return direction === 'asc' ? -1 : 1;
-            if (valueA > valueB) return direction === 'asc' ? 1 : -1;
-            return 0;
+            return direction === 'asc' 
+                ? (valueA < valueB ? -1 : valueA > valueB ? 1 : 0)
+                : (valueA > valueB ? -1 : valueA < valueB ? 1 : 0);
         });
         
-        // Reorder DOM elements using DOMUtils
         DOMUtils.reorderItems(visibleTasks);
     }
     
-    // Update URL and counts
-    updateURL(searchValue, sortValue);
+    // Update URL and statistics
+    DOMUtils.updateSearchSortURL(searchValue, sortValue);
     StatisticsUtils.updateTaskCount();
     StatisticsUtils.updateStatistics();
 };
@@ -78,36 +70,14 @@ const applyFilters = () => {
  * Clears all filters without page reload
  */
 const clearFilters = () => {
-    // Clear all inputs
     DOMUtils.clearSearchInput();
     DOMUtils.clearSortSelect();
-    
-    // Show all tasks and reset ordering
-    DOMUtils.showAllItems('col-md-6');
-    DOMUtils.resetItemOrdering('col-md-6');
-    
-    // Update URL and counts
-    updateURL('', '');
-    StatisticsUtils.updateTaskCount(); 
+    DOMUtils.showAllItems(CSS_CLASSES.TASK_ITEM);
+    DOMUtils.resetItemOrdering(CSS_CLASSES.TASK_ITEM);
+    DOMUtils.updateSearchSortURL('', '');
+    StatisticsUtils.updateTaskCount();
     StatisticsUtils.updateStatistics();
 };
-
-const getFallbackSearchValue = () => {
-    return DOMUtils.getSearchInputValue();
-};
-
-const getFallbackSortValue = () => {
-    return DOMUtils.getSortSelectValue();
-};
-
-/**
- * Updates URL without page reload
- */
-const updateURL = (searchValue, sortValue) => {
-    DOMUtils.updateSearchSortURL(searchValue, sortValue);
-};
-
-// Removed updateTaskCount function to avoid conflicts - use StatisticsUtils.updateTaskCount() directly
 
 /**
  * Initialize filters from URL parameters on page load
@@ -115,25 +85,17 @@ const updateURL = (searchValue, sortValue) => {
 const initializeFiltersFromURL = () => {
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Set search value
+    // Set search and sort values from URL
     const searchValue = urlParams.get('q') || '';
-    const searchInput = d.querySelector('#searchInput');
-    if (searchInput && searchValue) {
-        searchInput.value = searchValue;
-    }
-    
-    // Set sort value
     const sortValue = urlParams.get('sort') || '';
-    const sortSelect = d.querySelector('#sortSelect');
-    if (sortSelect && sortValue) {
-        sortSelect.value = sortValue;
-    }
     
-    // Apply filters if there are parameters
+    if (searchValue) d.querySelector('#searchInput').value = searchValue;
+    if (sortValue) d.querySelector('#sortSelect').value = sortValue;
+    
+    // Apply filters if parameters exist, otherwise just update statistics
     if (searchValue || sortValue) {
         applyFilters();
     } else {
-        // Even if no filters, update counts to get correct initial statistics
         StatisticsUtils.updateTaskCount();
         StatisticsUtils.updateStatistics();
     }
@@ -141,8 +103,6 @@ const initializeFiltersFromURL = () => {
 
 // Export for module usage
 export { applyFilters, clearFilters, initializeFiltersFromURL };
-
-// No more window.* fallback functions needed - using universal event delegation system
 
 // Initialize from URL when page loads
 onReady(() => {

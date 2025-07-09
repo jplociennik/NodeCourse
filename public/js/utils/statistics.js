@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { d, setText, onReady } from './helpers.js';
+import { CSS_CLASSES } from './helpers.js';
 
 /**
  * Statistics module for managing and updating task counters
@@ -17,12 +18,16 @@ const STATISTICS_CONFIG = {
     SELECTORS: {
         TODO_COUNT: '#todoCount',
         DONE_COUNT: '#doneCount',
-        TASK_COUNT: '.task-count',
-        VISIBLE_CHECKBOXES: '.col-md-6:not([style*="display: none"]) input[type="checkbox"][id^="task-"]',
+        TASK_COUNT: '#taskCount',
+        DONE_PERCENTAGE: '#donePercentage',
+        DONE_PERCENTAGE_BAR: '#donePercentageBar',
+        VISIBLE_CHECKBOXES: `.${CSS_CLASSES.TASK_ITEM}:not([style*="display: none"]) ${CSS_CLASSES.TASK_CHECKBOX}`,
+        VISIBLE_CHECKED_CHECKBOXES: `.${CSS_CLASSES.TASK_ITEM}:not([style*="display: none"]) ${CSS_CLASSES.TASK_CHECKBOX}:checked`,
+        VISIBLE_TASKS: `.${CSS_CLASSES.TASK_ITEM}:not([style*="display: none"])`,
         STATISTICS_ELEMENTS: '.statistics-row .h5, .statistics-row small'
     },
     
-    TASK_ITEM_CLASS: 'col-md-6'
+    TASK_ITEM_CLASS: CSS_CLASSES.TASK_ITEM
 };
 
 // =============================================================================
@@ -88,7 +93,7 @@ const updateTaskCount = () => {
     const taskCountElement = d.querySelector(STATISTICS_CONFIG.SELECTORS.TASK_COUNT);
     
     if (taskCountElement) {
-        const visibleTasks = d.querySelectorAll(`${STATISTICS_CONFIG.TASK_ITEM_CLASS}:not([style*="display: none"])`);
+        const visibleTasks = d.querySelectorAll(STATISTICS_CONFIG.SELECTORS.VISIBLE_TASKS);
         const count = visibleTasks.length;
         setText(taskCountElement, count);
         return count;

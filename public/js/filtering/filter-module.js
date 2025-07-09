@@ -1,171 +1,173 @@
 import { d } from '../utils/helpers.js';
 import DOMUtils from '../utils/dom-utils.js';
 import { StatisticsUtils } from '../utils/statistics.js';
+import { FILTER_SELECTORS, FILTER_CLASSES } from './filter-constants.js';
 
 /**
- * FilterModule - Handles advanced filtering functionality
+ * Builds filter parameters from form inputs
  */
-let filterModuleManager = null;
-let filterModuleConfig = null;
-
-const initFilterModule = (manager) => {
-    filterModuleManager = manager;
-    filterModuleConfig = manager.config.filterConfig;
-    restoreFiltersFromURL();
+const buildFilterParams = (manager) => {
+    const filterParams = new URLSearchParams();
+    
+    // Keep existing search and sort parameters
+    if (manager?.modules?.search?.getValue()) filterParams.set('q', manager.modules.search.getValue()); 
+    if (manager?.modules?.sort?.getValue()) filterParams.set('sort', manager.modules.sort.getValue());
+    
+    // Add status filters
+    const doneCheckbox = d.querySelector('#filter_done');
+    const todoCheckbox = d.querySelector('#filter_todo');
+    if (doneCheckbox?.checked) filterParams.set('done', 'on');
+    if (todoCheckbox?.checked) filterParams.set('todo', 'on');
+    
+    // Add date filters if enabled and have values
+    ['dateFrom', 'dateTo'].forEach(filterId => {
+        const isEnabled = d.querySelector(`#enable_${filterId}`)?.checked;
+        const value = d.querySelector(`#filter_${filterId}`)?.value;
+        if (isEnabled && value) filterParams.set(filterId, value);
+    });
+    
+    return filterParams;
 };
 
+/**
+ * Updates page content with server response
+ */
+const updatePageContent = (doc) => {
+    const newTasksContainer = doc.querySelector('.tasks-container');
+    if (newTasksContainer) {
+        d.querySelector('.tasks-container').innerHTML = newTasksContainer.innerHTML;
+        StatisticsUtils.updateStatisticsFromResponse(doc);
+    }
+};
+
+/**
+ * Restores filters from URL parameters
+ */
 const restoreFiltersFromURL = () => {
     const urlParams = new URLSearchParams(window.location.search);
     
     // Restore status filters
-    if (urlParams.get('done') === 'on') {
-        const doneCheckbox = document.querySelector('#filter_done');
-        if (doneCheckbox) doneCheckbox.checked = true;
-    }
-    if (urlParams.get('todo') === 'on') {
-        const todoCheckbox = document.querySelector('#filter_todo');
-        if (todoCheckbox) todoCheckbox.checked = true;
-    }
+    if (urlParams.get('done') === 'on') d.querySelector('#filter_done').checked = true;
+    if (urlParams.get('todo') === 'on') d.querySelector('#filter_todo').checked = true;
     
     // Restore date filters
-    const dateFrom = urlParams.get('dateFrom');
-    if (dateFrom) {
-        const dateFromCheckbox = document.querySelector('#enable_dateFrom');
-        const dateFromInput = document.querySelector('#filter_dateFrom');
-        if (dateFromCheckbox && dateFromInput) {
-            dateFromCheckbox.checked = true;
-            dateFromInput.value = dateFrom;
-            document.querySelector('#input_dateFrom').style.display = 'block';
+    ['dateFrom', 'dateTo'].forEach(filterId => {
+        const value = urlParams.get(filterId);
+        if (value) {
+            d.querySelector(`#enable_${filterId}`).checked = true;
+            d.querySelector(`#filter_${filterId}`).value = value;
+            d.querySelector(`#input_${filterId}`).style.display = 'block';
         }
-    }
-    
-    const dateTo = urlParams.get('dateTo');
-    if (dateTo) {
-        const dateToCheckbox = document.querySelector('#enable_dateTo');
-        const dateToInput = document.querySelector('#filter_dateTo');
-        if (dateToCheckbox && dateToInput) {
-            dateToCheckbox.checked = true;
-            dateToInput.value = dateTo;
-            document.querySelector('#input_dateTo').style.display = 'block';
-        }
-    }
+    });
     
     // Show advanced filters if any are active
-    if (urlParams.get('done') || urlParams.get('todo') || dateFrom || dateTo) {
-        const filtersContainer = document.querySelector('#advancedFilters');
-        const toggleIcon = document.querySelector('#filterToggleIcon');
+    const hasActiveFilters = urlParams.get('done') || urlParams.get('todo') || 
+                           urlParams.get('dateFrom') || urlParams.get('dateTo');
+    
+    if (hasActiveFilters) {
+        const filtersContainer = d.querySelector('#advancedFilters');
+        const toggleIcon = d.querySelector('#filterToggleIcon');
         if (filtersContainer && toggleIcon) {
             filtersContainer.style.display = 'block';
-            toggleIcon.className = 'bi bi-chevron-up ms-1';
+            toggleIcon.className = FILTER_CLASSES.CHEVRON_UP;
         }
     }
 };
 
-const applyAdvancedFilters = async (filters = {}) => {
-    console.log('Applying filters - sending to server...');
-    
-    const filterParams = new URLSearchParams();
-    
-    // Keep existing search and sort parameters - fix references
-    if (filterModuleManager && filterModuleManager.modules && filterModuleManager.modules.search && filterModuleManager.modules.search.getValue()) {
-        filterParams.set('q', filterModuleManager.modules.search.getValue());
-    }
-    if (filterModuleManager && filterModuleManager.modules && filterModuleManager.modules.sort && filterModuleManager.modules.sort.getValue()) {
-        filterParams.set('sort', filterModuleManager.modules.sort.getValue());
-    }
-    
-    // Process checkbox filters (status)
-    const statusCheckboxes = document.querySelectorAll('input[name="filter[status][]"]:checked');
-    statusCheckboxes.forEach(checkbox => {
-        filterParams.set(checkbox.value, 'on');
-    });
-    
-    // Process date filters
-    const dateFromCheckbox = document.querySelector('#enable_dateFrom');
-    const dateFromInput = document.querySelector('#filter_dateFrom');
-    if (dateFromCheckbox && dateFromCheckbox.checked && dateFromInput && dateFromInput.value) {
-        filterParams.set('dateFrom', dateFromInput.value);
-    }
-    
-    const dateToCheckbox = document.querySelector('#enable_dateTo');
-    const dateToInput = document.querySelector('#filter_dateTo');
-    if (dateToCheckbox && dateToCheckbox.checked && dateToInput && dateToInput.value) {
-        filterParams.set('dateTo', dateToInput.value);
-    }
-    
-    console.log('Sending filters to server:', filterParams.toString());
+/**
+ * Applies advanced filters by sending request to server
+ */
+const applyAdvancedFilters = async (manager) => {
+    const filterParams = buildFilterParams(manager);
     
     try {
-        // Send request to server using apiPost helper
         const response = await fetch(`${window.location.pathname}?${filterParams.toString()}`);
         const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
         
-        // Parse response and extract tasks container
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const newTasksContainer = doc.querySelector('.tasks-container');
-        const newStatsElements = doc.querySelectorAll('.statistics-row .h5, .statistics-row small');
-        
-        if (newTasksContainer) {
-            // Update tasks container
-            const currentTasksContainer = d.querySelector('.tasks-container');
-            if (currentTasksContainer) {
-                currentTasksContainer.innerHTML = newTasksContainer.innerHTML;
-            }
-            
-            // Update statistics using the statistics module
-            StatisticsUtils.updateStatisticsFromResponse(doc);
-            
-            // Update URL without reload using DOMUtils
-            const urlObject = {};
-            filterParams.forEach((value, key) => {
-                urlObject[key] = value;
-            });
-            DOMUtils.updateURL(urlObject);
-            
-            console.log('Filters applied successfully via server');
-        }
+        updatePageContent(doc); 
+        DOMUtils.updateURL(filterParams);
     } catch (error) {
         console.error('Error applying filters:', error);
     }
 };
 
-const clearAdvancedFilters = () => {
-    // Clear all filter inputs
-    d.querySelectorAll('#advancedFilters input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    d.querySelectorAll('#advancedFilters input[type="date"]').forEach(dateInput => {
-        dateInput.value = '';
-    });
+/**
+ * Clears all advanced filters and resets to default state
+ */
+const clearAdvancedFilters = async (manager) => {
+    // Clear all inputs
+    d.querySelectorAll(FILTER_SELECTORS.ADVANCED_CHECKBOXES).forEach(checkbox => checkbox.checked = false);
+    d.querySelectorAll(FILTER_SELECTORS.ADVANCED_DATE_INPUTS).forEach(dateInput => dateInput.value = '');
+    d.querySelectorAll(FILTER_SELECTORS.INPUT_CONTAINERS).forEach(container => container.style.display = 'none');
     
-    // Hide date inputs
-    d.querySelectorAll('[id^="input_"]').forEach(input => {
-        input.style.display = 'none';
-    });
+    // Reset sort and search
+    DOMUtils.clearSortSelect();
+    if (manager?.modules?.search?.clear) manager.modules.search.clear();
     
-    // Redirect without filters, keep only search and sort - fix references
+    // Force default sorting
     const filterParams = new URLSearchParams();
-    if (filterModuleManager && filterModuleManager.modules && filterModuleManager.modules.search && filterModuleManager.modules.search.getValue()) {
-        filterParams.set('q', filterModuleManager.modules.search.getValue());
-    }
-    if (filterModuleManager && filterModuleManager.modules && filterModuleManager.modules.sort && filterModuleManager.modules.sort.getValue()) {
-        filterParams.set('sort', filterModuleManager.modules.sort.getValue());
-    }
+    filterParams.set('sort', '');
     
-    window.location.search = filterParams.toString();
+    try {
+        const response = await fetch(`${window.location.pathname}?${filterParams.toString()}`);
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        
+        updatePageContent(doc);
+        DOMUtils.updateURL(filterParams);
+    } catch (error) {
+        console.error('Error clearing filters:', error);
+    }
 };
 
-// Create FilterModule as an object with arrow functions
-const FilterModule = function(manager) {
-    initFilterModule(manager);
+/**
+ * Sets up status checkbox mutual exclusion
+ */
+const setupStatusCheckboxes = () => {
+    const doneCheckbox = d.querySelector('#filter_done');
+    const todoCheckbox = d.querySelector('#filter_todo');
+    
+    if (doneCheckbox && todoCheckbox) {
+        doneCheckbox.addEventListener('change', () => {
+            if (doneCheckbox.checked) todoCheckbox.checked = false;
+        });
+        
+        todoCheckbox.addEventListener('change', () => {
+            if (todoCheckbox.checked) doneCheckbox.checked = false;
+        });
+    }
+};
+
+/**
+ * Sets up advanced filter toggle behavior
+ */
+const setupFilterToggle = () => {
+    const toggleButton = d.querySelector('[data-action="toggle-advanced-filters"]');
+    const filtersContainer = d.querySelector('#advancedFilters');
+    const toggleIcon = d.querySelector('#filterToggleIcon');
+    
+    if (toggleButton && filtersContainer && toggleIcon) {
+        toggleButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isVisible = filtersContainer.style.display === 'block';
+            filtersContainer.style.display = isVisible ? 'none' : 'block';
+            toggleIcon.className = isVisible ? FILTER_CLASSES.CHEVRON_DOWN : FILTER_CLASSES.CHEVRON_UP;
+        });
+    }
+};
+
+const FilterModule = (manager) => {
+    restoreFiltersFromURL();
+    setupStatusCheckboxes();
+    setupFilterToggle();
     
     return {
-        restoreFiltersFromURL,
-        applyFilters: applyAdvancedFilters,
-        clear: clearAdvancedFilters
+        applyFilters: () => applyAdvancedFilters(manager),
+        clear: () => clearAdvancedFilters(manager)
     };
 };
 
-// Export as default
 export default FilterModule; 
