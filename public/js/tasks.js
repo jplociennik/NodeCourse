@@ -2,10 +2,6 @@
 // TASK MANAGEMENT MODULE
 // =============================================================================
 
-// =============================================================================
-// IMPORTS
-// =============================================================================
-
 import { d, setText, setClass, setHref, setStyle, apiPost } from './utils/helpers.js';
 import { StatisticsUtils } from './utils/statistics.js';
 
@@ -43,47 +39,9 @@ const SELECTORS = {
     FIRST_CHECKBOX: '[data-action="toggle-status"]'
 };
 
-
-
-
 // =============================================================================
 // PRIVATE HELPER FUNCTIONS
 // =============================================================================
-
-/**
- * Gets all task checkboxes on the page
- * @returns {NodeList} All task checkboxes
- */
-const getAllTaskCheckboxes = () => {
-    return d.querySelectorAll(SELECTORS.TASK_CHECKBOXES);
-};
-
-/**
- * Gets a specific task checkbox by task ID
- * @param {string} taskId - The task ID
- * @returns {Element|null} The checkbox element or null
- */
-const getTaskCheckbox = (taskId) => {
-    return d.querySelector(SELECTORS.TASK_CHECKBOX_BY_ID(taskId));
-};
-
-/**
- * Gets task ID from a checkbox element
- * @param {Element} checkbox - The checkbox element
- * @returns {string|null} The task ID or null
- */
-const getTaskIdFromCheckbox = (checkbox) => {
-    return checkbox?.dataset?.taskId || null;
-};
-
-/**
- * Gets a task icon by task ID
- * @param {string} taskId - The task ID
- * @returns {Element|null} The icon element or null
- */
-const getTaskIcon = (taskId) => {
-    return d.querySelector(SELECTORS.TASK_ICON_BY_ID(taskId));
-};
 
 /**
  * Sets task title color for incomplete tasks
@@ -94,16 +52,13 @@ const setTaskTitleColor = (titleElement, isIncomplete) => {
     if (!titleElement) return;
     
     if (isIncomplete) {
-        // Set turkusowy color for incomplete tasks
         setStyle(titleElement, 'color', '#369992', 'important');
         titleElement.classList.add('task-incomplete');
     } else {
-        // Remove custom color and class for completed tasks
         titleElement.style.removeProperty('color');
         titleElement.classList.remove('task-incomplete');
     }
 };
-
 
 /**
  * Shows an error message to the user using Bootstrap modal
@@ -201,7 +156,7 @@ const updateTaskUI = (taskId, isDone) => {
     }
     
     // Update task icon
-    const titleIcon = getTaskIcon(taskId);
+    const titleIcon = d.querySelector(SELECTORS.TASK_ICON_BY_ID(taskId));
     if (titleIcon) {
         setClass(titleIcon, isDone ? CSS_CLASSES.ICON_SUCCESS : CSS_CLASSES.ICON_MUTED);
         
@@ -280,10 +235,6 @@ export {
     setDeleteTask, 
     toggleTaskStatus, 
     updateTaskUI,
-    getAllTaskCheckboxes,
-    getTaskCheckbox,
-    getTaskIdFromCheckbox,
-    getTaskIcon,
     setTaskTitleColor
 };
 
