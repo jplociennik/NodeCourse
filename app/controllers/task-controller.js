@@ -67,7 +67,7 @@ const TaskController = {
 
   getFilterConfig: async () => {
     return {
-      features: ['search', 'sort', 'advancedFilters'],
+      features: ['search', 'sort', 'advancedFilters', 'pagination'],
       title: 'Wyszukiwanie i sortowanie',
       icon: 'bi bi-funnel',
       searchConfig: {
@@ -110,6 +110,7 @@ const TaskController = {
         let q = req.query.q ? req.query.q : '';
         let sort = req.query.sort ? req.query.sort : '';
 
+        // Filtering
         const where = {};
         if (q) { where.taskName = { $regex: q, $options: 'i' }; }
         if (req.query.dateFrom) { where.dateFrom = { $gte: req.query.dateFrom }; } 
@@ -120,6 +121,11 @@ const TaskController = {
         if (req.query.todo === 'on') where.isDone = false;
 
         let query = Task.find(where);
+
+        // Pagination
+        query = query.skip((req.query.page - 1) * req.query.limit).limit(req.query.limit);
+
+        // Sorting
         if(sort) {
             const s = sort.split('|');
             const sortDirection = s[1] === 'desc' ? -1 : 1;
@@ -142,6 +148,11 @@ const TaskController = {
             ],
             tasks: tasks,
             query: req.query,
+            paginationConfig: {
+                page,
+                pagesCount,
+                resultsCount,
+            },
             filterConfig: await TaskController.getFilterConfig(),
             statisticsConfig: {
                 show: tasks.length > 0,
