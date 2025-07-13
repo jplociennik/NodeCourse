@@ -109,9 +109,12 @@ const TaskController = {
     try {
         let q = req.query.q ? req.query.q : '';
         let sort = req.query.sort ? req.query.sort : '';
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
 
         // Filtering
         const where = {};
+        where.user = req.session.userId;
         if (q) { where.taskName = { $regex: q, $options: 'i' }; }
         if (req.query.dateFrom) { where.dateFrom = { $gte: req.query.dateFrom }; } 
         if (req.query.dateTo) { where.$or = [ { dateTo: { $lte: req.query.dateTo } }, { dateTo: null, dateFrom: { $lte: req.query.dateTo } } ]; }
@@ -120,10 +123,13 @@ const TaskController = {
         if (req.query.done === 'on') where.isDone = true;
         if (req.query.todo === 'on') where.isDone = false;
 
-        let query = Task.find(where);
+        // Get total count for pagination
+        const totalCount = await Task.countDocuments(where);
+        const pagesCount = Math.ceil(totalCount / limit);
 
-        // Pagination
-        query = query.skip((req.query.page - 1) * req.query.limit).limit(req.query.limit);
+        // Query with pagination
+        let query = Task.find(where);
+        query = query.skip((page - 1) * limit).limit(limit);
 
         // Sorting
         if(sort) {
@@ -151,7 +157,8 @@ const TaskController = {
             paginationConfig: {
                 page,
                 pagesCount,
-                resultsCount,
+                resultsCount: totalCount,
+                limit
             },
             filterConfig: await TaskController.getFilterConfig(),
             statisticsConfig: {
@@ -193,7 +200,8 @@ const TaskController = {
         taskName,  
         dateFrom,  
         dateTo: dateTo || null,
-        isDone: false
+        isDone: false,
+        user: req.session.userId
       });
 
       await task.save();
@@ -230,7 +238,8 @@ const TaskController = {
       await Task.findByIdAndUpdate(id, {  
         taskName,  
         dateFrom,  
-        dateTo: dateTo || null
+        dateTo: dateTo || null,
+        user: req.session.userId
       }, { runValidators: true });
 
       res.redirect('/zadania');

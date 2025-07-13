@@ -1,6 +1,17 @@
 const { User } = require('../db/mongoose');
 const { ErrorController } = require('./error-controller');
 
+async function renderEditProfileForm(res, user, errors = {}, formData = {}) {
+  await res.render('Pages/profile/profile-edit', {
+    pageTitle: 'Edytuj profil',
+    pageName: 'profile',
+    title: 'Edytuj profil',
+    user,
+    errors,
+    formData
+  });
+}
+
 const UserController = {
   getSortOptions: async () => {
     return [
@@ -202,7 +213,33 @@ const UserController = {
     } catch (error) {
       ErrorController.handleError(res, error);
     }
-  }
+  },
+
+  showEditProfile: async (req, res) => {
+    try {
+      const user = await User.findById(req.session.userId);  
+      await renderEditProfileForm(res, user);
+    } catch (error) {
+      ErrorController.handleError(res, error);
+    }
+  },
+
+  updateProfile: async (req, res) => {
+    try {
+      const user = await User.findById(req.session.userId);
+      const { name, password } = req.body;
+      user.name = name;
+      
+      if (req.body.password) user.password = password;
+      await user.save();
+
+      req.flash('success', 'Profil został zaktualizowany.');
+      res.redirect('/admin/profil');
+
+    } catch (error) {
+      await renderEditProfileForm(res, req.session, error.errors || {}, req.body);
+    }
+  },
 };
 
 module.exports = { UserController };

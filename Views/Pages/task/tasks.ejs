@@ -27,9 +27,11 @@
                 <div class="card-header tasks-header text-white d-flex justify-content-between align-items-center">
                     <h2 class="mb-0"><i class="bi bi-kanban"></i> Lista zadań</h2>
 
+                    <% if (isLoggedIn) { %>
                     <a href="/zadania/admin/dodaj" class="btn btn-light">
                         <i class="bi bi-plus-lg"></i> Dodaj zadanie
                     </a>
+                    <% } %>
                 </div>
                 <div class="card-body">
                     <% if (tasks.length > 0) { %>
@@ -44,6 +46,7 @@
                                                     <i class="bi bi-check-circle <%= task.isDone ? 'text-success' : 'text-muted' %>" data-task-icon="<%= task._id %>"></i> 
                                                     <%= task.taskName %>
                                                 </h5>
+                                                <% if (isLoggedIn) { %>
                                                 <div class="form-check">
                                                     <input 
                                                         class="form-check-input" 
@@ -57,6 +60,7 @@
                                                         <small class="text-muted">Wykonane</small>
                                                     </label>
                                                 </div>
+                                                <% } %>
                                             </div>
                                             <div class="task-meta">
                                                 <i class="bi bi-calendar3"></i> <%= task.dateFrom %>
@@ -70,6 +74,7 @@
                                                     <%= task.isDone ? 'Wykonane' : 'Do wykonania' %>
                                                 </span>
                                             </div>
+                                            <% if (isLoggedIn) { %>
                                             <div class="d-grid gap-2 d-md-flex task-actions">
                                                 <a href="/zadania/admin/<%= task._id %>/edytuj" class="btn btn-outline-primary btn-sm">
                                                     <i class="bi bi-pencil"></i> Edytuj
@@ -81,6 +86,7 @@
                                                     <i class="bi bi-trash"></i> Usuń
                                                 </button>
                                             </div>
+                                            <% } %>
                                         </div>
                                     </div>
                                 </div>

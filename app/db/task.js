@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const { Schema }  = require('mongoose');
 
 const taskSchema = new Schema({
@@ -20,6 +21,11 @@ const taskSchema = new Schema({
     isDone: {
         type: Boolean,
         default: false
+    },
+    user: {
+        type: ObjectId,
+        required: true,
+        ref: 'User'
     }
 });
 

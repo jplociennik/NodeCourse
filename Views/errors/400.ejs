@@ -1,0 +1,51 @@
+<%- include('../layouts/error') %>
+
+<div class="error-container">
+    <div class="error-content">
+        <h1>400 - Błąd walidacji</h1>
+        <% if (typeof message !== 'undefined') { %>
+            <p class="error-message"><%= message %></p>
+        <% } else { %>
+            <p class="error-message">Nieprawidłowe dane wejściowe.</p>
+        <% } %>
+        <a href="javascript:history.back()" class="btn btn-primary">Wróć</a>
+    </div>
+</div>
+
+<style>
+.error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 2rem;
+}
+
+.error-content {
+    text-align: center;
+    max-width: 600px;
+}
+
+.error-message {
+    margin: 1.5rem 0;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #357abd;
+}
+</style> 

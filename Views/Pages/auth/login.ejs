@@ -1,0 +1,52 @@
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="auth-container">
+                <h1 class="auth-title">Zaloguj się</h1>
+
+                <form class="auth-form" method="POST" action="/zaloguj">
+                    <div class="form-group mb-3">
+                        <label for="email" class="form-label">Adres email</label>
+                        <input type="email" id="email" name="email" required 
+                               placeholder="Wprowadź swój email"
+                               class="form-control <%= errors && errors.email ? 'is-invalid' : '' %>"
+                               value="<%= formData?.email || '' %>">
+                        <% if (errors && errors.email) { %>
+                            <div class="invalid-feedback">
+                                <%= errors.email.message %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="password" class="form-label">Hasło</label>
+                        <input type="password" id="password" name="password" required 
+                               placeholder="Wprowadź hasło"
+                               class="form-control <%= errors && errors.password ? 'is-invalid' : '' %>">
+                        <% if (errors && errors.password) { %>
+                            <div class="invalid-feedback">
+                                <%= errors.password.message %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Zaloguj się
+                        </button>
+                    </div>
+
+                    <div class="auth-links">
+                        <p>Nie masz jeszcze konta? <a href="/zarejestruj">Zarejestruj się</a></p>
+                    </div>
+                </form>
+
+                <% if (errors && Object.keys(errors).length > 0) { %>
+                <div class="alert alert-danger mt-3">
+                    <i class="bi bi-exclamation-triangle"></i> Wystąpiły błędy podczas logowania!
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

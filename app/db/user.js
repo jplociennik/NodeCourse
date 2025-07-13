@@ -1,6 +1,15 @@
-const { hashPassword } = require('./extensions')
+const { hashPassword, verifyPassword } = require('./extensions')
 const { ValidateEmail } = require('./validators')
 const { Schema }  = require('mongoose');
+
+const validateUniqueEmail = (error, _, next) => {
+    if (error.code === 11000 && error.keyPattern?.email) {
+        error.errors = {
+            email: { message: 'Ten email jest już zajęty!' }
+        };
+    }
+    next(error);
+}
 
 const userSchema = new Schema({
     name: {
@@ -28,7 +37,7 @@ const userSchema = new Schema({
         default: false
     }
 }, {
-    timestamps: true // Adds createdAt and updatedAt fields
+    timestamps: true
 });
 
 userSchema.pre('save', async function(next) {
@@ -45,4 +54,11 @@ userSchema.pre('insertMany', async function(next, docs) {
     next();
 });
 
+userSchema.post('save', validateUniqueEmail);
+
+userSchema.methods = {
+    async comparePassword(password) {
+        return await verifyPassword(password, this.password);
+    }
+}
 module.exports = { userSchema }
