@@ -5,6 +5,16 @@ const { UserController } = require('../controllers/user-controller');
 const { AuthController } = require('../controllers/auth-controller');
 const { TaskController } = require('../controllers/task-controller');
 const { authMiddleware } = require('../middleware/auth-middleware');
+const multer = require('multer');
+const path = require('path');
+
+// Konfiguracja Multer
+const storage = multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, path.join(__dirname, '../../public/uploads/tasks')),
+    filename: (_req, _file, cb) => 
+        cb(null, Date.now() + '-' + _file.originalname.normalize('NFD').replace(/[^\w.\-]/g, '_'))
+});
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
@@ -22,9 +32,9 @@ router.post('/zaloguj', authMiddleware.requireGuest, AuthController.login);
 router.get('/wyloguj', AuthController.logout);
 
 // Osobisty profil (tylko dla zalogowanych)
-router.get('/admin/profil', AuthController.showProfile);
-router.get('/admin/profil/edytuj', UserController.showEditProfile);
-router.post('/admin/profil/edytuj', UserController.updateProfile);
+router.get('/user/profil', AuthController.showProfile);
+router.get('/user/profil/edytuj', UserController.showEditProfile);
+router.post('/user/profil/edytuj', UserController.updateProfile);
 
 // Pozostałe ścieżki
 router.get('/profile', UserController.getUsersList);
@@ -32,13 +42,14 @@ router.get('/profile/:id', UserController.getUserProfile);
 router.get('/profile/:id/szczegoly', UserController.getUserDetails);
 
 // Routes dla zadań (tylko dla zalogowanych)
-router.get('/zadania', TaskController.getTasksPage);
-router.get('/zadania/admin/dodaj', TaskController.showAddTaskForm);
-router.post('/zadania/admin/dodaj', TaskController.addTask);
-router.get('/zadania/admin/:id/edytuj', TaskController.showEditTaskForm);
-router.post('/zadania/admin/:id/edytuj', TaskController.editTask);
-router.post('/zadania/admin/:id/toggle', TaskController.toggleTaskStatus);
-router.post('/zadania/admin/:id/usun', TaskController.deleteTask);
+router.get('/zadania/user/',  TaskController.getTasksPage);
+router.get('/zadania/user/dodaj',  TaskController.showAddTaskForm);
+router.post('/zadania/user/dodaj',  upload.single('image'), TaskController.addTask);
+router.get('/zadania/user/:id/edytuj', authMiddleware.requireAuth, upload.single('image'), TaskController.showEditTaskForm);
+router.post('/zadania/user/:id/edytuj', authMiddleware.requireAuth, upload.single('image'), TaskController.editTask);
+router.post('/zadania/user/:id/toggle',  TaskController.toggleTaskStatus);
+router.post('/zadania/user/:id/usun',  TaskController.deleteTask);
+router.post('/zadania/user/:id/usun-zdjecie', authMiddleware.requireAuth, TaskController.deleteImage);
 
 // Middleware dla 404 - musi być na końcu
 router.use(notFoundMiddleware);

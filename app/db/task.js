@@ -22,6 +22,10 @@ const taskSchema = new Schema({
         type: Boolean,
         default: false
     },
+    image: {
+        type: String,
+        default: null
+    },
     user: {
         type: ObjectId,
         required: true,

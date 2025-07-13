@@ -64,7 +64,7 @@ app.use((_req, res, next) => {
 //Middleware
 app.use('/', viewMiddleware);
 app.use('/', authMiddleware.addUserToLocals);
-app.use('admin/', authMiddleware.requireAuth);
+app.use(/.*\/user(\/|$)/, authMiddleware.requireAuth);
 
 //Router
 app.use('/', router);

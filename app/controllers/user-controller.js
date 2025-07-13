@@ -234,7 +234,7 @@ const UserController = {
       await user.save();
 
       req.flash('success', 'Profil został zaktualizowany.');
-      res.redirect('/admin/profil');
+      res.redirect('/user/profil');
 
     } catch (error) {
       await renderEditProfileForm(res, req.session, error.errors || {}, req.body);

@@ -1,5 +1,8 @@
 const { Task } = require('../db/mongoose');
 const { ErrorController } = require('./error-controller');
+const fs = require('fs');
+const path = require('path');
+const { removeTaskImage } = require('../services/task-image-service');
 
 const TaskController = {
   
@@ -98,7 +101,7 @@ const TaskController = {
       pageTitle: isEdit ? 'Edytuj zadanie' : 'Dodaj zadanie',
       pageName: 'tasks',
       formTitle: isEdit ? 'Edytuj zadanie' : 'Dodaj nowe zadanie',
-      formAction: isEdit ? `/zadania/admin/${req.params?.id || task?._id}/edytuj` : '/zadania/admin/dodaj',
+      formAction: isEdit ? `/zadania/user/${req.params?.id || task?._id}/edytuj` : '/zadania/user/dodaj',
       submitText: isEdit ? 'Zaktualizuj zadanie' : 'Dodaj zadanie',
       task: task || req.body || {}
     };
@@ -201,11 +204,12 @@ const TaskController = {
         dateFrom,  
         dateTo: dateTo || null,
         isDone: false,
-        user: req.session.userId
+        user: req.session.userId,
+        image: req.file.filename || null
       });
 
       await task.save();
-      res.redirect('/zadania');
+      res.redirect('/zadania/user');
     } catch (error) {
       const formConfig = await TaskController.getFormConfig('add', req);
       ErrorController.handleValidationError(res, error, formConfig);
@@ -235,14 +239,19 @@ const TaskController = {
     try {
       const { id } = req.params;
       const { taskName, dateFrom, dateTo } = req.body;
+      const task = await Task.findById(id);
+
+      if (req.file.filename && task.image) await removeTaskImage(task.image);
+
       await Task.findByIdAndUpdate(id, {  
         taskName,  
         dateFrom,  
         dateTo: dateTo || null,
-        user: req.session.userId
+        user: req.session.userId,
+        image: req.file.filename || task.image
       }, { runValidators: true });
 
-      res.redirect('/zadania');
+      res.redirect('/zadania/user');
     } catch (error) {
         const task = await Task.findById(req.params.id);
         const formConfig = await TaskController.getFormConfig('edit', req, task);
@@ -272,8 +281,26 @@ const TaskController = {
     try {
       const { id } = req.params;
       await Task.findByIdAndDelete(id);
-      res.redirect('/zadania');
+      res.redirect('/zadania/user');
         
+    } catch (error) {
+      ErrorController.handleError(res, error);
+    }
+  },
+
+  deleteImage: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const task = await Task.findById(id);
+      if (!task) {
+        return res.status(404).render('errors/404', { pageTitle: 'Zadanie nie znalezione' });
+      }
+      if (task.image) {
+        removeTaskImage(task.image);
+        task.image = null;
+        await task.save();
+      }
+      res.redirect(`/zadania/user/${id}/edytuj`);
     } catch (error) {
       ErrorController.handleError(res, error);
     }

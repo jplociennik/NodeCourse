@@ -8,44 +8,69 @@
     </div>
 
     <div class="card-body">
-        <form class="task-form" method="POST" action="<%= formAction ?? '/zadania' %>">
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="taskName" class="form-label">
-                        <i class="bi bi-card-text"></i> Nazwa zadania
-                    </label>
-                    <input type="text" class="form-control <%= errors?.taskName ? 'is-invalid' : '' %>" id="taskName" name="taskName" 
-                        value="<%= task.taskName %>" required>
-                    
-                    <% if (errors && errors.taskName) { %>
-                        <div class="invalid-feedback"><%= errors?.taskName.message %></div>
-                    <% } %>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="dateFrom" class="form-label">
-                        <i class="bi bi-calendar"></i> Od kiedy
-                    </label>
-                    <input type="date" class="form-control <%= errors?.dateFrom ? 'is-invalid' : '' %>" id="dateFrom" name="dateFrom" 
-                        value="<%= task.dateFrom %>" required>
-                    
-                    <% if (errors && errors.dateFrom) { %>
-                        <div class="invalid-feedback"><%= errors?.dateFrom.message %></div>
-                    <% } %>
-                </div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="dateTo" class="form-label">
-                    <i class="bi bi-calendar-check"></i> Do kiedy
-                </label>
-                <input type="date" class="form-control <%= errors?.dateTo ? 'is-invalid' : '' %>" id="dateTo" name="dateTo" 
-                    value="<%= task.dateTo %>">
-
-                <% if (errors && errors.dateTo) { %>
-                    <div class="invalid-feedback"><%= errors?.dateTo.message %></div>
+        <form class="task-form" method="POST" action="<%= formAction ?? '/zadania' %>" enctype="multipart/form-data">
+            <div class="d-flex flex-row align-items-start mb-3 flex-wrap">
+                <% if (task.image) { %>
+                    <div class="me-4 mb-3 d-flex align-items-center">
+                        <img src="/uploads/tasks/<%= task.image %>" alt="Zdjęcie zadania" class="task-image-form-left">
+                        <div class="ms-3">
+                            <form method="POST" action="/zadania/user/<%= task._id %>/usun-zdjecie" onsubmit="return confirm('Czy na pewno chcesz usunąć zdjęcie?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm mt-2">
+                                    <i class="bi bi-trash"></i> Usuń zdjęcie
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 <% } %>
+                <div class="flex-grow-1 w-100">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="taskName" class="form-label">
+                                <i class="bi bi-card-text"></i> Nazwa zadania
+                            </label>
+                            <input type="text" class="form-control <%= errors?.taskName ? 'is-invalid' : '' %>" id="taskName" name="taskName" 
+                                value="<%= task.taskName %>" required>
+                            
+                            <% if (errors && errors.taskName) { %>
+                                <div class="invalid-feedback"><%= errors?.taskName.message %></div>
+                            <% } %>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="dateFrom" class="form-label">
+                                <i class="bi bi-calendar"></i> Od kiedy
+                            </label>
+                            <input type="date" class="form-control <%= errors?.dateFrom ? 'is-invalid' : '' %>" id="dateFrom" name="dateFrom" 
+                                value="<%= task.dateFrom %>" required>
+                            
+                            <% if (errors && errors.dateFrom) { %>
+                                <div class="invalid-feedback"><%= errors?.dateFrom.message %></div>
+                            <% } %>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="dateTo" class="form-label">
+                            <i class="bi bi-calendar-check"></i> Do kiedy
+                        </label>
+                        <input type="date" class="form-control <%= errors?.dateTo ? 'is-invalid' : '' %>" id="dateTo" name="dateTo" 
+                            value="<%= task.dateTo %>">
+
+                        <% if (errors && errors.dateTo) { %>
+                            <div class="invalid-feedback"><%= errors?.dateTo.message %></div>
+                        <% } %>
+                    </div>
+                </div>
             </div>
             
+
+
+            <div class="mb-3">
+                <label for="image" class="form-label">
+                    <i class="bi bi-image"></i> Zdjęcie zadania
+                </label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+            </div>
+
             <div class="d-grid">
                 <button type="submit" class="btn btn-success btn-lg">
                     <i class="bi bi-plus-circle"></i> 
@@ -61,3 +86,20 @@
         <% } %>
     </div>
 </div> 
+<script>
+  // Przed wysłaniem formularza zapisz scroll
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function() {
+      sessionStorage.setItem('scrollY', window.scrollY);
+    });
+  });
+
+  // Po załadowaniu strony przywróć scroll
+  window.addEventListener('DOMContentLoaded', function() {
+    const scrollY = sessionStorage.getItem('scrollY');
+    if (scrollY !== null) {
+      window.scrollTo(0, parseInt(scrollY, 10));
+      sessionStorage.removeItem('scrollY');
+    }
+  });
+</script> 

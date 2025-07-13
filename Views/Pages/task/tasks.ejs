@@ -28,7 +28,7 @@
                     <h2 class="mb-0"><i class="bi bi-kanban"></i> Lista zadań</h2>
 
                     <% if (isLoggedIn) { %>
-                    <a href="/zadania/admin/dodaj" class="btn btn-light">
+                    <a href="/zadania/user/dodaj" class="btn btn-light">
                         <i class="bi bi-plus-lg"></i> Dodaj zadanie
                     </a>
                     <% } %>
@@ -41,34 +41,79 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="card h-100 task-card">
                                         <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                                <h5 class="card-title text-success mb-0">
-                                                    <i class="bi bi-check-circle <%= task.isDone ? 'text-success' : 'text-muted' %>" data-task-icon="<%= task._id %>"></i> 
-                                                    <%= task.taskName %>
-                                                </h5>
-                                                <% if (isLoggedIn) { %>
-                                                <div class="form-check">
-                                                    <input 
-                                                        class="form-check-input" 
-                                                        type="checkbox" 
-                                                        id="task-<%= task._id %>" 
-                                                        <%= task.isDone ? 'checked' : '' %>
-                                                        data-task-id="<%= task._id %>"
-                                                        data-action="toggle-status"
-                                                    >
-                                                    <label class="form-check-label" for="task-<%= task._id %>">
-                                                        <small class="text-muted">Wykonane</small>
-                                                    </label>
+                                            <% if (task.image && task.image.trim() !== "") { %>
+                                                <div class="d-flex align-items-start mb-2">
+                                                    <img src="/uploads/tasks/<%= task.image %>" alt="Zdjęcie zadania" class="task-image-list me-3">
+                                                    <div class="flex-grow-1">
+                                                        <h5 class="card-title text-success mb-0">
+                                                            <i class="bi bi-check-circle <%= task.isDone ? 'text-success' : 'text-muted' %>" data-task-icon="<%= task._id %>"></i> 
+                                                            <%= task.taskName %>
+                                                        </h5>
+                                                        <div class="task-meta">
+                                                            <% if (task.dateTo) { %>
+                                                                <div><i class="bi bi-calendar3"></i> od <%= task.dateFrom %></div>
+                                                                <div><i class="bi bi-calendar-check"></i> do <%= task.dateTo %></div>
+                                                            <% } else { %>
+                                                                <div><i class="bi bi-calendar3"></i> od <%= task.dateFrom %></div>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <% if (isLoggedIn) { %>
+                                                    <div class="form-check ms-2">
+                                                        <input 
+                                                            class="form-check-input" 
+                                                            type="checkbox" 
+                                                            id="task-<%= task._id %>" 
+                                                            <%= task.isDone ? 'checked' : '' %>
+                                                            data-task-id="<%= task._id %>"
+                                                            data-action="toggle-status"
+                                                        >
+                                                        <label class="form-check-label" for="task-<%= task._id %>">
+                                                            <small class="text-muted">Wykonane</small>
+                                                        </label>
+                                                    </div>
+                                                    <% } %>
                                                 </div>
-                                                <% } %>
-                                            </div>
-                                            <div class="task-meta">
-                                                <i class="bi bi-calendar3"></i> <%= task.dateFrom %>
-                                                <% if (task.dateTo) { %>
-                                                    <span class="mx-2">→</span>
-                                                    <i class="bi bi-calendar-check"></i> <%= task.dateTo %>
-                                                <% } %>
-                                            </div>
+                                            <% } else { %>
+                                                <div class="d-flex align-items-start mb-2">
+                                                    <span class="task-image-list placeholder-image me-3 d-flex align-items-center justify-content-center bg-secondary">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16">
+                                                            <path d="M14.002 3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-12a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12zm-12-1A2 2 0 0 0 0 4v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-12z"/>
+                                                            <path d="M10.648 8.646a.5.5 0 0 1 .704 0l2.148 2.147V4a1 1 0 0 0-1-1h-12a1 1 0 0 0-1 1v6.793l2.146-2.147a.5.5 0 0 1 .708 0l2.646 2.647 3.646-3.647z"/>
+                                                            <circle cx="4.5" cy="6.5" r="1"/>
+                                                        </svg>
+                                                    </span>
+                                                    <div class="flex-grow-1">
+                                                        <h5 class="card-title text-success mb-0">
+                                                            <i class="bi bi-check-circle <%= task.isDone ? 'text-success' : 'text-muted' %>" data-task-icon="<%= task._id %>"></i> 
+                                                            <%= task.taskName %>
+                                                        </h5>
+                                                        <div class="task-meta">
+                                                            <% if (task.dateTo) { %>
+                                                                <div><i class="bi bi-calendar3"></i> od <%= task.dateFrom %></div>
+                                                                <div><i class="bi bi-calendar-check"></i> do <%= task.dateTo %></div>
+                                                            <% } else { %>
+                                                                <div><i class="bi bi-calendar3"></i> od <%= task.dateFrom %></div>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <% if (isLoggedIn) { %>
+                                                    <div class="form-check ms-2">
+                                                        <input 
+                                                            class="form-check-input" 
+                                                            type="checkbox" 
+                                                            id="task-<%= task._id %>" 
+                                                            <%= task.isDone ? 'checked' : '' %>
+                                                            data-task-id="<%= task._id %>"
+                                                            data-action="toggle-status"
+                                                        >
+                                                        <label class="form-check-label" for="task-<%= task._id %>">
+                                                            <small class="text-muted">Wykonane</small>
+                                                        </label>
+                                                    </div>
+                                                    <% } %>
+                                                </div>
+                                            <% } %>
                                             <div class="mb-3">
                                                 <span class="badge task-status <%= task.isDone ? 'bg-success' : 'bg-warning' %>" id="status-<%= task._id %>">
                                                     <%= task.isDone ? 'Wykonane' : 'Do wykonania' %>
@@ -76,7 +121,7 @@
                                             </div>
                                             <% if (isLoggedIn) { %>
                                             <div class="d-grid gap-2 d-md-flex task-actions">
-                                                <a href="/zadania/admin/<%= task._id %>/edytuj" class="btn btn-outline-primary btn-sm">
+                                                <a href="/zadania/user/<%= task._id %>/edytuj" class="btn btn-outline-primary btn-sm">
                                                     <i class="bi bi-pencil"></i> Edytuj
                                                 </a>
                                                 <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" 

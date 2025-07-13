@@ -33,26 +33,24 @@
                 </li>
                 <% if (isLoggedIn) { %>
                 <li class="nav-item">
-                    <a class="nav-link <%= currentPage === '/zadania' ? 'active' : '' %>" href="/zadania">
+                    <a class="nav-link <%= currentPage === '/zadania/user' ? 'active' : '' %>" href="/zadania/user">
                         <i class="bi bi-list-check"></i> Zadania
                     </a>
                 </li>
                 <% } %>
                 
                 <% if (isLoggedIn) { %>
-                    <!-- Opcje dla zalogowanych użytkowników -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle"></i> <%= user.name %>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/admin/profil"><i class="bi bi-person"></i> Mój profil</a></li>
+                            <li><a class="dropdown-item" href="/user/profil"><i class="bi bi-person"></i> Mój profil</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/wyloguj"><i class="bi bi-box-arrow-right"></i> Wyloguj się</a></li>
                         </ul>
                     </li>
                 <% } else { %>
-                    <!-- Opcje dla niezalogowanych użytkowników -->
                     <li class="nav-item">
                         <a class="nav-link <%= currentPage === '/zarejestruj' ? 'active' : '' %>" href="/zarejestruj">
                             <i class="bi bi-person-add"></i> Zarejestruj się

@@ -10,8 +10,8 @@ import { StatisticsUtils } from './utils/statistics.js';
 // =============================================================================
 
 const TASK_API = {
-    TOGGLE: (id) => `/zadania/admin/${id}/toggle`,
-    DELETE: (id) => `/zadania/admin/${id}/usun`
+    TOGGLE: (id) => `/zadania/user/${id}/toggle`,
+    DELETE: (id) => `/zadania/user/${id}/usun`
 };
 
 const MESSAGES = {

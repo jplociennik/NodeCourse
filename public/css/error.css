@@ -54,9 +54,32 @@ main {
     color: var(--text-primary);
     border-radius: 10px;
     box-shadow: 0 4px 6px var(--shadow);
-    text-align: center;
-    padding: 3rem 2rem;
+    max-width: 700px;
+    margin: 3rem auto;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: row;
+    gap: 2.5rem;
+    align-items: flex-start;
     transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.error-main {
+    flex: 2;
+    text-align: center;
+}
+
+.error-side {
+    flex: 1;
+    min-width: 180px;
+    text-align: left;
+    margin-top: 2.5rem;
+}
+
+.error-content {
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .error-code {
@@ -122,20 +145,25 @@ footer {
 }
 
 .helpful-links {
-    margin-top: 2rem;
-    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
     color: var(--text-muted);
 }
 
+.helpful-links p {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
 .helpful-links ul {
-    text-align: left;
-    display: inline-block;
-    list-style: none;
-    padding: 0;
+    list-style: disc inside;
+    padding-left: 1.2em;
+    margin: 0;
 }
 
 .helpful-links li {
-    margin: 0.5rem 0;
+    margin: 0.2em 0;
+    padding-left: 0.2em;
 }
 
 .helpful-links a {
@@ -183,32 +211,36 @@ footer {
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
-    main {
-        margin: 1rem auto;
-        padding: 1rem;
-    }
-    
+@media (max-width: 900px) {
     .error-container {
-        padding: 2rem 1rem;
-    }
-    
-    .error-code {
-        font-size: 4rem;
-    }
-    
-    .error-message {
-        font-size: 1.2rem;
-    }
-    
-    .error-actions {
         flex-direction: column;
         align-items: center;
+        gap: 1.5rem;
+        padding: 1.5rem 0.5rem;
     }
-    
-    .btn-home, .btn-secondary {
+    .error-side {
+        margin-top: 1.5rem;
+        min-width: 0;
         width: 100%;
-        max-width: 200px;
+        text-align: left;
+    }
+}
+
+@media (max-width: 600px) {
+    .error-container {
+        max-width: 98vw;
+        margin: 1rem auto;
+        padding: 1rem 0.2rem;
+    }
+    .error-main {
+        text-align: center;
+    }
+    .error-code {
+        font-size: 3.5rem;
+    }
+    .btn-home {
+        width: 100%;
+        max-width: 220px;
         text-align: center;
     }
 }
