@@ -45,4 +45,39 @@
     background-color: #a83442;
     border-color: #a83442;
     color: white;
+}
+
+.btn-circle {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #7a232c;
+    border: 1.5px solid #7a232c;
+    transition: box-shadow 0.2s, border-color 0.2s, background 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+.btn-circle .bi-x-lg {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #fff;
+    stroke: #fff;
+    stroke-width: 2.5px;
+}
+.btn-circle svg {
+    display: block;
+}
+.btn-circle svg line {
+    stroke: #fff;
+    stroke-width: 2.2px;
+    stroke-linecap: round;
+}
+.btn-circle:hover, .btn-circle:focus {
+    background: #a83442;
+    border-color: #fff;
+    box-shadow: 0 0 0 3px rgba(168,52,66,0.18);
+    outline: none;
 } 

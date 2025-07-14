@@ -1,10 +1,12 @@
 const ErrorController = {
   handleError: async (res, error) => {
+    console.log(error.message);
+
     await res.status(500).render('errors/500', {
       pageTitle: 'Błąd serwera',
       pageName: 'error',
       error: error.message,
-      title: 'Błąd serwera',
+      title: 'Błąd serwera',  
       subtitle: 'Wystąpił problem z bazą danych',
       heroIcon: 'bi bi-exclamation-triangle-fill'
     });

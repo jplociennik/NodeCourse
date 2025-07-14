@@ -5,17 +5,9 @@ const { UserController } = require('../controllers/user-controller');
 const { AuthController } = require('../controllers/auth-controller');
 const { TaskController } = require('../controllers/task-controller');
 const { authMiddleware } = require('../middleware/auth-middleware');
-const multer = require('multer');
-const path = require('path');
+const { createImageUpload, IsWrongImageMimeType } = require('../services/image-service');
 
-// Konfiguracja Multer
-const storage = multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, path.join(__dirname, '../../public/uploads/tasks')),
-    filename: (_req, _file, cb) => 
-        cb(null, Date.now() + '-' + _file.originalname.normalize('NFD').replace(/[^\w.\-]/g, '_'))
-});
-const upload = multer({ storage: storage });
-
+const upload = createImageUpload();
 const router = express.Router();
 
 // Główne routes
@@ -43,13 +35,26 @@ router.get('/profile/:id/szczegoly', UserController.getUserDetails);
 
 // Routes dla zadań (tylko dla zalogowanych)
 router.get('/zadania/user/',  TaskController.getTasksPage);
-router.get('/zadania/user/dodaj',  TaskController.showAddTaskForm);
-router.post('/zadania/user/dodaj',  upload.single('image'), TaskController.addTask);
-router.get('/zadania/user/:id/edytuj', authMiddleware.requireAuth, upload.single('image'), TaskController.showEditTaskForm);
-router.post('/zadania/user/:id/edytuj', authMiddleware.requireAuth, upload.single('image'), TaskController.editTask);
+router.get('/zadania/user/dodaj', TaskController.showAddTaskForm);
+// Dodawanie zadania z obsługą błędu typu pliku
+router.post('/zadania/user/dodaj', 
+  upload.single('image'),
+  IsWrongImageMimeType,
+  TaskController.addTask
+);
+router.get('/zadania/user/:id/edytuj', 
+    upload.single('image'), 
+    TaskController.showEditTaskForm);
+// Edycja zadania z obsługą błędu typu pliku
+router.post('/zadania/user/:id/edytuj', 
+  authMiddleware.requireAuth,
+  upload.single('image'),
+  IsWrongImageMimeType,
+  TaskController.editTask
+);
 router.post('/zadania/user/:id/toggle',  TaskController.toggleTaskStatus);
 router.post('/zadania/user/:id/usun',  TaskController.deleteTask);
-router.post('/zadania/user/:id/usun-zdjecie', authMiddleware.requireAuth, TaskController.deleteImage);
+router.post('/zadania/user/:id/usun-zdjecie', TaskController.deleteImage);
 
 // Middleware dla 404 - musi być na końcu
 router.use(notFoundMiddleware);

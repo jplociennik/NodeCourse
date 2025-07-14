@@ -2,7 +2,7 @@ const { Task } = require('../db/mongoose');
 const { ErrorController } = require('./error-controller');
 const fs = require('fs');
 const path = require('path');
-const { removeTaskImage } = require('../services/task-image-service');
+const { removeTaskImage } = require('../services/image-service');
 
 const TaskController = {
   
@@ -241,14 +241,14 @@ const TaskController = {
       const { taskName, dateFrom, dateTo } = req.body;
       const task = await Task.findById(id);
 
-      if (req.file.filename && task.image) await removeTaskImage(task.image);
+      if (req.file?.filename && task.image) removeTaskImage(task.image);
 
       await Task.findByIdAndUpdate(id, {  
         taskName,  
         dateFrom,  
         dateTo: dateTo || null,
         user: req.session.userId,
-        image: req.file.filename || task.image
+        image: req.file?.filename ?? task.image
       }, { runValidators: true });
 
       res.redirect('/zadania/user');
@@ -261,19 +261,16 @@ const TaskController = {
 
   toggleTaskStatus: async (req, res) => {
     try {
+      console.log(req.params);
       const { id } = req.params;
       const task = await Task.findById(id);
-      
-      if (!task) {
-        return res.status(404).json({ error: 'Zadanie nie znalezione' });
-      }
 
       task.isDone = !task.isDone;
       await task.save();
       
       res.json({ success: true, isDone: task.isDone });
     } catch (error) {
-      res.status(500).json({ error: 'Błąd podczas aktualizacji zadania' });
+      ErrorController.handleError(res, error);
     }
   },
 
@@ -292,14 +289,13 @@ const TaskController = {
     try {
       const { id } = req.params;
       const task = await Task.findById(id);
-      if (!task) {
-        return res.status(404).render('errors/404', { pageTitle: 'Zadanie nie znalezione' });
-      }
+      
       if (task.image) {
         removeTaskImage(task.image);
         task.image = null;
         await task.save();
       }
+
       res.redirect(`/zadania/user/${id}/edytuj`);
     } catch (error) {
       ErrorController.handleError(res, error);

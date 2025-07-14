@@ -8,22 +8,39 @@
     </div>
 
     <div class="card-body">
+        <% if (task && task.image) { %>
+            <div id="oldImageContainer" class="mb-3 p-3 rounded">
+                <div class="d-flex align-items-center">
+                    <img src="/uploads/tasks/<%= task.image %>" alt="Zdjęcie zadania" class="task-image-form-left me-3">
+                    <div>
+                        <form method="POST" action="/zadania/user/<%= task._id %>/usun-zdjecie" style="display: inline;">
+                            <button type="submit" class="btn btn-outline-danger btn-circle ms-2" title="Usuń zdjęcie">
+                                <svg width="18" height="18" viewBox="0 0 18 18">
+                                  <line x1="4" y1="4" x2="14" y2="14" />
+                                  <line x1="14" y1="4" x2="4" y2="14" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
         <form class="task-form" method="POST" action="<%= formAction ?? '/zadania' %>" enctype="multipart/form-data">
             <div class="d-flex flex-row align-items-start mb-3 flex-wrap">
-                <% if (task.image) { %>
-                    <div class="me-4 mb-3 d-flex align-items-center">
-                        <img src="/uploads/tasks/<%= task.image %>" alt="Zdjęcie zadania" class="task-image-form-left">
-                        <div class="ms-3">
-                            <form method="POST" action="/zadania/user/<%= task._id %>/usun-zdjecie" onsubmit="return confirm('Czy na pewno chcesz usunąć zdjęcie?');">
-                                <button type="submit" class="btn btn-outline-danger btn-sm mt-2">
-                                    <i class="bi bi-trash"></i> Usuń zdjęcie
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                <% } %>
                 <div class="flex-grow-1 w-100">
                     <div class="row">
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label">
+                                <i class="bi bi-image"></i> Zdjęcie zadania
+                            </label>
+                            <div id="imagePreview" class="mt-2 mb-3" style="display: none;">
+                                <img id="previewImg" src="" alt="Podgląd zdjęcia" class="task-image-form-left">
+                            </div>
+                            <input type="file" text="Wybierz zdjęcie" class="form-control" id="image" name="image" accept="image/*">
+                        </div>
+                        
                         <div class="col-md-6 mb-3">
                             <label for="taskName" class="form-label">
                                 <i class="bi bi-card-text"></i> Nazwa zadania
@@ -61,15 +78,6 @@
                     </div>
                 </div>
             </div>
-            
-
-
-            <div class="mb-3">
-                <label for="image" class="form-label">
-                    <i class="bi bi-image"></i> Zdjęcie zadania
-                </label>
-                <input type="file" class="form-control" id="image" name="image" accept="image/*">
-            </div>
 
             <div class="d-grid">
                 <button type="submit" class="btn btn-success btn-lg">
@@ -85,21 +93,7 @@
         </div>
         <% } %>
     </div>
-</div> 
-<script>
-  // Przed wysłaniem formularza zapisz scroll
-  document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', function() {
-      sessionStorage.setItem('scrollY', window.scrollY);
-    });
-  });
+</div>
 
-  // Po załadowaniu strony przywróć scroll
-  window.addEventListener('DOMContentLoaded', function() {
-    const scrollY = sessionStorage.getItem('scrollY');
-    if (scrollY !== null) {
-      window.scrollTo(0, parseInt(scrollY, 10));
-      sessionStorage.removeItem('scrollY');
-    }
-  });
-</script> 
+<script type="module" src="/js/utils/scroll-manager.js"></script>
+<script type="module" src="/js/task-form.js"></script>
