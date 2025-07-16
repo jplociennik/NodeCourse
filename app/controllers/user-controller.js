@@ -185,6 +185,9 @@ const UserController = {
       if (!user) {
         ErrorController.handleUserNotFound(res, id);
       } else {
+        // Sprawdź czy to własny profil
+        const isOwnProfile = req.session.userId && req.session.userId.toString() === id;
+        
         await res.render('pages/profile/profile-details', {
           pageTitle: `Szczegóły - ${user.name}`,
           pageName: 'profile',
@@ -207,7 +210,8 @@ const UserController = {
               icon: 'bi bi-info-circle'
             }
           ],
-          user: user
+          user: user,
+          isOwnProfile: isOwnProfile
         });
       }
     } catch (error) {

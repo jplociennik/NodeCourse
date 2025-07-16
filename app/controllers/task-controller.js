@@ -1,8 +1,7 @@
 const { Task } = require('../db/mongoose');
 const { ErrorController } = require('./error-controller');
-const fs = require('fs');
-const path = require('path');
 const { removeTaskImage } = require('../services/image-service');
+const { Parser } = require('json2csv');
 
 const TaskController = {
   
@@ -107,6 +106,30 @@ const TaskController = {
     };
   },
 
+  getCsvConfig: async (res, tasks) => {
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=tasks.csv');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.attachment(`tasks-${Date.now()}.csv`);
+
+    const mapTaskForCsv = task => ({
+      taskName: task.taskName,
+      dateFrom: task.dateFrom ? new Date(task.dateFrom).toLocaleDateString('pl-PL') : '',
+      dateTo: task.dateTo ? new Date(task.dateTo).toLocaleDateString('pl-PL') : '',
+      isDone: task.isDone ? 'Wykonane' : 'Do wykonania'
+    });
+    const data = tasks.map(mapTaskForCsv);
+
+    const fields = [
+      { label: 'Nazwa zadania', value: 'taskName' },
+      { label: 'Data od', value: 'dateFrom' },
+      { label: 'Data do', value: 'dateTo' },
+      { label: 'Status', value: 'isDone' }
+    ];
+
+    return { fields, data, res };
+  },
+
   // Routing functions
   getTasksPage: async (req, res) => {
     try {
@@ -205,7 +228,7 @@ const TaskController = {
         dateTo: dateTo || null,
         isDone: false,
         user: req.session.userId,
-        image: req.file.filename || null
+        image: req.file?.filename || null
       });
 
       await task.save();
@@ -261,7 +284,6 @@ const TaskController = {
 
   toggleTaskStatus: async (req, res) => {
     try {
-      console.log(req.params);
       const { id } = req.params;
       const task = await Task.findById(id);
 
@@ -300,7 +322,33 @@ const TaskController = {
     } catch (error) {
       ErrorController.handleError(res, error);
     }
-  }
+  },
+
+  exportTasks: async (req, res) => {
+    try {
+      const tasks = await Task.find({ user: req.session.userId });
+      const csvConfig = await TaskController.getCsvConfig(res, tasks);
+      const parser = new Parser({ fields: csvConfig.fields });
+      const csv = parser.parse(csvConfig.data);
+      const bom = '\uFEFF';
+      res.send(bom + csv);
+    } catch (error) {
+      ErrorController.handleError(res, error);
+    }
+  },
+
+  exportAllTasks: async (req, res) => {
+    try {
+      const tasks = await Task.find({ user: req.session.userId });
+      const csvConfig = await TaskController.getCsvConfig(res, tasks);
+      const parser = new Parser({ fields: csvConfig.fields });
+      const csv = parser.parse(csvConfig.data);
+      const bom = '\uFEFF';
+      res.send(bom + csv);
+    } catch (error) {
+      ErrorController.handleError(res, error);
+    }
+  },
 };
   
 module.exports = { TaskController }; 

@@ -121,6 +121,7 @@ const AuthController = {
                 subtitle: 'Twoje dane osobowe',
                 heroIcon: 'bi bi-person-circle',
                 user: user,
+                isOwnProfile: true,
                 breadcrumbs: [
                     {
                         text: 'Profil',

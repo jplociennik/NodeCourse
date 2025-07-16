@@ -36,6 +36,7 @@ router.get('/profile/:id/szczegoly', UserController.getUserDetails);
 // Routes dla zadań (tylko dla zalogowanych)
 router.get('/zadania/user/',  TaskController.getTasksPage);
 router.get('/zadania/user/dodaj', TaskController.showAddTaskForm);
+
 // Dodawanie zadania z obsługą błędu typu pliku
 router.post('/zadania/user/dodaj', 
   upload.single('image'),
@@ -45,6 +46,7 @@ router.post('/zadania/user/dodaj',
 router.get('/zadania/user/:id/edytuj', 
     upload.single('image'), 
     TaskController.showEditTaskForm);
+
 // Edycja zadania z obsługą błędu typu pliku
 router.post('/zadania/user/:id/edytuj', 
   authMiddleware.requireAuth,
@@ -55,6 +57,10 @@ router.post('/zadania/user/:id/edytuj',
 router.post('/zadania/user/:id/toggle',  TaskController.toggleTaskStatus);
 router.post('/zadania/user/:id/usun',  TaskController.deleteTask);
 router.post('/zadania/user/:id/usun-zdjecie', TaskController.deleteImage);
+
+// Csv export
+router.get('/zadania/user/export', TaskController.exportTasks);
+router.get('/zadania/user/export/all', TaskController.exportAllTasks);
 
 // Middleware dla 404 - musi być na końcu
 router.use(notFoundMiddleware);

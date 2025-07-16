@@ -1,9 +1,11 @@
 <% if (isLoggedIn) { %>
+<% if (typeof isOwnProfile !== 'undefined' && isOwnProfile) { %>
 <div class="d-flex justify-content-end mb-3">
     <a href="/user/profil/edytuj" class="btn btn-outline-primary">
         <i class="bi bi-pencil"></i> Edytuj profil
     </a>
 </div>
+<% } %>
 <% } %>
 <div class="card">
     <div class="card-header bg-success text-white">

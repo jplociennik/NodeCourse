@@ -2,12 +2,12 @@ require('mongoose');
 const express = require('express');
 const expressEjsLayouts = require('express-ejs-layouts');
 const session = require('express-session');
-const flash = require('express-flash');
 const path = require('path');
 const app = express();
 const router = require('./routes/web');
 const { viewMiddleware } = require('./middleware/view-middleware');
 const { authMiddleware } = require('./middleware/auth-middleware');
+const { flashMiddleware } = require('./middleware/flash-middleware');
 const cookieParser = require('cookie-parser');
 const { sessionKeySecret } = require('./config')
 
@@ -38,7 +38,7 @@ app.use(session({
 }));
 
 //Flash Messages
-app.use(flash());
+app.use(flashMiddleware);
 
 //Content Security Policy Headers
 app.use((_req, res, next) => {
@@ -59,6 +59,10 @@ app.use((_req, res, next) => {
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     
     next();
+});
+
+process.on('warning', (warning) => {
+    console.log(warning.stack);
 });
 
 //Middleware
