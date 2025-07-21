@@ -1,5 +1,7 @@
 const { Task } = require('../../db/mongoose');
+const { User } = require('../../db/mongoose');
 const { ApiErrorController } = require('./error-controller');
+const bcrypt = require('bcrypt');
 
 const ApiTaskController = {
   
@@ -81,6 +83,22 @@ const ApiTaskController = {
       if (!task) return ApiErrorController.handleNotFound(res, 'Task');
 
       res.json({ success: true, message: 'Task deleted successfully' });
+    } catch (error) {
+      ApiErrorController.handleError(res, error);
+    }
+  },
+
+  // Login
+  login: async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ email });
+      if (!user) return ApiErrorController.handleNotFound(res, 'Błędny email lub hasło');
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) return ApiErrorController.handleForbidden(res, 'Błędny email lub hasło');
+
+      res.json({ success: true, data: { token: user.apiToken } });
     } catch (error) {
       ApiErrorController.handleError(res, error);
     }
