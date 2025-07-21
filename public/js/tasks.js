@@ -19,6 +19,7 @@ const MESSAGES = {
     NETWORK_ERROR: 'Błąd połączenia z serwerem'
 };
 
+
 const CSS_CLASSES = {
     BADGE_SUCCESS: 'badge task-status bg-success',
     BADGE_WARNING: 'badge task-status bg-warning',
@@ -126,27 +127,13 @@ const setDeleteTask = (taskId, taskName) => {
  * @param {HTMLInputElement} checkbox - The checkbox element that triggered the change
  */
 const toggleTaskStatus = async (taskId, checkbox) => {
-    console.log('toggleTaskStatus called:', { taskId, checked: checkbox.checked });
     const originalState = checkbox.checked;
     
     try {
-        console.log('Making API request to:', TASK_API.TOGGLE(taskId));
         const data = await apiPost(TASK_API.TOGGLE(taskId));
-        console.log('API response:', data);
         
         if (data.success) {
             updateTaskUI(taskId, data.isDone);
-            console.log('Task UI updated, checking for filter manager...');
-            // Trigger filter reapplication
-            if (window.filterManager?.modules?.filter) {
-                console.log('Filter manager found, applying filters...');
-                window.filterManager.modules.filter.applyFilters();
-            } else {
-                console.log('Filter manager not found:', { 
-                    filterManager: window.filterManager,
-                    modules: window.filterManager?.modules
-                });
-            }
         } else throw new Error(data.error || MESSAGES.ERROR);
         
     } catch (error) {
@@ -206,7 +193,6 @@ const handleDOMContentLoaded = () => {
     
     setInitialTaskColors();
     d.addEventListener('keydown', handleKeyboardShortcuts);   
-    console.log('Tasks module fully initialized');
 };
 
 // =============================================================================
