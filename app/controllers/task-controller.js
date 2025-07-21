@@ -1,7 +1,9 @@
 const { Task } = require('../db/mongoose');
+const { User } = require('../db/mongoose');
 const { ErrorController } = require('./error-controller');
 const { removeTaskImage } = require('../services/image-service');
 const { Parser } = require('json2csv');
+const { sampleTasks } = require('../db/sample-tasks');
 
 const TaskController = {
   
@@ -166,6 +168,10 @@ const TaskController = {
 
         const tasks = await query.exec();
 
+        // Sprawdź czy użytkownik już wygenerował przykładowe zadania
+        const user = await User.findById(req.session.userId);
+        const hasGeneratedSampleTasks = user ? user.hasGeneratedSampleTasks : false;
+
         await res.render('pages/task/tasks', { 
             pageTitle: 'Zadania',
             pageName: 'tasks',
@@ -180,6 +186,7 @@ const TaskController = {
             ],
             tasks: tasks,
             query: req.query,
+            hasGeneratedSampleTasks: hasGeneratedSampleTasks,
             paginationConfig: {
                 page,
                 pagesCount,
@@ -347,6 +354,31 @@ const TaskController = {
       res.send(bom + csv);
     } catch (error) {
       ErrorController.handleError(res, error);
+    }
+  },
+
+  generateSampleTasks: async (req, res) => {
+    try {
+      // Sprawdź czy użytkownik istnieje
+      const user = await User.findById(req.session.userId);
+      if (!user) {
+        return ErrorController.handleServerError(res, new Error('Użytkownik nie został znaleziony'), 'Użytkownik nie został znaleziony');
+      }
+      if (user.hasGeneratedSampleTasks) {
+        req.flash('error', 'Przykładowe zadania zostały już wygenerowane dla tego użytkownika');
+        return res.redirect('/zadania/user');
+      }
+
+      const tasksToInsert = sampleTasks.map(task => ({ ...task, user: req.session.userId }));
+      await Task.insertMany(tasksToInsert);
+      user.hasGeneratedSampleTasks = true;
+      await user.save();
+
+      req.flash('success', 'Pomyślnie wygenerowano 20 przykładowych zadań!');
+      res.redirect('/zadania/user');
+    } catch (error) {
+      console.error('Błąd podczas generowania przykładowych zadań:', error);
+      return ErrorController.handleServerError(res, error, 'Wystąpił błąd podczas generowania przykładowych zadań');
     }
   },
 };

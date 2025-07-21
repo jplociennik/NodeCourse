@@ -1,15 +1,18 @@
 require('mongoose');
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const expressEjsLayouts = require('express-ejs-layouts');
 const session = require('express-session');
+const rateLimiterMiddleware = require('./middleware/rate-limiter-middleware');
 const path = require('path');
-const app = express();
 const router = require('./routes/web');
 const { viewMiddleware } = require('./middleware/view-middleware');
-const { authMiddleware } = require('./middleware/auth-middleware');
 const { flashMiddleware } = require('./middleware/flash-middleware');
-const cookieParser = require('cookie-parser');
+const { authMiddleware } = require('./middleware/auth-middleware');
 const { sessionKeySecret } = require('./config')
+const helmet = require('helmet')
+
+const app = express();
 
 //View Engine
 app.set('view engine','ejs');
@@ -23,6 +26,7 @@ app.set('layout', './layouts/main');
 app.use(express.static(path.join(__dirname, '../public')));
 
 //Parsers
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -69,6 +73,17 @@ process.on('warning', (warning) => {
 app.use('/', viewMiddleware);
 app.use('/', authMiddleware.addUserToLocals);
 app.use(/.*\/user(\/|$)/, authMiddleware.requireAuth);
+app.use(rateLimiterMiddleware);
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
+            styleSrc: ["'self'", "https://cdn.jsdelivr.net"],
+            fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
+        }
+    }
+}));
 
 //Router
 app.use('/', router);

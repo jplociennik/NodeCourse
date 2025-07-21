@@ -89,6 +89,18 @@ const setupTaskActions = () => {
         const { setDeleteTask } = await import('../tasks.js');
         setDeleteTask(taskId, taskName);
     });
+    
+    // Task export
+    registerActionHandler('export-tasks', (element, eventType, data) => {
+        if (eventType !== 'click') return;
+        exportTasks();
+    });
+    
+    // Task export all
+    registerActionHandler('export-all-tasks', (element, eventType, data) => {
+        if (eventType !== 'click') return;
+        exportAllTasks();
+    });
 };
 
 /**

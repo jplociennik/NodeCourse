@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 module.exports = {
     async hashPassword(doc) {
@@ -10,5 +11,9 @@ module.exports = {
 
     async verifyPassword(password, hashedPassword) {
         return await bcrypt.compare(password, hashedPassword);
+    },
+
+    async generateApiToken(doc) {
+        doc.apiToken = crypto.randomBytes(32).toString('hex');
     }
 };

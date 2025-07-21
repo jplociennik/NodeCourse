@@ -83,23 +83,6 @@
         </div>
         <!-- Include standalone search script -->
         <script src="/js/filtering/search-module.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // For standalone use, create minimal manager
-                window.filterManager = {
-                    modules: {
-                        search: new SearchModule({
-                            updateURL: () => {},
-                            updateCounts: () => {}
-                        })
-                    }
-                };
-                window.performSearch = function() {
-                    window.filterManager.modules.search.performSearch(
-                        document.getElementById('searchInput').value
-                    );
-                };
-            });
-        </script>
+        <script src="/js/standalone-search.js"></script>
     </div>
 </div> 

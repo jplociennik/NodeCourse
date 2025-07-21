@@ -6,6 +6,7 @@ const { AuthController } = require('../controllers/auth-controller');
 const { TaskController } = require('../controllers/task-controller');
 const { authMiddleware } = require('../middleware/auth-middleware');
 const { createImageUpload, IsWrongImageMimeType } = require('../services/image-service');
+const apiRouter = require('./api');
 
 const upload = createImageUpload();
 const router = express.Router();
@@ -61,6 +62,12 @@ router.post('/zadania/user/:id/usun-zdjecie', TaskController.deleteImage);
 // Csv export
 router.get('/zadania/user/export', TaskController.exportTasks);
 router.get('/zadania/user/export/all', TaskController.exportAllTasks);
+
+// Generate sample tasks
+router.post('/zadania/user/generate-sample', TaskController.generateSampleTasks);
+
+//api routes
+router.use('/api', apiRouter);  
 
 // Middleware dla 404 - musi być na końcu
 router.use(notFoundMiddleware);

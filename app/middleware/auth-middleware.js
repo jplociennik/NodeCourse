@@ -1,4 +1,5 @@
 const { User } = require('../db/mongoose');
+const { ApiErrorController } = require('../controllers/api/error-controller');
 
 const authMiddleware = {
     // Middleware do sprawdzania czy użytkownik jest zalogowany
@@ -45,4 +46,18 @@ const authMiddleware = {
     }
 };
 
-module.exports = { authMiddleware }; 
+const apiAuthMiddleware = {     
+    requireAuth: async (req, res, next) => {
+
+        const apiToken = req.headers.authorization.split(' ')[1];
+        const user = await User.findOne({ apiToken: apiToken });
+        
+        if (!user) {
+            return ApiErrorController.handleUnauthorized(res, 'Nie masz dostępu do tej strony. Zaloguj się.');
+        }
+        req.user = user;
+        next();
+    }
+};
+
+module.exports = { authMiddleware, apiAuthMiddleware }; 

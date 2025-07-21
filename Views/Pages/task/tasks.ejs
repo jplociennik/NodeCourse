@@ -28,9 +28,18 @@
                     <h2 class="mb-0"><i class="bi bi-kanban"></i> Lista zadań</h2>
 
                     <% if (isLoggedIn) { %>
-                    <a href="/zadania/user/dodaj" class="btn btn-light">
-                        <i class="bi bi-plus-lg"></i> Dodaj zadanie
-                    </a>
+                    <div class="d-flex gap-2">
+                        <% if (!hasGeneratedSampleTasks) { %>
+                        <form method="POST" action="/zadania/user/generate-sample" class="d-inline">
+                            <button type="submit" class="btn btn-warning" onclick="return confirm('Czy na pewno chcesz wygenerować 20 przykładowych zadań? Tej operacji nie można cofnąć.')">
+                                <i class="bi bi-magic"></i> Generuj przykłady
+                            </button>
+                        </form>
+                        <% } %>
+                        <a href="/zadania/user/dodaj" class="btn btn-light">
+                            <i class="bi bi-plus-lg"></i> Dodaj zadanie
+                        </a>
+                    </div>
                     <% } %>
                 </div>
                 <div class="card-body">
@@ -146,10 +155,10 @@
                 </div>
             </div>
             <div class="col-lg-4">
-                <button type="button" onclick="window.location.href='/zadania/user/export'" class="btn btn-csv-base btn-csv-export me-2 d-inline-block">
+                <button type="button" class="btn btn-csv-base btn-csv-export me-2 d-inline-block" data-action="export-tasks">
                     <i class="bi bi-download"></i> Pobierz CSV
                 </button>
-                <button type="button" onclick="window.location.href='/zadania/user/export/all'" class="btn btn-csv-base btn-csv-export-outline d-inline-block">
+                <button type="button" class="btn btn-csv-base btn-csv-export-outline d-inline-block" data-action="export-all-tasks">
                     <i class="bi bi-download-all"></i> Pobierz wszystkie CSV
                 </button>
             </div>
@@ -176,7 +185,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Anuluj
                 </button>
-                <form id="deleteTaskForm" method="POST" style="display: inline;">
+                <form id="deleteTaskForm" method="POST" class="delete-form-inline">
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash"></i> Usuń zadanie
                     </button>
@@ -219,3 +228,4 @@
 <!-- Statistics module is loaded by main-filter.ejs -->
 <!-- Load task management -->
 <script type="module" src="/js/tasks.js"></script>
+<script src="/js/task-export.js"></script>

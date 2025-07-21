@@ -1,4 +1,4 @@
-const { hashPassword, verifyPassword } = require('./extensions')
+const { hashPassword, verifyPassword, generateApiToken } = require('./extensions')
 const { ValidateEmail } = require('./validators')
 const { Schema }  = require('mongoose');
 
@@ -35,6 +35,13 @@ const userSchema = new Schema({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    apiToken: {
+        type: String
+    },
+    hasGeneratedSampleTasks: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true
@@ -44,12 +51,18 @@ userSchema.pre('save', async function(next) {
     if (this.isModified('password')) {
         await hashPassword(this);
     }
+    if (this.isModified('apiToken') || this.isNew) {
+        await generateApiToken(this);
+    }
     next();
 });
 
 userSchema.pre('insertMany', async function(next, docs) {
     for (const doc of docs) {
         await hashPassword(doc);
+        if (doc.isModified('apiToken') || doc.isNew) {
+            await generateApiToken(doc);
+        }
     }
     next();
 });
