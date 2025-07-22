@@ -229,9 +229,9 @@ const updateItemCounter = (itemClass, counterSelector) => {
 // EXPORTS
 // =============================================================================
 
-const DOMUtils = {
+export { 
     // Constants
-    selectors: DOM_SELECTORS,
+    DOM_SELECTORS,
     
     // Query functions
     getAllItems,
@@ -264,5 +264,3 @@ const DOMUtils = {
     // Counter functions
     updateItemCounter
 };
-
-export default DOMUtils; 

@@ -151,8 +151,8 @@ const setupFilterActions = () => {
         if (eventType !== 'click') return;
         
         // Dynamic import for code splitting - only load when needed
-        const { toggleAdvancedFilters } = await import('../filtering/filter-ui.js');
-        toggleAdvancedFilters();
+        const { handleAdvancedFiltersToggle } = await import('../filtering/advanced-filter.js');
+        handleAdvancedFiltersToggle();
     });
     
     // Toggle date input
@@ -163,7 +163,7 @@ const setupFilterActions = () => {
         if (!filterId) return;
         
         // Dynamic import for code splitting - only load when needed
-        const { toggleDateInput } = await import('../filtering/filter-ui.js');
+        const { toggleDateInput } = await import('../filtering/advanced-filter.js');
         toggleDateInput(filterId);
     });
 };

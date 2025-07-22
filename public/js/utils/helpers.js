@@ -50,8 +50,16 @@ const apiPost = async (url, data = null) => {
     return response.json();
 };
 
+const debounce = (fn, delay = 300) => {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn(...args), delay);
+    };
+};
+
 // =============================================================================
 // EXPORTS
 // =============================================================================
 
-export { d, setText, setClass, setHref, setStyle, removeStyle, onReady, apiPost, CSS_CLASSES }; 
+export { d, setText, setClass, setHref, setStyle, removeStyle, onReady, apiPost, debounce, CSS_CLASSES }; 

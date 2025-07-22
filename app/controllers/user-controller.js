@@ -86,6 +86,7 @@ const UserController = {
         options: await UserController.getFilterOptions()
       },
       showStatistics: false,
+      formAction: '/profile',
       containerClass: 'profiles-container',
       itemClass: 'profile-item',
       searchFields: ['data-name'], // Search in data-name attribute
@@ -121,6 +122,7 @@ const UserController = {
         ],
         users: users,
         query: req.query,
+        
         filterConfig: await UserController.getFilterConfig(),
         statisticsConfig: {
           show: users.length > 0,

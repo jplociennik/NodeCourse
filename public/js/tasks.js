@@ -2,7 +2,7 @@
 // TASK MANAGEMENT MODULE
 // =============================================================================
 
-import { d, setText, setClass, setHref, setStyle, apiPost, onReady } from './utils/helpers.js';
+import { d, setText, setClass, setStyle, apiPost, onReady } from './utils/helpers.js';
 import { StatisticsUtils } from './utils/statistics.js';
 
 // =============================================================================

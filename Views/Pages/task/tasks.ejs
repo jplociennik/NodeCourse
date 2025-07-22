@@ -44,7 +44,7 @@
                 </div>
                 <div class="card-body">
                     <% if (tasks.length > 0) { %>
-                        <p class="lead">Znaleziono <span class="badge task-count"><%= tasks.length %></span> zadań.</p>
+                        <p class="lead">Znaleziono <span class="badge task-count" id="taskCount"><%= paginationConfig.resultsCount %></span> zadań.</p>
                         <div class="row tasks-container">
                             <% tasks.forEach((task, index) => { %>
                                 <div class="col-md-6 mb-3">
@@ -146,6 +146,13 @@
                                 </div>
                             <% }); %>
                         </div>
+                        
+                        <!-- Pagination -->
+                        <%- include('../../partials/filtering/pagination', { 
+                            paginationConfig: paginationConfig, 
+                            query: query 
+                        }) %>
+                        
                     <% } else { %>
                         <div class="text-center py-5 empty-state">
                             <i class="bi bi-clipboard-x display-1 text-muted"></i>

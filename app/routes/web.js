@@ -3,7 +3,11 @@ const { notFoundMiddleware } = require('../middleware/error-middleware');
 const { HomeController } = require('../controllers/home-controller');
 const { UserController } = require('../controllers/user-controller');
 const { AuthController } = require('../controllers/auth-controller');
-const { TaskController } = require('../controllers/task-controller');
+const { TaskController } = require('../controllers/task/task-controller');
+
+// Debug: sprawdź czy TaskController jest poprawnie zaimportowany
+console.log('TaskController loaded:', !!TaskController);
+console.log('TaskController methods:', Object.keys(TaskController || {}));
 const { authMiddleware } = require('../middleware/auth-middleware');
 const { createImageUpload, IsWrongImageMimeType } = require('../services/image-service');
 const apiRouter = require('./api');
@@ -60,7 +64,7 @@ router.post('/zadania/user/:id/usun',  TaskController.deleteTask);
 router.post('/zadania/user/:id/usun-zdjecie', TaskController.deleteImage);
 
 // Csv export
-router.get('/zadania/user/export', TaskController.exportTasks);
+router.get('/zadania/user/export', TaskController.exportFilteredTasks);
 router.get('/zadania/user/export/all', TaskController.exportAllTasks);
 
 // Generate sample tasks

@@ -97,8 +97,7 @@ const updateTaskCount = () => {
         const count = visibleTasks.length;
         setText(taskCountElement, count);
         return count;
-    }
-    
+    }   
     return 0;
 };
 
@@ -110,11 +109,7 @@ const getTaskCounts = () => {
     const { todoCount, doneCount } = countTasksByStatus();
     const totalCount = todoCount + doneCount;
     
-    return {
-        todoCount,
-        doneCount,
-        totalCount
-    };
+    return { todoCount, doneCount, totalCount };
 };
 
 /**

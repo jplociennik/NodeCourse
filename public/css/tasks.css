@@ -639,3 +639,95 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* =============================================================================
+   PAGINATION STYLES
+   ============================================================================= */
+
+.pagination {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.pagination .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.pagination .page-link:hover {
+    background-color: var(--custom-green);
+    border-color: var(--custom-green);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+.pagination .page-link.active {
+    background-color: var(--custom-green);
+    border-color: var(--custom-green);
+    color: white;
+    font-weight: 600;
+}
+
+.pagination .page-link.disabled {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.pagination .page-link.disabled:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-muted);
+    transform: none;
+    box-shadow: none;
+}
+
+/* Dark theme support */
+[data-theme="dark"] .pagination .page-link {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .pagination .page-link:hover {
+    background-color: var(--custom-green);
+    border-color: var(--custom-green);
+    color: white;
+}
+
+[data-theme="dark"] .pagination .page-link.disabled {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-muted);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .pagination {
+        gap: 0.125rem;
+    }
+    
+    .pagination .page-link {
+        min-width: 2rem;
+        height: 2rem;
+        padding: 0.25rem;
+        font-size: 0.875rem;
+    }
+}

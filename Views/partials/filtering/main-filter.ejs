@@ -24,14 +24,17 @@ const hasFilter = filterConfig.features.includes('advancedFilters');
 %>
 
 <!-- Filter content without card wrapper - will be rendered inside sidebar -->
-        
+    <form method="GET" 
+        action="<%= filterConfig.formAction || console.log(`Nie ma przypisanej akcji do formularza: ${filterConfig.formAction}`) %>">
+        <!-- Hidden field to track advanced filters state -->
+        <input type="hidden" name="advancedFiltersOpen" value="<%= query.advancedFiltersOpen ? 'true' : 'false' %>" id="advancedFiltersOpenField">
         <% if (hasSearch) { %>
         <!-- Search Section -->
         <div class="mb-4">
             <label class="form-label fw-bold">
                 <i class="bi bi-search"></i> <%= filterConfig.searchConfig.label %>
             </label>
-            <%- include('./searchbar', { config: filterConfig.searchConfig, query: typeof query !== 'undefined' ? query : {} }) %>
+            <%- include('./searchbar', { config: filterConfig.searchConfig, query: query }) %>
         </div>
         <% } %>
 
@@ -41,18 +44,33 @@ const hasFilter = filterConfig.features.includes('advancedFilters');
             <label class="form-label fw-bold">
                 <i class="bi bi-sort-alpha-down"></i> <%= filterConfig.sortConfig.label %>
             </label>
-            <%- include('./sortbar', { config: filterConfig.sortConfig, query: typeof query !== 'undefined' ? query : {} }) %>
+            <%- include('./sortbar', { config: filterConfig.sortConfig, query: query }) %>
         </div>
         <% } %>
+
+        <!-- Results per page Section -->
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                <i class="bi bi-list-ul"></i> Wyniki na stronę
+            </label>
+            <select class="form-select" name="limit" id="limitSelect">
+                <option value="5" <%= parseInt(query.limit) === 5 ? 'selected' : '' %>>5 wyników</option>
+                <option value="10" <%= !query.limit || parseInt(query.limit) === 10 ? 'selected' : '' %>>10 wyników</option>
+                <option value="20" <%= parseInt(query.limit) === 20 ? 'selected' : '' %>>20 wyników</option>
+                <option value="50" <%= parseInt(query.limit) === 50 ? 'selected' : '' %>>50 wyników</option>
+            </select>
+        </div>
 
         <% if (hasFilter) { %>
         <!-- Advanced Filters Section -->
         <div class="mb-4">
-            <div class="form-label fw-bold cursor-pointer"
+            <div id="advancedFiltersToggle" class="form-label fw-bold cursor-pointer">
                 <i class="bi bi-filter"></i> <%= filterConfig.filterConfig.label %>
-                <i id="filterToggleIcon" class="bi bi-chevron-up ms-1"></i>
+                <i id="filterToggleIcon" class="bi <%= query.advancedFiltersOpen ? 'bi-chevron-up' : 'bi-chevron-down' %> ms-1"></i>
             </div>
-            <%- include('./filter', { config: filterConfig.filterConfig, query: typeof query !== 'undefined' ? query : {} }) %>
+            <div id="advancedFilters" class="<%= query.advancedFiltersOpen ? '' : 'advanced-filters-hidden' %>">
+                <%- include('./filter', { config: filterConfig.filterConfig, query: query }) %>
+            </div>
         </div>
         <% } %>
 
@@ -61,22 +79,17 @@ const hasFilter = filterConfig.features.includes('advancedFilters');
         <div class="d-grid gap-2 mt-4">
             <button type="button" 
                     class="btn btn-success" 
+                    id="applyFiltersBtn">
                 <i class="bi bi-check-circle"></i> Zastosuj filtry
             </button>
             <button type="button" 
                     class="btn btn-outline-secondary" 
+                    id="clearFiltersBtn">
                 <i class="bi bi-x-circle"></i> Wyczyść filtry
             </button>
         </div>
         <% } %>
+    </form>
 
-
-<!-- Store config for FilterManager -->
 <script type="application/json" id="filterConfig"><%- JSON.stringify(filterConfig) %></script>
-
-<!-- Load FilterManager and modules in proper order -->
-<!-- Global utilities are loaded in main.ejs layout -->
-<!-- Load statistics module (used by filtering system) -->
-<script type="module" src="/js/utils/statistics.js"></script>
-
- 
+<script type="module" src="/js/filtering/filter-ajax.js"></script>

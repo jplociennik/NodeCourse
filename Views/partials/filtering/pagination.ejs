@@ -1,11 +1,80 @@
+<% if (paginationConfig) { %>
 <div class="row">
+    <% if (paginationConfig.pagesCount > 1) { %>
     <div class="col-md-6">
         <div class="pagination">
-            <a href="#" class="page-link">Poprzednia</a>
-            <% for(let i = 2; i <= paginationConfig.pagesCount; i++) { %>
-                <a href="#" class="page-link"><%= i %></a>
+            <!-- Previous page -->
+            <% if (paginationConfig.page > 1) { %>
+                <a href="?<%= new URLSearchParams({...query, page: paginationConfig.page - 1}) %>" 
+                   class="page-link" data-page="<%= paginationConfig.page - 1 %>">
+                    <i class="bi bi-chevron-left"></i> Poprzednia
+                </a>
+            <% } else { %>
+                <span class="page-link disabled">
+                    <i class="bi bi-chevron-left"></i> Poprzednia
+                </span>
             <% } %>
-            <a href="#" class="page-link">Następna</a>
+
+            <!-- Page numbers -->
+            <% 
+            const startPage = Math.max(1, paginationConfig.page - 2);
+            const endPage = Math.min(paginationConfig.pagesCount, paginationConfig.page + 2);
+            
+            // Show first page if not in range
+            if (startPage > 1) { %>
+                <a href="?<%= new URLSearchParams({...query, page: 1}) %>" 
+                   class="page-link" data-page="1">1</a>
+                <% if (startPage > 2) { %>
+                    <span class="page-link disabled">...</span>
+                <% } %>
+            <% } %>
+
+            <% for(let i = startPage; i <= endPage; i++) { %>
+                <% if (i === paginationConfig.page) { %>
+                    <span class="page-link active"><%= i %></span>
+                <% } else { %>
+                    <a href="?<%= new URLSearchParams({...query, page: i}) %>" 
+                       class="page-link" data-page="<%= i %>"><%= i %></a>
+                <% } %>
+            <% } %>
+
+            <!-- Show last page if not in range -->
+            <% if (endPage < paginationConfig.pagesCount) { %>
+                <% if (endPage < paginationConfig.pagesCount - 1) { %>
+                    <span class="page-link disabled">...</span>
+                <% } %>
+                <a href="?<%= new URLSearchParams({...query, page: paginationConfig.pagesCount}) %>" 
+                   class="page-link" data-page="<%= paginationConfig.pagesCount %>">
+                    <%= paginationConfig.pagesCount %>
+                </a>
+            <% } %>
+
+            <!-- Next page -->
+            <% if (paginationConfig.page < paginationConfig.pagesCount) { %>
+                <a href="?<%= new URLSearchParams({...query, page: paginationConfig.page + 1}) %>" 
+                   class="page-link" data-page="<%= paginationConfig.page + 1 %>">
+                    Następna <i class="bi bi-chevron-right"></i>
+                </a>
+            <% } else { %>
+                <span class="page-link disabled">
+                    Następna <i class="bi bi-chevron-right"></i>
+                </span>
+            <% } %>
         </div>
     </div>
+    <% } %>
+    
+    <!-- Results info - always show -->
+    <div class="<%= paginationConfig.pagesCount > 1 ? 'col-md-6' : 'col-md-12' %> text-end">
+        <small class="text-muted">
+            <% if (paginationConfig.resultsCount > 0) { %>
+                Wyniki <%= (paginationConfig.page - 1) * paginationConfig.limit + 1 %> - 
+                <%= Math.min(paginationConfig.page * paginationConfig.limit, paginationConfig.resultsCount) %> 
+                z <%= paginationConfig.resultsCount %>
+            <% } else { %>
+                Brak wyników
+            <% } %>
+        </small>
+    </div>
 </div>
+<% } %>
