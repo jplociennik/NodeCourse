@@ -184,13 +184,11 @@ const TaskController = {
     try {
       const userId = req.session.userId;
       
-      // Check if user already has sample tasks
-      const existingTasks = await Task.find({ user: userId });
-      if (existingTasks.length > 0) {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'Użytkownik już ma zadania. Nie można wygenerować przykładowych zadań.' 
-        });
+      // Check if user has already generated sample tasks
+      const user = await User.findById(userId);
+      if (user && user.hasGeneratedSampleTasks) {
+        req.flash('error', 'Przykładowe zadania zostały już wygenerowane dla tego użytkownika.');
+        return res.redirect('/zadania/user/');
       }
 
       // Generate sample tasks for the user
@@ -204,9 +202,11 @@ const TaskController = {
       // Mark user as having generated sample tasks
       await User.findByIdAndUpdate(userId, { hasGeneratedSampleTasks: true });
 
-      res.json({ success: true, message: 'Przykładowe zadania zostały wygenerowane' });
+      req.flash('success', 'Przykładowe zadania zostały wygenerowane pomyślnie!');
+      res.redirect('/zadania/user/');
     } catch (error) {
-      res.status(500).json({ success: false, error: 'Błąd podczas generowania przykładowych zadań' });
+      req.flash('error', 'Błąd podczas generowania przykładowych zadań');
+      res.redirect('/zadania/user/');
     }
   },
 

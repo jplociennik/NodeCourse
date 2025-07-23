@@ -43,6 +43,16 @@
                     <% } %>
                 </div>
                 <div class="card-body">
+                    <% if (messages.error) { %>
+                        <div class="alert alert-danger">
+                            <%= messages.error %>
+                        </div>
+                    <% } %>
+                    <% if (messages.success) { %>
+                        <div class="alert alert-success">
+                            <%= messages.success %>
+                        </div>
+                    <% } %>
                     <% if (tasks.length > 0) { %>
                         <p class="lead">Znaleziono <span class="badge task-count" id="taskCount"><%= paginationConfig.resultsCount %></span> zadań.</p>
                         <div class="row tasks-container">
