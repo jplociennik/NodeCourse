@@ -26,10 +26,6 @@ const LOADING_HTML = `
 // LOADING STATE FUNCTIONS
 // =============================================================================
 
-// =============================================================================
-// LOADING STATE FUNCTIONS
-// =============================================================================
-
 const showLoading = () => {
     const tasksContainer = d.querySelector('.tasks-container');
     if (tasksContainer) {
@@ -48,9 +44,8 @@ const updateContent = (html) => {
     // Extract tasks container content or empty state
     const newTasksContainer = tempDiv.querySelector('.tasks-container');
     const newEmptyState = tempDiv.querySelector('.empty-state');
-    const newTaskCount = tempDiv.querySelector('#taskCount');
     const newStatistics = tempDiv.querySelector('.statistics-row');
-    const newPagination = tempDiv.querySelector('.pagination')?.closest('.row');
+    const newPagination = tempDiv.querySelector('.pagination-container');
     
     // Update tasks container
     const tasksContainer = d.querySelector('.tasks-container');
@@ -59,17 +54,6 @@ const updateContent = (html) => {
             tasksContainer.innerHTML = newTasksContainer.innerHTML;
         } else if (newEmptyState) {
             tasksContainer.innerHTML = newEmptyState.outerHTML;
-        }
-    }
-    
-    // Update task count - always update, even if newTaskCount is null (means 0 tasks)
-    const taskCount = d.querySelector('#taskCount');
-    if (taskCount) {
-        if (newTaskCount) {
-            taskCount.textContent = newTaskCount.textContent;
-        } else {
-            // If no task count found in response, it means 0 tasks
-            taskCount.textContent = '0';
         }
     }
     
@@ -84,12 +68,12 @@ const updateContent = (html) => {
         }
     }
     
-    // Update pagination
-    const currentPagination = d.querySelector('.pagination')?.closest('.row');
+    // Update pagination and results info (now combined in one element)
+    const currentPagination = d.querySelector('.pagination-container');
     
     if (newPagination) {
         if (currentPagination) {
-            // Update existing pagination
+            // Update existing pagination (which now includes results info)
             currentPagination.innerHTML = newPagination.innerHTML;
         } else {
             // Insert new pagination after tasks container
@@ -99,7 +83,7 @@ const updateContent = (html) => {
             }
         }
     } else {
-        // Remove current pagination if no pagination in response
+        // Remove current pagination if no pagination in response (e.g., when no tasks)
         if (currentPagination) {
             currentPagination.remove();
         }
@@ -163,10 +147,20 @@ const handleFilterSubmit = (form) => async () => {
     await submitFormWithDelay(form);
 };
 
-const handlePaginationClick = async (event) => {
-    event.preventDefault();
+// Usunięta funkcja handlePaginationClick - zastąpiona przez handlePaginationAction
+
+// =============================================================================
+// PAGINATION EVENT DELEGATION
+// =============================================================================
+
+/**
+ * Handles pagination clicks using event delegation
+ * This function is called by the universal event delegation system
+ */
+const handlePaginationAction = async (element, eventType, data) => {
+    if (eventType !== 'click') return;
     
-    const link = event.target.closest('a[data-page]');
+    const link = element.closest('a[data-page]');
     if (!link) return;
     
     const page = link.dataset.page;
@@ -201,6 +195,47 @@ const handlePaginationClick = async (event) => {
     }
 };
 
+// =============================================================================
+// LIMIT CHANGE HANDLER
+// =============================================================================
+
+/**
+ * Handles limit selector changes
+ * This function is called by the universal event delegation system
+ */
+const handleLimitChange = async (element, eventType, data) => {
+    if (eventType !== 'change') return;
+    
+    const form = d.querySelector('form[method="GET"]');
+    if (!form) return;
+    
+    // Update hidden limit field in form
+    const limitHiddenField = d.querySelector('#limitHiddenField');
+    if (limitHiddenField) {
+        limitHiddenField.value = element.value;
+    }
+    
+    // Reset page to 1 when limit changes
+    const pageInput = form.querySelector('input[name="page"]');
+    if (pageInput) {
+        pageInput.value = '1';
+    } else {
+        // Create hidden page input if it doesn't exist
+        const hiddenPageInput = d.createElement('input');
+        hiddenPageInput.type = 'hidden';
+        hiddenPageInput.name = 'page';
+        hiddenPageInput.value = '1';
+        form.appendChild(hiddenPageInput);
+    }
+    
+    await handleFilterSubmit(form)();
+};
+
+// =============================================================================
+// EXPORTS FOR EVENT DELEGATION
+// =============================================================================
+
+export { handlePaginationAction, handleLimitChange };
 
 
 const handleClearFilters = (form) => async () => {
@@ -251,29 +286,7 @@ const initializeFilterAjax = () => {
         clearFiltersBtn.addEventListener('click', handleClearFilters(form));
     }
     
-    // Handle pagination clicks using event delegation
-    document.addEventListener('click', handlePaginationClick);
-    
-    // Handle limit change
-    const limitSelect = d.querySelector('#limitSelect');
-    if (limitSelect) {
-        limitSelect.addEventListener('change', async (event) => {
-            // Reset page to 1 when limit changes
-            const pageInput = form.querySelector('input[name="page"]');
-            if (pageInput) {
-                pageInput.value = '1';
-            } else {
-                // Create hidden page input if it doesn't exist
-                const hiddenPageInput = d.createElement('input');
-                hiddenPageInput.type = 'hidden';
-                hiddenPageInput.name = 'page';
-                hiddenPageInput.value = '1';
-                form.appendChild(hiddenPageInput);
-            }
-            
-            await handleFilterSubmit(form)();
-        });
-    }
+    // Limit change is now handled by universal event delegation system
     
     // Handle browser back/forward buttons
     window.addEventListener('popstate', async (event) => {

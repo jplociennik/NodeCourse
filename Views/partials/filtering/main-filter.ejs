@@ -28,6 +28,8 @@ const hasFilter = filterConfig.features.includes('advancedFilters');
         action="<%= filterConfig.formAction || console.log(`Nie ma przypisanej akcji do formularza: ${filterConfig.formAction}`) %>">
         <!-- Hidden field to track advanced filters state -->
         <input type="hidden" name="advancedFiltersOpen" value="<%= query.advancedFiltersOpen ? 'true' : 'false' %>" id="advancedFiltersOpenField">
+        <!-- Hidden field for limit - will be updated by select in pagination -->
+        <input type="hidden" name="limit" value="<%= query.limit || '10' %>" id="limitHiddenField">
         <% if (hasSearch) { %>
         <!-- Search Section -->
         <div class="mb-4">
@@ -48,18 +50,7 @@ const hasFilter = filterConfig.features.includes('advancedFilters');
         </div>
         <% } %>
 
-        <!-- Results per page Section -->
-        <div class="mb-4">
-            <label class="form-label fw-bold">
-                <i class="bi bi-list-ul"></i> Wyniki na stronę
-            </label>
-            <select class="form-select" name="limit" id="limitSelect">
-                <option value="5" <%= parseInt(query.limit) === 5 ? 'selected' : '' %>>5 wyników</option>
-                <option value="10" <%= !query.limit || parseInt(query.limit) === 10 ? 'selected' : '' %>>10 wyników</option>
-                <option value="20" <%= parseInt(query.limit) === 20 ? 'selected' : '' %>>20 wyników</option>
-                <option value="50" <%= parseInt(query.limit) === 50 ? 'selected' : '' %>>50 wyników</option>
-            </select>
-        </div>
+
 
         <% if (hasFilter) { %>
         <!-- Advanced Filters Section -->

@@ -4,10 +4,6 @@ const { HomeController } = require('../controllers/home-controller');
 const { UserController } = require('../controllers/user-controller');
 const { AuthController } = require('../controllers/auth-controller');
 const { TaskController } = require('../controllers/task/task-controller');
-
-// Debug: sprawdź czy TaskController jest poprawnie zaimportowany
-console.log('TaskController loaded:', !!TaskController);
-console.log('TaskController methods:', Object.keys(TaskController || {}));
 const { authMiddleware } = require('../middleware/auth-middleware');
 const { createImageUpload, IsWrongImageMimeType } = require('../services/image-service');
 const apiRouter = require('./api');

@@ -731,3 +731,74 @@
         font-size: 0.875rem;
     }
 }
+
+/* Limit selector styling */
+.limit-select {
+    width: auto;
+    min-width: 80px;
+}
+
+/* =============================================================================
+   PAGINATION AND RESULTS INFO LAYOUT
+   ============================================================================= */
+
+/* Custom pagination container without Bootstrap padding */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 0;
+}
+
+/* Pagination on the left - no padding */
+.pagination-left {
+    flex: 1;
+    padding: 0;
+    display: flex;
+}
+
+/* Results info on the right */
+.pagination-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 0.5rem;
+}
+
+/* Compact layout for pagination and results info in one row */
+.pagination {
+    margin: 0;
+}
+
+/* Make the limit selector more compact */
+.limit-select {
+    width: auto;
+    min-width: 60px;
+    max-width: 80px;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Mobile responsiveness for the combined layout */
+@media (max-width: 768px) {
+    .pagination-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .pagination-left {
+        order: 2;
+    }
+    
+    .pagination-right {
+        order: 1;
+        justify-content: center;
+    }
+    
+    .limit-select {
+        min-width: 50px;
+        max-width: 60px;
+    }
+}

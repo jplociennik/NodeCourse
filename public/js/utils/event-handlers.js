@@ -166,6 +166,24 @@ const setupFilterActions = () => {
         const { toggleDateInput } = await import('../filtering/advanced-filter.js');
         toggleDateInput(filterId);
     });
+    
+    // Pagination handling
+    registerActionHandler('pagination', async (element, eventType, data) => {
+        if (eventType !== 'click') return;
+        
+        // Dynamic import for code splitting - only load when needed
+        const { handlePaginationAction } = await import('../filtering/filter-ajax.js');
+        handlePaginationAction(element, eventType, data);
+    });
+    
+    // Limit selector handling
+    registerActionHandler('limit-select', async (element, eventType, data) => {
+        if (eventType !== 'change') return;
+        
+        // Dynamic import for code splitting - only load when needed
+        const { handleLimitChange } = await import('../filtering/filter-ajax.js');
+        handleLimitChange(element, eventType, data);
+    });
 };
 
 // =============================================================================

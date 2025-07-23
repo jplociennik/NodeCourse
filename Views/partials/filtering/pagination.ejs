@@ -1,12 +1,13 @@
-<% if (paginationConfig) { %>
-<div class="row">
-    <% if (paginationConfig.pagesCount > 1) { %>
-    <div class="col-md-6">
-        <div class="pagination">
+<!-- Pagination and results info - always show -->
+<div class="pagination-container">
+    <!-- Pagination on the left -->
+    <div class="pagination-left">
+        <% if (paginationConfig) { %>
+        <div class="pagination <%= paginationConfig.pagesCount <= 1 ? 'd-none' : '' %>">
             <!-- Previous page -->
             <% if (paginationConfig.page > 1) { %>
                 <a href="?<%= new URLSearchParams({...query, page: paginationConfig.page - 1}) %>" 
-                   class="page-link" data-page="<%= paginationConfig.page - 1 %>">
+                   class="page-link" data-page="<%= paginationConfig.page - 1 %>" data-action="pagination">
                     <i class="bi bi-chevron-left"></i> Poprzednia
                 </a>
             <% } else { %>
@@ -23,7 +24,7 @@
             // Show first page if not in range
             if (startPage > 1) { %>
                 <a href="?<%= new URLSearchParams({...query, page: 1}) %>" 
-                   class="page-link" data-page="1">1</a>
+                   class="page-link" data-page="1" data-action="pagination">1</a>
                 <% if (startPage > 2) { %>
                     <span class="page-link disabled">...</span>
                 <% } %>
@@ -34,7 +35,7 @@
                     <span class="page-link active"><%= i %></span>
                 <% } else { %>
                     <a href="?<%= new URLSearchParams({...query, page: i}) %>" 
-                       class="page-link" data-page="<%= i %>"><%= i %></a>
+                       class="page-link" data-page="<%= i %>" data-action="pagination"><%= i %></a>
                 <% } %>
             <% } %>
 
@@ -44,7 +45,7 @@
                     <span class="page-link disabled">...</span>
                 <% } %>
                 <a href="?<%= new URLSearchParams({...query, page: paginationConfig.pagesCount}) %>" 
-                   class="page-link" data-page="<%= paginationConfig.pagesCount %>">
+                   class="page-link" data-page="<%= paginationConfig.pagesCount %>" data-action="pagination">
                     <%= paginationConfig.pagesCount %>
                 </a>
             <% } %>
@@ -52,7 +53,7 @@
             <!-- Next page -->
             <% if (paginationConfig.page < paginationConfig.pagesCount) { %>
                 <a href="?<%= new URLSearchParams({...query, page: paginationConfig.page + 1}) %>" 
-                   class="page-link" data-page="<%= paginationConfig.page + 1 %>">
+                   class="page-link" data-page="<%= paginationConfig.page + 1 %>" data-action="pagination">
                     Następna <i class="bi bi-chevron-right"></i>
                 </a>
             <% } else { %>
@@ -61,20 +62,35 @@
                 </span>
             <% } %>
         </div>
+        <% } %>
     </div>
-    <% } %>
     
-    <!-- Results info - always show -->
-    <div class="<%= paginationConfig.pagesCount > 1 ? 'col-md-6' : 'col-md-12' %> text-end">
-        <small class="text-muted">
-            <% if (paginationConfig.resultsCount > 0) { %>
-                Wyniki <%= (paginationConfig.page - 1) * paginationConfig.limit + 1 %> - 
-                <%= Math.min(paginationConfig.page * paginationConfig.limit, paginationConfig.resultsCount) %> 
-                z <%= paginationConfig.resultsCount %>
-            <% } else { %>
-                Brak wyników
-            <% } %>
-        </small>
+    <!-- Limit selector and results info on the right -->
+    <div class="pagination-right">
+        <div class="d-flex flex-row align-items-center justify-content-end gap-3">
+            <!-- Limit selector -->
+            <div class="d-flex align-items-center gap-2">
+                <small class="text-muted">Na stronę:</small>
+                <select class="form-select form-select-sm limit-select" name="limit" id="limitSelect" data-action="limit-select">
+                    <option value="5" <%= parseInt(query.limit) === 5 ? 'selected' : '' %>>5</option>
+                    <option value="10" <%= !query.limit || parseInt(query.limit) === 10 ? 'selected' : '' %>>10</option>
+                    <option value="20" <%= parseInt(query.limit) === 20 ? 'selected' : '' %>>20</option>
+                    <option value="50" <%= parseInt(query.limit) === 50 ? 'selected' : '' %>>50</option>
+                </select>
+            </div>
+            
+            <!-- Results info -->
+            <small class="text-muted">
+                <% if (paginationConfig && paginationConfig.resultsCount > 0) { %>
+                    Wyniki <%= (paginationConfig.page - 1) * paginationConfig.limit + 1 %> - 
+                    <%= Math.min(paginationConfig.page * paginationConfig.limit, paginationConfig.resultsCount) %> 
+                    z <%= paginationConfig.resultsCount %>
+                <% } else if (paginationConfig && paginationConfig.resultsCount === 0) { %>
+                    Brak wyników
+                <% } else { %>
+                    Ładowanie...
+                <% } %>
+            </small>
+        </div>
     </div>
-</div>
-<% } %>
+</div> 
