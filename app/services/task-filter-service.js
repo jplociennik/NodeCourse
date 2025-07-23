@@ -63,10 +63,29 @@ const buildWhereClause = (params, userId) => {
     }
     
     if (params.dateTo && params.dateTo.trim() !== '') {
-        where.$or = [
-            { dateTo: { $lte: params.dateTo } },
-            { dateTo: null, dateFrom: { $lte: params.dateTo } }
-        ];
+        // Create $and array to combine dateTo with other conditions
+        const dateToCondition = {
+            $or: [
+                { dateTo: { $lte: params.dateTo } },
+                { dateTo: null, dateFrom: { $lte: params.dateTo } }
+            ]
+        };
+        
+        // If we already have other conditions, use $and
+        if (Object.keys(where).length > 1) {
+            const existingConditions = { ...where };
+            delete existingConditions.user; // Remove user condition temporarily
+            
+            where.$and = [
+                existingConditions,
+                dateToCondition
+            ];
+            delete where.dateFrom; // Remove dateFrom as it's now in $and
+            delete where.taskName; // Remove taskName as it's now in $and
+        } else {
+            // If only user condition exists, just add dateTo
+            Object.assign(where, dateToCondition);
+        }
     }
     
     if (params.done === 'on') {
@@ -77,6 +96,7 @@ const buildWhereClause = (params, userId) => {
         where.isDone = false;
     }
     
+    console.log('buildWhereClause final where:', JSON.stringify(where, null, 2));
     return where;
 };
 
@@ -147,7 +167,7 @@ const getFilteredTasks = async (params, userId, withoutPagination = false) => {
     // Calculate statistics for all matching tasks (not just current page)
     const todoCount = await Task.countDocuments({ ...where, isDone: false });
     const doneCount = await Task.countDocuments({ ...where, isDone: true });
-    
+
     return {
         tasks,
         paginationConfig: {
@@ -157,17 +177,17 @@ const getFilteredTasks = async (params, userId, withoutPagination = false) => {
             limit
         },
         statisticsConfig: {
-            show: tasks.length > 0,
+            show: totalCount > 0,
             title: 'Statystyki zadań',
             items: [
                 {
                     id: 'todoCount',
-                    value: tasks.filter(t => !t.isDone).length,
+                    value: todoCount,
                     label: 'Do zrobienia'
                 },
                 {
                     id: 'doneCount',
-                    value: tasks.filter(t => t.isDone).length,
+                    value: doneCount,
                     label: 'Wykonane'
                 }
             ]
@@ -183,6 +203,8 @@ const getFilteredTasks = async (params, userId, withoutPagination = false) => {
 const saveFilterState = (session, query) => {
     session.filterState = {
         advancedFiltersOpen: query.advancedFiltersOpen === 'true',
+        q: query.q || '', // Save search query
+        sort: query.sort || '', // Save sort parameter
         dateFrom: query.dateFrom || '',
         dateTo: query.dateTo || '',
         enable_dateFrom: query.enable_dateFrom || null,
@@ -200,6 +222,8 @@ const saveFilterState = (session, query) => {
 const getFilterState = (session) => {
     return session.filterState || {
         advancedFiltersOpen: false,
+        q: '', // Default empty search
+        sort: '', // Default empty sort
         dateFrom: '',
         dateTo: '',
         enable_dateFrom: null,

@@ -41,11 +41,26 @@ const updateContent = (html) => {
     const tempDiv = d.createElement('div');
     tempDiv.innerHTML = html;
     
+    // Podmień statystyki na te z backendu
+    const newStatistics = tempDiv.querySelector('.statistics-row');
+    const currentStatisticsRow = d.querySelector('.statistics-row');
+    if (currentStatisticsRow && newStatistics) {
+        currentStatisticsRow.innerHTML = newStatistics.innerHTML;
+    } else if (currentStatisticsRow) {
+        currentStatisticsRow.innerHTML = '';
+    }
+    
     // Extract tasks container content or empty state
     const newTasksContainer = tempDiv.querySelector('.tasks-container');
     const newEmptyState = tempDiv.querySelector('.empty-state');
-    const newStatistics = tempDiv.querySelector('.statistics-row');
     const newPagination = tempDiv.querySelector('.pagination-container');
+    
+    // Update task count badge
+    const newTaskCountElement = tempDiv.querySelector('#taskCount');
+    const currentTaskCountElement = d.querySelector('#taskCount');
+    if (newTaskCountElement && currentTaskCountElement) {
+        currentTaskCountElement.textContent = newTaskCountElement.textContent;
+    }
     
     // Update tasks container
     const tasksContainer = d.querySelector('.tasks-container');
@@ -54,17 +69,6 @@ const updateContent = (html) => {
             tasksContainer.innerHTML = newTasksContainer.innerHTML;
         } else if (newEmptyState) {
             tasksContainer.innerHTML = newEmptyState.outerHTML;
-        }
-    }
-    
-    // Update statistics - always update, even if newStatistics is null (means 0 tasks)
-    const statisticsRow = d.querySelector('.statistics-row');
-    if (statisticsRow) {
-        if (newStatistics) {
-            statisticsRow.innerHTML = newStatistics.innerHTML;
-        } else {
-            // If no statistics found in response, it means 0 tasks - hide statistics or show 0
-            statisticsRow.innerHTML = '';
         }
     }
     
@@ -228,6 +232,7 @@ const handleLimitChange = async (element, eventType, data) => {
         form.appendChild(hiddenPageInput);
     }
     
+    // Submit form immediately for limit changes (no debounce needed)
     await handleFilterSubmit(form)();
 };
 
@@ -235,7 +240,7 @@ const handleLimitChange = async (element, eventType, data) => {
 // EXPORTS FOR EVENT DELEGATION
 // =============================================================================
 
-export { handlePaginationAction, handleLimitChange };
+export { handlePaginationAction, handleLimitChange, handleFilterSubmit };
 
 
 const handleClearFilters = (form) => async () => {
@@ -268,22 +273,36 @@ const initializeFilterAjax = () => {
     // Initialize advanced filters
     initializeAdvancedFilters();
     
-    // Handle search button click (with debounce)
+    // Create a single debounced function for all filter actions
+    const debouncedFilterSubmit = debounce(handleFilterSubmit(form), 300);
+    
+    // Handle search button click
     const searchBtn = d.querySelector('#searchBtn');
     if (searchBtn) {
-        searchBtn.addEventListener('click', debounce(handleFilterSubmit(form), 300));
+        searchBtn.addEventListener('click', debouncedFilterSubmit);
     }
     
-    // Handle apply filters button click (with debounce)
+    // Handle apply filters button click
     const applyFiltersBtn = d.querySelector('#applyFiltersBtn');
     if (applyFiltersBtn) {
-        applyFiltersBtn.addEventListener('click', debounce(handleFilterSubmit(form), 300));
+        applyFiltersBtn.addEventListener('click', debouncedFilterSubmit);
     }
     
     // Handle clear filters button
     const clearFiltersBtn = d.querySelector('#clearFiltersBtn');
     if (clearFiltersBtn) {
         clearFiltersBtn.addEventListener('click', handleClearFilters(form));
+    }
+    
+    // Handle search input enter key
+    const searchInput = d.querySelector('#searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                debouncedFilterSubmit();
+            }
+        });
     }
     
     // Limit change is now handled by universal event delegation system

@@ -3,7 +3,6 @@
 // =============================================================================
 
 import { d, setText, setClass, setStyle, apiPost, onReady } from './utils/helpers.js';
-import { StatisticsUtils } from './utils/statistics.js';
 
 // =============================================================================
 // CONSTANTS & CONFIGURATION
@@ -149,7 +148,7 @@ const toggleTaskStatus = async (taskId, checkbox) => {
  * @param {string} taskId - The ID of the task
  * @param {boolean} isDone - Whether the task is completed
  */
-const updateTaskUI = (taskId, isDone) => {
+const updateTaskUI = async (taskId, isDone) => {
 
     const statusBadge = d.querySelector(`#status-${taskId}`);
     if (statusBadge) {
@@ -165,7 +164,17 @@ const updateTaskUI = (taskId, isDone) => {
         setTaskTitleColor(titleElement, !isDone);
     }
     
-    StatisticsUtils.updateStatistics();
+    // Update statistics from backend after task status change
+    try {
+        const form = d.querySelector('form[method="GET"]');
+        if (form) {
+            // Import and call the filter AJAX function to refresh statistics
+            const { handleFilterSubmit } = await import('./filtering/filter-ajax.js');
+            await handleFilterSubmit(form)();
+        }
+    } catch (error) {
+        console.error('Error updating statistics after task status change:', error);
+    }
 };
 
 // =============================================================================
