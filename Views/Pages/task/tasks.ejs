@@ -55,7 +55,7 @@
                     <% } %>
                     <% if (tasks.length > 0) { %>
                         <p class="lead">Znaleziono <span class="badge task-count" id="taskCount"><%= paginationConfig.resultsCount %></span> zadań.</p>
-                        <div class="row tasks-container">
+                        <div class="row" id="tasksContainer">
                             <% tasks.forEach((task, index) => { %>
                                 <div class="col-md-6 mb-3">
                                     <div class="card h-100 task-card">
@@ -164,7 +164,7 @@
                         }) %>
                         
                     <% } else { %>
-                        <div class="text-center py-5 empty-state">
+                        <div class="text-center py-5" id="emptyState">
                             <i class="bi bi-clipboard-x display-1 text-muted"></i>
                             <h3 class="text-muted mt-3">Brak zadań</h3>
                         </div>

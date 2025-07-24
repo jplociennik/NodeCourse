@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { d, setText, setClass, setStyle, apiPost, onReady } from './utils/helpers.js';
+import { showErrorModal } from './utils/alert-utils.js';
 
 // =============================================================================
 // CONSTANTS & CONFIGURATION
@@ -17,7 +18,6 @@ const MESSAGES = {
     ERROR: 'Błąd podczas aktualizacji zadania',
     NETWORK_ERROR: 'Błąd połączenia z serwerem'
 };
-
 
 const CSS_CLASSES = {
     BADGE_SUCCESS: 'badge task-status bg-success',
@@ -65,23 +65,7 @@ const setTaskTitleColor = (titleElement, isIncomplete) => {
 };
 
 
-/**
- * Shows an error message to the user using Bootstrap modal
- * @param {string} message - The error message to display
- * @param {string} title - Optional title for the error modal
- */
-const showErrorMessage = (message, title = 'Błąd') => {
-    const errorModal = d.querySelector('#errorModal');
-    const errorTitle = d.querySelector('#errorModalTitle');
-    const errorMessage = d.querySelector('#errorModalMessage');
-    
-    if (errorModal && setText(errorTitle, title) && setText(errorMessage, message)) {
-        new bootstrap.Modal(errorModal).show();
-    } else {
-        console.error('Error modal elements not found, falling back to alert');
-        alert(`${title}: ${message}`);
-    }
-};
+// Removed showErrorMessage - now using showErrorModal from alert-utils.js
 
 /**
  * Sets initial colors for task titles based on their status
@@ -139,7 +123,7 @@ const toggleTaskStatus = async (taskId, checkbox) => {
         console.error('Error toggling task status:', error);
         
         checkbox.checked = !originalState;               
-        showErrorMessage(error.message.includes('Failed to fetch') ? MESSAGES.NETWORK_ERROR : MESSAGES.ERROR);
+        showErrorModal(error.message.includes('Failed to fetch') ? MESSAGES.NETWORK_ERROR : MESSAGES.ERROR);
     }
 };
 
@@ -166,11 +150,11 @@ const updateTaskUI = async (taskId, isDone) => {
     
     // Update statistics from backend after task status change
     try {
-        const form = d.querySelector('form[method="GET"]');
+        const form = d.querySelector('#filterForm');
         if (form) {
-            // Import and call the filter AJAX function to refresh statistics
-            const { handleFilterSubmit } = await import('./filtering/filter-ajax.js');
-            await handleFilterSubmit(form)();
+            // Import and call the AJAX function to refresh statistics
+            const { submitFormWithDelay } = await import('./filtering/ajax-requests.js');
+            await submitFormWithDelay(form);
         }
     } catch (error) {
         console.error('Error updating statistics after task status change:', error);

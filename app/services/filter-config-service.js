@@ -79,18 +79,6 @@ const createSortFieldsConfig = (fieldMappings) => {
 };
 
 /**
- * Merges custom config with default config
- * @param {Object} customConfig - Custom configuration to merge
- * @returns {Object} Merged configuration
- */
-const mergeWithDefaults = (customConfig = {}) => {
-    return {
-        ...DEFAULT_FILTER_CONFIG,
-        ...customConfig
-    };
-};
-
-/**
  * Creates a complete filter configuration
  * @param {Object} options - Configuration options
  * @param {string} options.formAction - Form action URL
@@ -102,33 +90,11 @@ const mergeWithDefaults = (customConfig = {}) => {
  * @returns {Object} Complete filter configuration
  */
 const createFilterConfig = (options = {}) => {
-    const {
-        formAction,
-        sortOptions = [],
-        filterOptions = [],
-        searchConfig = {},
-        sortConfig = {},
-        filterConfig = {}
-    } = options;
 
-    return mergeWithDefaults({
-        formAction,
-        searchConfig: {
-            placeholder: 'Wpisz nazwę...',
-            label: 'Szukaj',
-            ...searchConfig
-        },
-        sortConfig: {
-            label: 'Sortuj według',
-            options: sortOptions,
-            ...sortConfig
-        },
-        filterConfig: {
-            label: 'Filtry zaawansowane',
-            options: filterOptions,
-            ...filterConfig
-        }
-    });
+    return {
+        ...DEFAULT_FILTER_CONFIG,
+        ...options
+    };  
 };
 
 // =============================================================================
@@ -139,6 +105,5 @@ module.exports = {
     getDefaultSortFieldTypes,
     getDefaultFilterConfig,
     createSortFieldsConfig,
-    mergeWithDefaults,
     createFilterConfig
 }; 

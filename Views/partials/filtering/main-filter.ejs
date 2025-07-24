@@ -1,6 +1,6 @@
 <%
 // Default configuration - will be overridden by passed config
-const filterConfig = {
+const config = {
     features: ['search', 'sort'],
     title: 'Wyszukiwanie i sortowanie',
     searchConfig: {
@@ -15,28 +15,29 @@ const filterConfig = {
         label: 'Filtry zaawansowane',
         options: []
     },
-    ...config
+    ...mainFilterConfig
 };
-
-const hasSearch = filterConfig.features.includes('search');
-const hasSort = filterConfig.features.includes('sort');
-const hasFilter = filterConfig.features.includes('advancedFilters');
 %>
 
 <!-- Filter content without card wrapper - will be rendered inside sidebar -->
-    <form method="GET" 
-        action="<%= filterConfig.formAction || console.log(`Nie ma przypisanej akcji do formularza: ${filterConfig.formAction}`) %>">
+    <form method="GET" id="filterForm"
+        action="<%= config.formAction || console.log(`Nie ma przypisanej akcji do formularza: ${config.formAction}`) %>">
         <!-- Hidden field to track advanced filters state -->
         <input type="hidden" name="advancedFiltersOpen" value="<%= query.advancedFiltersOpen ? 'true' : 'false' %>" id="advancedFiltersOpenField">
         <!-- Hidden field for limit - will be updated by select in pagination -->
         <input type="hidden" name="limit" value="<%= query.limit || '10' %>" id="limitHiddenField">
+
+        <% const hasSearch = config.features.includes('search') %>
+        <% const hasSort = config.features.includes('sort') %>
+        <% const hasFilter = config.features.includes('advancedFilters') %>
+
         <% if (hasSearch) { %>
         <!-- Search Section -->
         <div class="mb-4">
             <label class="form-label fw-bold">
-                <i class="bi bi-search"></i> <%= filterConfig.searchConfig.label %>
+                <i class="bi bi-search"></i> <%= config.searchConfig.label %>
             </label>
-            <%- include('./searchbar', { config: filterConfig.searchConfig, query: query }) %>
+            <%- include('./searchbar', { config: config.searchConfig, query: query }) %>
         </div>
         <% } %>
 
@@ -44,23 +45,21 @@ const hasFilter = filterConfig.features.includes('advancedFilters');
         <!-- Sort Section -->
         <div class="mb-4">
             <label class="form-label fw-bold">
-                <i class="bi bi-sort-alpha-down"></i> <%= filterConfig.sortConfig.label %>
+                <i class="bi bi-sort-alpha-down"></i> <%= config.sortConfig.label %>
             </label>
-            <%- include('./sortbar', { config: filterConfig.sortConfig, query: query }) %>
+            <%- include('./sortbar', { config: config.sortConfig, query: query }) %>
         </div>
         <% } %>
-
-
 
         <% if (hasFilter) { %>
         <!-- Advanced Filters Section -->
         <div class="mb-4">
             <div id="advancedFiltersToggle" class="form-label fw-bold cursor-pointer">
-                <i class="bi bi-filter"></i> <%= filterConfig.filterConfig.label %>
+                <i class="bi bi-filter"></i> <%= config.filterConfig.label %>
                 <i id="filterToggleIcon" class="bi <%= query.advancedFiltersOpen ? 'bi-chevron-up' : 'bi-chevron-down' %> ms-1"></i>
             </div>
             <div id="advancedFilters" class="<%= query.advancedFiltersOpen ? '' : 'advanced-filters-hidden' %>">
-                <%- include('./filter', { config: filterConfig.filterConfig, query: query }) %>
+                <%- include('./filter', { config: config.filterConfig, query: query }) %>
             </div>
         </div>
         <% } %>
@@ -82,5 +81,5 @@ const hasFilter = filterConfig.features.includes('advancedFilters');
         <% } %>
     </form>
 
-<script type="application/json" id="filterConfig"><%- JSON.stringify(filterConfig) %></script>
+<script type="application/json" id="filterConfig"><%- JSON.stringify(config) %></script>
 <script type="module" src="/js/filtering/filter-ajax.js"></script>

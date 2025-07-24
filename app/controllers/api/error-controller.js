@@ -1,6 +1,10 @@
 const ApiErrorController = {
   
-  // Handle validation errors
+  /**
+   * Handles validation errors for API responses
+   * @param {Object} res - Express response object
+   * @param {Error} error - Validation error object
+   */
   handleValidationError: (res, error) => {
     const errors = {};
     
@@ -18,7 +22,11 @@ const ApiErrorController = {
     });
   },
 
-  // Handle not found errors
+  /**
+   * Handles not found errors for API responses
+   * @param {Object} res - Express response object
+   * @param {string} resource - Resource name that was not found
+   */
   handleNotFound: (res, resource = 'Resource') => {
     res.status(404).json({
       success: false,
@@ -27,7 +35,11 @@ const ApiErrorController = {
     });
   },
 
-  // Handle unauthorized errors
+  /**
+   * Handles unauthorized access errors for API responses
+   * @param {Object} res - Express response object
+   * @param {string} message - Custom error message
+   */
   handleUnauthorized: (res, message = 'Unauthorized access') => {
     res.status(401).json({
       success: false,
@@ -36,7 +48,11 @@ const ApiErrorController = {
     });
   },
 
-  // Handle forbidden errors
+  /**
+   * Handles forbidden access errors for API responses
+   * @param {Object} res - Express response object
+   * @param {string} message - Custom error message
+   */
   handleForbidden: (res, message = 'Access forbidden') => {
     res.status(403).json({
       success: false,
@@ -45,7 +61,12 @@ const ApiErrorController = {
     });
   },
 
-  // Handle server errors
+  /**
+   * Handles server errors for API responses
+   * @param {Object} res - Express response object
+   * @param {Error} error - Error object
+   * @param {string} message - Custom error message
+   */
   handleServerError: (res, error, message = 'Internal server error') => {
     console.error('API Error:', error);
     
@@ -57,7 +78,11 @@ const ApiErrorController = {
     });
   },
 
-  // Handle database errors
+  /**
+   * Handles database errors for API responses
+   * @param {Object} res - Express response object
+   * @param {Error} error - Database error object
+   */
   handleDatabaseError: (res, error) => {
     if (error.name === 'MongoServerError' && error.code === 11000) {
       return res.status(409).json({
@@ -70,7 +95,11 @@ const ApiErrorController = {
     ApiErrorController.handleServerError(res, error, 'Database operation failed');
   },
 
-  // Handle general errors
+  /**
+   * Handles general errors for API responses
+   * @param {Object} res - Express response object
+   * @param {Error} error - Error object
+   */
   handleError: (res, error) => {
     if (error.name === 'ValidationError') {
       return ApiErrorController.handleValidationError(res, error);

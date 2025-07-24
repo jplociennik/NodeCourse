@@ -3,14 +3,7 @@
 // General DOM manipulation functions for any type of items
 // =============================================================================
 
-// =============================================================================
-// CONSTANTS
-// =============================================================================
 
-const DOM_SELECTORS = {
-    SEARCH_INPUT: '#searchInput',
-    SORT_SELECT: '#sortSelect'
-};
 
 // =============================================================================
 // DOM QUERY FUNCTIONS
@@ -230,9 +223,6 @@ const updateItemCounter = (itemClass, counterSelector) => {
 // =============================================================================
 
 export { 
-    // Constants
-    DOM_SELECTORS,
-    
     // Query functions
     getAllItems,
     getVisibleItems,

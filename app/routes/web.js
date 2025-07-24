@@ -1,7 +1,7 @@
 const express = require('express');
 const { notFoundMiddleware } = require('../middleware/error-middleware');
 const { HomeController } = require('../controllers/home-controller');
-const { UserController } = require('../controllers/user-controller');
+const { UserController } = require('../controllers/user/user-controller');
 const { AuthController } = require('../controllers/auth-controller');
 const { TaskController } = require('../controllers/task/task-controller');
 const { authMiddleware } = require('../middleware/auth-middleware');

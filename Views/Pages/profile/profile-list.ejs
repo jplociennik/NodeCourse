@@ -1,9 +1,9 @@
 <div class="row">
     <!-- Search and Sort Sidebar -->
-    <% 
+    <%
     // Generate filter content and statistics
     const filterContent = include('../../partials/filtering/main-filter', { 
-        config: filterConfig, 
+        mainFilterConfig: mainFilterConfig, 
         query: query, 
         users: users 
     });
@@ -13,8 +13,8 @@
     const fullContent = filterContent + statisticsContent;
     %>
     <%- include('../../partials/sidebar', { 
-        sidebarTitle: filterConfig.title,
-        sidebarIcon: filterConfig.icon,
+        sidebarTitle: mainFilterConfig.title,
+        sidebarIcon: mainFilterConfig.icon,
         useCustomContent: true,
         customContent: fullContent
     }) %>
@@ -80,5 +80,4 @@
         </div>
 </div>
 
-<!-- Profile-specific JavaScript -->
-<script src="/js/profile-statistics.js"></script> 
+ 

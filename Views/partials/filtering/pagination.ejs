@@ -1,5 +1,5 @@
 <!-- Pagination and results info - always show -->
-<div class="pagination-container">
+<div class="pagination-container" id="paginationContainer">
     <!-- Pagination on the left -->
     <div class="pagination-left">
         <% if (paginationConfig) { %>
@@ -8,11 +8,11 @@
             <% if (paginationConfig.page > 1) { %>
                 <a href="?<%= new URLSearchParams({...query, page: paginationConfig.page - 1}) %>" 
                    class="page-link" data-page="<%= paginationConfig.page - 1 %>" data-action="pagination">
-                    <i class="bi bi-chevron-left"></i> Poprzednia
+                    <i class="bi bi-chevron-left"></i>
                 </a>
             <% } else { %>
                 <span class="page-link disabled">
-                    <i class="bi bi-chevron-left"></i> Poprzednia
+                    <i class="bi bi-chevron-left"></i>
                 </span>
             <% } %>
 
@@ -54,11 +54,11 @@
             <% if (paginationConfig.page < paginationConfig.pagesCount) { %>
                 <a href="?<%= new URLSearchParams({...query, page: paginationConfig.page + 1}) %>" 
                    class="page-link" data-page="<%= paginationConfig.page + 1 %>" data-action="pagination">
-                    Następna <i class="bi bi-chevron-right"></i>
+                    <i class="bi bi-chevron-right"></i>
                 </a>
             <% } else { %>
                 <span class="page-link disabled">
-                    Następna <i class="bi bi-chevron-right"></i>
+                    <i class="bi bi-chevron-right"></i>
                 </span>
             <% } %>
         </div>

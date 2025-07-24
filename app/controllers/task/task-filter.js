@@ -1,16 +1,5 @@
-// =============================================================================
-// TASK FILTER SERVICE
-// =============================================================================
-
-const { Task } = require('../db/mongoose');
-
-/**
- * Service for handling task filtering, sorting, and pagination
- */
-
-// =============================================================================
-// CONSTANTS & CONFIGURATION
-// =============================================================================
+const { Task } = require('../../db/mongoose.js');
+const FilterService = require('../../services/filter-service.js');
 
 const VALID_LIMITS = [5, 10, 20, 50];
 const DEFAULT_LIMIT = 10;
@@ -20,27 +9,23 @@ const DEFAULT_LIMIT = 10;
 // =============================================================================
 
 /**
- * Validates and returns a safe limit value
- * @param {number} limit - The requested limit
- * @returns {number} Validated limit
+ * Calculates todo and done counts based on filter conditions
+ * @param {Object} where - Where clause for filtering
+ * @param {number} totalCount - Total count of filtered tasks
+ * @returns {Object} Object with todoCount and doneCount
  */
-const validateLimit = (limit) => {
-    const parsedLimit = parseInt(limit) || DEFAULT_LIMIT;
-    return VALID_LIMITS.includes(parsedLimit) ? parsedLimit : DEFAULT_LIMIT;
-};
-
-/**
- * Validates and returns a safe page number
- * @param {number} page - The requested page
- * @param {number} pagesCount - Total number of pages
- * @returns {number} Validated page number
- */
-const validatePage = (page, pagesCount) => {
-    const parsedPage = parseInt(page) || 1;
-    if (parsedPage > pagesCount && pagesCount > 0) {
-        return 1; // Reset to first page if current page is out of range
-    }
-    return parsedPage;
+const calculateTaskStatistics = async (where, totalCount) => {
+    if (where.isDone === true) 
+        return { todoCount: 0, doneCount: totalCount };  
+    if (where.isDone === false) 
+        return { todoCount: totalCount, doneCount: 0 };
+       
+    const [todoCount, doneCount] = await Promise.all([
+        Task.countDocuments({ ...where, isDone: false }),
+        Task.countDocuments({ ...where, isDone: true })
+    ]);
+    
+    return { todoCount, doneCount };
 };
 
 /**
@@ -52,12 +37,8 @@ const validatePage = (page, pagesCount) => {
 const buildWhereClause = (params, userId) => {
     const where = { user: userId };
     
-    // Text search (from main form)
-    if (params.q && params.q.trim() !== '') {
-        where.taskName = { $regex: params.q, $options: 'i' };
-    }
+    FilterService.addTextSearchCondition(where, params, 'taskName');
     
-    // Advanced filters (from session)
     if (params.dateFrom && params.dateFrom.trim() !== '') {
         where.dateFrom = { $gte: params.dateFrom };
     }
@@ -80,8 +61,8 @@ const buildWhereClause = (params, userId) => {
                 existingConditions,
                 dateToCondition
             ];
-            delete where.dateFrom; // Remove dateFrom as it's now in $and
-            delete where.taskName; // Remove taskName as it's now in $and
+            delete where.dateFrom;
+            delete where.taskName;
         } else {
             // If only user condition exists, just add dateTo
             Object.assign(where, dateToCondition);
@@ -95,35 +76,33 @@ const buildWhereClause = (params, userId) => {
     if (params.todo === 'on') {
         where.isDone = false;
     }
-    
-    console.log('buildWhereClause final where:', JSON.stringify(where, null, 2));
     return where;
 };
 
 /**
- * Applies sorting to the query
- * @param {Object} query - Mongoose query object
- * @param {string} sort - Sort parameter (e.g., "taskName|asc")
- * @returns {Object} Query with sorting applied
+ * Creates task-specific statistics configuration
+ * @param {number} todoCount - Number of todo tasks
+ * @param {number} doneCount - Number of done tasks
+ * @returns {Object} Statistics configuration
  */
-const applySorting = (query, sort) => {
-    if (sort && sort.trim() !== '') {
-        const sortParts = sort.split('|');
-        const sortDirection = sortParts[1] === 'desc' ? -1 : 1;
-        return query.sort({ [sortParts[0]]: sortDirection });
-    }
-    return query;
-};
-
-/**
- * Applies pagination to the query
- * @param {Object} query - Mongoose query object
- * @param {number} page - Current page
- * @param {number} limit - Items per page
- * @returns {Object} Query with pagination applied
- */
-const applyPagination = (query, page, limit) => {
-    return query.skip((page - 1) * limit).limit(limit);
+const createTaskStatistics = (todoCount, doneCount) => {
+    const totalCount = todoCount + doneCount;
+    return {
+        show: totalCount > 0,
+        title: 'Statystyki zadań',
+        items: [
+            {
+                id: 'todoCount',
+                value: todoCount,
+                label: 'Do zrobienia'
+            },
+            {
+                id: 'doneCount',
+                value: doneCount,
+                label: 'Wykonane'
+            }
+        ]
+    };
 };
 
 // =============================================================================
@@ -138,9 +117,8 @@ const applyPagination = (query, page, limit) => {
  * @returns {Object} Object containing tasks, pagination config, and statistics
  */
 const getFilteredTasks = async (params, userId, withoutPagination = false) => {
-    // Validate and prepare parameters
-    const limit = validateLimit(params.limit);
-    const q = params.q || '';
+    // Validate and prepare parameters using shared functions
+    const limit = FilterService.validateLimit(params.limit, VALID_LIMITS, DEFAULT_LIMIT);
     const sort = params.sort || '';
     
     // Build where clause
@@ -150,23 +128,22 @@ const getFilteredTasks = async (params, userId, withoutPagination = false) => {
     const totalCount = await Task.countDocuments(where);
     const pagesCount = Math.ceil(totalCount / limit);
     
-    // Validate page number
-    const page = validatePage(params.page, pagesCount);
+    // Validate page number using shared function
+    const page = FilterService.validatePage(params.page, pagesCount);
     
-    // Build and execute query
+    // Calculate statistics for all matching tasks (not just current page)
+    const { todoCount, doneCount } = await calculateTaskStatistics(where, totalCount);
+
+    // Build and execute query using shared functions
     let query = Task.find(where);
-    query = applySorting(query, sort);
+    query = FilterService.applySorting(query, sort);
     
     // Apply pagination only if not requesting all filtered tasks
     if (!withoutPagination) {
-        query = applyPagination(query, page, limit);
+        query = FilterService.applyPagination(query, page, limit);
     }
     
     const tasks = await query.exec();
-    
-    // Calculate statistics for all matching tasks (not just current page)
-    const todoCount = await Task.countDocuments({ ...where, isDone: false });
-    const doneCount = await Task.countDocuments({ ...where, isDone: true });
 
     return {
         tasks,
@@ -176,22 +153,7 @@ const getFilteredTasks = async (params, userId, withoutPagination = false) => {
             resultsCount: totalCount,
             limit
         },
-        statisticsConfig: {
-            show: totalCount > 0,
-            title: 'Statystyki zadań',
-            items: [
-                {
-                    id: 'todoCount',
-                    value: todoCount,
-                    label: 'Do zrobienia'
-                },
-                {
-                    id: 'doneCount',
-                    value: doneCount,
-                    label: 'Wykonane'
-                }
-            ]
-        }
+        statisticsConfig: createTaskStatistics(todoCount, doneCount)
     };
 };
 

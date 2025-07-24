@@ -1,0 +1,61 @@
+/* CSS Variables and Color System */
+:root {
+    /* Light theme colors */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #868e96;
+    --border-color: #dee2e6;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --shadow-hover: rgba(0, 0, 0, 0.15);
+    
+    /* Green theme colors */
+    --custom-green: #28a745;
+    --custom-green-dark: #218838;
+    --custom-green-light: #34ce57;
+    --custom-green-bg: rgba(40, 167, 69, 0.1);
+    
+    /* Turquoise colors */
+    --turquoise: #369992;
+    --turquoise-light: #4ab3a8;
+    --turquoise-dark: #2a7a73;
+    
+    /* Blue colors */
+    --custom-blue: #5a9fd4;
+    --custom-blue-dark: #4a8bc2;
+    
+    /* Navigation colors */
+    --nav-bg: #343a40;
+    --nav-text: #ffffff;
+    --nav-hover: #495057;
+}
+
+/* Dark theme colors */
+[data-theme="dark"] {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --text-primary: #f0f6fc;
+    --text-secondary: #7d8590;
+    --text-muted: #656d76;
+    --border-color: #30363d;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --shadow-hover: rgba(0, 0, 0, 0.6);
+    
+    --custom-green: #238636;
+    --custom-green-dark: #1a7f37;
+    --custom-green-light: #2ea043;
+    --custom-green-bg: rgba(35, 134, 54, 0.15);
+    
+    --nav-bg: #010409;
+    --nav-text: #f0f6fc;
+    --nav-hover: #21262d;
+}
+
+/* Utility color classes */
+.text-turquoise { color: var(--turquoise) !important; }
+.text-custom-blue { color: var(--custom-blue) !important; }
+.bg-turquoise { background-color: var(--turquoise) !important; }
+.border-turquoise { border-color: var(--turquoise) !important; } 

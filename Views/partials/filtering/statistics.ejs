@@ -12,7 +12,7 @@ const showStatistics = statisticsConfig && statisticsConfig.show && statisticsCo
     <h6 class="text-success mb-3">
         <i class="bi bi-bar-chart"></i> <%= statisticsConfig.title || 'Statystyki' %>
     </h6>
-    <div class="row statistics-row text-center">
+    <div class="row text-center" id="statisticsRow">
         <% statisticsConfig.items.forEach((item, index) => { %>
         <div class="col-<%= Math.floor(12 / statisticsConfig.items.length) %>">
             <div class="bg-dark p-2 rounded border border-secondary statistics-card">

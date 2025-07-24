@@ -6,7 +6,7 @@ const { Task } = require('../../db/mongoose');
 const { User } = require('../../db/mongoose');
 const { ErrorController } = require('../error-controller');
 const { removeTaskImage } = require('../../services/image-service');
-const TaskFilterService = require('../../services/task-filter-service.js');
+const TaskFilterService = require('./task-filter.js');
 const CsvExportService = require('../../services/csv-export-service.js');
 const { TaskControllerConfig } = require('./task-controller-config.js');
 const { sampleTasks } = require('../../db/sample-tasks');
@@ -17,6 +17,11 @@ const TaskController = {
   // ROUTING FUNCTIONS
   // =============================================================================
 
+  /**
+   * Gets tasks page with filtering and pagination
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   getTasksPage: async (req, res) => {
     try {
         // Save advanced filters state to session
@@ -51,7 +56,7 @@ const TaskController = {
             query: params, // Merge req.query with advanced filters state
             hasGeneratedSampleTasks: hasGeneratedSampleTasks,
             paginationConfig: paginationConfig,
-            filterConfig: await TaskControllerConfig.getFilterConfig(),
+            mainFilterConfig: TaskControllerConfig.getMainFilterConfig(),
             statisticsConfig: statisticsConfig
         });
     } catch (error) {
@@ -59,6 +64,11 @@ const TaskController = {
     }
   },
 
+  /**
+   * Shows add task form
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   showAddTaskForm: async (req, res) => {
     try {
       const formConfig = await TaskControllerConfig.getFormConfig('add', req);
@@ -69,6 +79,11 @@ const TaskController = {
     }
   },
 
+  /**
+   * Adds new task to database
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   addTask: async (req, res) => {
     try {
       const { taskName, dateFrom, dateTo } = req.body;
@@ -89,6 +104,11 @@ const TaskController = {
     }
   },
 
+  /**
+   * Shows edit task form
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   showEditTaskForm: async (req, res) => {
     try {
       const { id } = req.params;
@@ -108,6 +128,11 @@ const TaskController = {
     }
   },
 
+  /**
+   * Updates existing task in database
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   editTask: async (req, res) => {
     try {
       const { id } = req.params;
@@ -131,6 +156,11 @@ const TaskController = {
     }
   },
 
+  /**
+   * Deletes task from database
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   deleteTask: async (req, res) => {
     try {
       const { id } = req.params;
@@ -145,6 +175,11 @@ const TaskController = {
     }
   },
 
+  /**
+   * Removes image from task
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   deleteImage: async (req, res) => {
     try {
       const { id } = req.params;
@@ -162,6 +197,11 @@ const TaskController = {
     }
   },
 
+  /**
+   * Toggles task completion status
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   toggleTaskStatus: async (req, res) => {
     try {
       const { id } = req.params;
@@ -180,6 +220,11 @@ const TaskController = {
     }
   },
 
+  /**
+   * Generates sample tasks for current user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   generateSampleTasks: async (req, res) => {
     try {
       const userId = req.session.userId;
@@ -214,6 +259,11 @@ const TaskController = {
   // CSV EXPORT FUNCTIONS
   // =============================================================================
 
+  /**
+   * Exports filtered tasks to CSV format
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   exportFilteredTasks: async (req, res) => {
     try {
       // Get advanced filters state from session
@@ -233,6 +283,11 @@ const TaskController = {
     }
   },
 
+  /**
+   * Exports all user tasks to CSV format
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   exportAllTasks: async (req, res) => {
     try {
       const tasks = await Task.find({ user: req.session.userId });
