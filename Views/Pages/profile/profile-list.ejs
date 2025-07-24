@@ -27,10 +27,11 @@
                 </div>
                 <div class="card-body">
                     <!-- Profiles Grid -->
-                    <div class="profiles-container">
+                    <div id="profilesContainer" class="profiles-container">
                         <div class="row">
                             <% users.forEach((user, index) => { %>
                                 <div class="col-md-6 mb-3 profile-item" 
+                                     id="profileItem-<%= user.id %>"
                                      data-name="<%= user.name.toLowerCase() %>" 
                                      data-id="<%= user.id %>"
                                      data-created="<%= user.createdAt ? new Date(user.createdAt).toISOString() : '' %>">

@@ -26,7 +26,7 @@ const makeAjaxRequest = async (url) => {
  * Submits form with delay and loading state
  * @param {HTMLFormElement} form - Form to submit
  */
-const submitFormWithDelay = async (form) => {
+const submitFormWithDelay = async (form, pageName) => {
     const formData = new FormData(form);
     const params = new URLSearchParams(formData);
     const url = `${form.action}?${params.toString()}`;
@@ -35,7 +35,7 @@ const submitFormWithDelay = async (form) => {
     saveScrollPosition();
     
     // Start loading timer
-    const loadingTimer = setTimeout(showLoading, LOADING_DELAY);
+    const loadingTimer = setTimeout(() => showLoading(pageName), LOADING_DELAY);
     
     try {
         const html = await makeAjaxRequest(url);
@@ -47,7 +47,7 @@ const submitFormWithDelay = async (form) => {
         updateURL(params);
         
         // Update content
-        updateContent(html);
+        await updateContent(html, pageName);
         
         // Restore scroll position after content update
         restoreScrollPosition();

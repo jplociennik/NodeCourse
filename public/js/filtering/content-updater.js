@@ -13,54 +13,60 @@ import { initializeAdvancedFilters } from './advanced-filter.js';
 /**
  * Updates page content from HTML response
  * @param {string} html - HTML content from server
+ * @param {string} pageName - Name of the current page (tasks or profile)
  */
-const updateContent = (html) => {
+const updateContent = async (html, pageName) => {
     const tempDiv = d.createElement('div');
     tempDiv.innerHTML = html;
     
     // Update statistics from backend using utility function
     updateStatisticsFromHTML(html);
     
-    // Extract tasks container content or empty state
-    const newTasksContainer = tempDiv.querySelector('#tasksContainer');
+    // Dynamically import selectors based on pageName
+    let selectors;
+    if (pageName === 'profile') {
+        const { PROFILE_SELECTORS } = await import('../profile-list.js');
+        selectors = PROFILE_SELECTORS;
+    } else {
+        const { TASK_SELECTORS } = await import('../tasks.js');
+        selectors = TASK_SELECTORS;
+    }
+    
+    // Extract container content or empty state
+    const newContainer = tempDiv.querySelector(selectors.CONTAINER);
     const newEmptyState = tempDiv.querySelector('#emptyState');
     const newPagination = tempDiv.querySelector('#paginationContainer');
     
-    // Update task count badge using utility function
-    const newTaskCountElement = tempDiv.querySelector('#taskCount');
-    if (newTaskCountElement) {
-        updateTaskCount(newTaskCountElement.textContent);
-    }
-    
-    // Update tasks container
-    const tasksContainer = d.querySelector('#tasksContainer');
-    if (tasksContainer) {
-        if (newTasksContainer) {
-            tasksContainer.innerHTML = newTasksContainer.innerHTML;
-        } else if (newEmptyState) {
-            tasksContainer.innerHTML = newEmptyState.outerHTML;
+    if (selectors.COUNT) {
+        const newCountElement = tempDiv.querySelector(selectors.COUNT);
+        if (newCountElement) {
+            updateTaskCount(newCountElement.textContent);
         }
     }
     
-    // Update pagination and results info (now combined in one element)
-    const currentPagination = d.querySelector('#paginationContainer');
+    // Update content container
+    const contentContainer = d.querySelector(selectors.CONTAINER);
+    if (contentContainer) {
+        if (newContainer) {
+            contentContainer.innerHTML = newContainer.innerHTML;
+        } else if (newEmptyState) {
+            contentContainer.innerHTML = newEmptyState.outerHTML;
+        }
+    }
     
+    // Update pagination and results info
+    const currentPagination = d.querySelector('#paginationContainer');   
     if (newPagination) {
         if (currentPagination) {
-            // Update existing pagination (which now includes results info)
             currentPagination.innerHTML = newPagination.innerHTML;
         } else {
-            // Insert new pagination after tasks container
-            const tasksContainer = d.querySelector('#tasksContainer');
-            if (tasksContainer) {
-                tasksContainer.parentNode.insertBefore(newPagination, tasksContainer.nextSibling);
+            const container = d.querySelector(selectors.CONTAINER);
+            if (container) {
+                container.parentNode.insertBefore(newPagination, container.nextSibling);
             }
         }
-    } else {
-        // Remove current pagination if no pagination in response (e.g., when no tasks)
-        if (currentPagination) {
-            currentPagination.remove();
-        }
+    } else if (currentPagination) {
+        currentPagination.remove();
     }
     
     // Re-initialize advanced filters after content update

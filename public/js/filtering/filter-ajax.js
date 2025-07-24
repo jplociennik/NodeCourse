@@ -16,13 +16,14 @@ import { handleFilterSubmit, handleClearFilters } from './filter-handlers.js';
  */
 const initializeFilterAjax = () => {
     const form = d.querySelector('#filterForm');
+    const pageName = window.location.pathname.substring(1);
     if (!form) return;
     
     // Initialize advanced filters
     initializeAdvancedFilters();
     
     // Create a single debounced function for all filter actions
-    const debouncedFilterSubmit = debounce(handleFilterSubmit(form), 300);
+    const debouncedFilterSubmit = debounce(handleFilterSubmit(form, pageName), 200);
     
     // Handle search button click
     const searchBtn = d.querySelector('#searchBtn');
@@ -39,7 +40,7 @@ const initializeFilterAjax = () => {
     // Handle clear filters button
     const clearFiltersBtn = d.querySelector('#clearFiltersBtn');
     if (clearFiltersBtn) {
-        clearFiltersBtn.addEventListener('click', handleClearFilters(form));
+        clearFiltersBtn.addEventListener('click', handleClearFilters(form, pageName));
     }
     
     // Handle search input enter key
@@ -54,11 +55,11 @@ const initializeFilterAjax = () => {
     }
     
     // Handle browser back/forward buttons
-    window.addEventListener('popstate', async (event) => {
+    window.addEventListener('popstate', async () => {
         try {
             const url = window.location.href;
             const html = await makeAjaxRequest(url);
-            updateContent(html);
+            await updateContent(html, pageName);
         } catch (error) {
             console.error('Error handling popstate:', error);
             window.location.reload();

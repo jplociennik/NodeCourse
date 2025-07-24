@@ -9,16 +9,16 @@ import { updateContent } from './content-updater.js';
 import { makeAjaxRequest } from './ajax-requests.js';
 
 // =============================================================================
-// PAGINATION EVENT HANDLERS
+// PAGINATION ACTION HANDLER
 // =============================================================================
 
 /**
  * Handles pagination clicks using event delegation
  * This function is called by the universal event delegation system
  */
-const handlePaginationAction = async (element, eventType, data) => {
+const handlePaginationAction = async (element, eventType, _data) => {
     if (eventType !== 'click') return;
-    
+    const pageName = window.location.pathname.substring(1);
     const link = element.closest('a[data-page]');
     if (!link) return;
     
@@ -30,13 +30,13 @@ const handlePaginationAction = async (element, eventType, data) => {
         saveScrollPosition();
         
         // Show loading state
-        showLoading();
+        showLoading(pageName);
         
         // Make AJAX request
         const html = await makeAjaxRequest(url);
         
         // Update content
-        updateContent(html);
+        await updateContent(html, pageName);
         
         // Update URL without page reload
         updateURL(url);

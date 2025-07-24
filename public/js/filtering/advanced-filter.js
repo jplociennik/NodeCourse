@@ -15,6 +15,12 @@ const CSS_CLASSES = {
     BI_CHEVRON_DOWN: 'bi-chevron-down'
 };
 
+const SELECTORS = {
+    DATE_INPUTS: 'input[type="date"]',
+    DATE_CHECKBOXES: 'input[data-action="toggle-date-input"]',
+    DATE_CONTAINERS: '[id^="input_"]'
+};
+
 // =============================================================================
 // ADVANCED FILTERS TOGGLE
 // =============================================================================
@@ -67,7 +73,7 @@ const toggleDateInput = (filterId) => {
     } else {
         // Hide date input and clear its value
         inputContainer.classList.add(CSS_CLASSES.FILTER_INPUT_HIDDEN);
-        const dateInput = inputContainer.querySelector('input[type="date"]');
+        const dateInput = inputContainer.querySelector(SELECTORS.DATE_INPUTS);
         if (dateInput) {
             dateInput.value = '';
         }
@@ -78,7 +84,7 @@ const toggleDateInput = (filterId) => {
  * Initializes date input states based on checkbox states
  */
 const initializeDateInputs = () => {
-    const dateCheckboxes = d.querySelectorAll('input[data-action="toggle-date-input"]');
+    const dateCheckboxes = d.querySelectorAll(SELECTORS.DATE_CHECKBOXES);
     
     dateCheckboxes.forEach(checkbox => {
         const filterId = checkbox.dataset.filterId;
@@ -95,8 +101,6 @@ const initializeDateInputs = () => {
 // ADVANCED FILTERS STATE MANAGEMENT
 // =============================================================================
 
-
-
 /**
  * Clears all advanced filters
  */
@@ -110,13 +114,13 @@ const clearAdvancedFilters = () => {
         });
         
         // Clear date inputs
-        const dateInputs = advancedFilters.querySelectorAll('input[type="date"]');
+        const dateInputs = advancedFilters.querySelectorAll(SELECTORS.DATE_INPUTS);
         dateInputs.forEach(input => {
             input.value = '';
         });
         
         // Hide date input containers
-        const dateContainers = advancedFilters.querySelectorAll('[id^="input_"]');
+        const dateContainers = advancedFilters.querySelectorAll(SELECTORS.DATE_CONTAINERS);
         dateContainers.forEach(container => {
             container.classList.add(CSS_CLASSES.FILTER_INPUT_HIDDEN);
         });

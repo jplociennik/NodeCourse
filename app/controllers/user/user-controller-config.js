@@ -35,7 +35,6 @@ const UserControllerConfig = {
       features: ['search', 'sort']
     });
   }
-
 };
 
 module.exports = { UserControllerConfig }; 

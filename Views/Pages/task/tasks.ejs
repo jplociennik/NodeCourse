@@ -3,7 +3,7 @@
         <% 
         // Generate filter content and statistics
         const filterContent = include('../../partials/filtering/main-filter', { 
-            config: filterConfig, 
+            config: mainFilterConfig, 
             query: query, 
             tasks: tasks 
         });
@@ -15,8 +15,8 @@
         const fullContent = filterContent + statisticsContent;
         %>
         <%- include('../../partials/sidebar', { 
-            sidebarTitle: filterConfig.title,
-            sidebarIcon: filterConfig.icon,
+            sidebarTitle: mainFilterConfig.title,
+            sidebarIcon: mainFilterConfig.icon,
             useCustomContent: true,
             customContent: fullContent
         }) %>

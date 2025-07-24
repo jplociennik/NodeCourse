@@ -14,15 +14,15 @@ import { submitFormWithDelay } from './ajax-requests.js';
  * Handles filter form submission
  * @param {HTMLFormElement} form - Form to submit
  */
-const handleFilterSubmit = (form) => async () => {
-    await submitFormWithDelay(form);
+const handleFilterSubmit = (form, pageName) => async () => {
+    await submitFormWithDelay(form, pageName);
 };
 
 /**
  * Handles clearing all filters
  * @param {HTMLFormElement} form - Form to clear
  */
-const handleClearFilters = (form) => async () => {
+const handleClearFilters = (form, pageName) => async () => {
     // Clear form inputs
     form.reset();
     
@@ -34,7 +34,7 @@ const handleClearFilters = (form) => async () => {
     if (hiddenField) hiddenField.value = 'false';
     
     // Use AJAX to submit cleared form
-    await submitFormWithDelay(form);
+    await submitFormWithDelay(form, pageName);
 };
 
 // =============================================================================

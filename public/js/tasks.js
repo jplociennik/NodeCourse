@@ -32,6 +32,12 @@ const SELECTORS = {
     FIRST_CHECKBOX: '[data-action="toggle-status"]'
 };
 
+// Export selectors for content updater
+export const TASK_SELECTORS = {
+    CONTAINER: '#tasksContainer',
+    COUNT: '#taskCount'
+};
+
 // =============================================================================
 // PRIVATE HELPER FUNCTIONS
 // =============================================================================
@@ -63,9 +69,6 @@ const setTaskTitleColor = (titleElement, isIncomplete) => {
         titleElement.classList.remove('task-incomplete');
     }
 };
-
-
-// Removed showErrorMessage - now using showErrorModal from alert-utils.js
 
 /**
  * Sets initial colors for task titles based on their status
@@ -133,7 +136,6 @@ const toggleTaskStatus = async (taskId, checkbox) => {
  * @param {boolean} isDone - Whether the task is completed
  */
 const updateTaskUI = async (taskId, isDone) => {
-
     const statusBadge = d.querySelector(`#status-${taskId}`);
     if (statusBadge) {
         setText(statusBadge, isDone ? 'Wykonane' : 'Do wykonania');
@@ -152,9 +154,8 @@ const updateTaskUI = async (taskId, isDone) => {
     try {
         const form = d.querySelector('#filterForm');
         if (form) {
-            // Import and call the AJAX function to refresh statistics
             const { submitFormWithDelay } = await import('./filtering/ajax-requests.js');
-            await submitFormWithDelay(form);
+            await submitFormWithDelay(form, 'tasks');
         }
     } catch (error) {
         console.error('Error updating statistics after task status change:', error);
@@ -183,7 +184,6 @@ const handleKeyboardShortcuts = (e) => {
  * Handles initial page setup and event listeners when DOM is ready
  */
 const handleDOMContentLoaded = () => {
-    
     setInitialTaskColors();
     d.addEventListener('keydown', handleKeyboardShortcuts);   
 };

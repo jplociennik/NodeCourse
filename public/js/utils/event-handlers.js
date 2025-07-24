@@ -140,12 +140,12 @@ const setupFilterActions = () => {
     });
     
     // Pagination handling
-    registerActionHandler('pagination', async (element, eventType, data) => {
+    registerActionHandler('pagination', async (element, eventType, pageName) => {
         if (eventType !== 'click') return;
         
         // Dynamic import for code splitting - only load when needed
         const { handlePaginationAction } = await import('../filtering/filter-ajax.js');
-        handlePaginationAction(element, eventType, data);
+        handlePaginationAction(element, eventType, pageName);
     });
     
     // Limit selector handling

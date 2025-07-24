@@ -25,11 +25,7 @@ const TaskControllerConfig = {
    * @returns {Object} Sort fields configuration
    */
   getSortFieldsConfig: () => {
-    return FilterConfigService.createSortFieldsConfig({
-      taskName: 'text',
-      dateFrom: 'date',
-      isDone: 'checkbox'
-    });
+    return TaskControllerConfig.getSortOptions();
   },
 
   /**
@@ -73,6 +69,12 @@ const TaskControllerConfig = {
   getMainFilterConfig: () => {
     return FilterConfigService.createFilterConfig({
       formAction: '/zadania/user',  
+      title: 'Wyszukiwanie i sortowanie',
+      icon: 'bi bi-funnel',
+      searchConfig: {
+        placeholder: 'Szukaj zadań...',
+        label: 'Szukaj zadań'
+      },
       sortConfig: TaskControllerConfig.getSortFieldsConfig(),
       filterConfig: TaskControllerConfig.getFilterConfig(),
       features: ['search', 'sort', 'advancedFilters', 'pagination']

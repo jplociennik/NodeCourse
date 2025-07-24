@@ -9,7 +9,6 @@ import { d } from '../utils/helpers.js';
 // =============================================================================
 
 const LOADING_DELAY = 2000;
-
 const LOADING_HTML = `
     <div class="col-12 text-center py-5">
         <div class="spinner-border text-success" role="status">
@@ -24,12 +23,13 @@ const LOADING_HTML = `
 // =============================================================================
 
 /**
- * Shows loading state in tasks container
+ * Shows loading state in container
+ * @param {string} pageName - Name of the page (tasks or profile)
  */
-const showLoading = () => {
-    const tasksContainer = d.querySelector('#tasksContainer');
-    if (tasksContainer) {
-        tasksContainer.innerHTML = LOADING_HTML;
+const showLoading = (pageName) => {
+    const container = d.querySelector(`#${pageName}Container`);
+    if (container) {
+        container.innerHTML = LOADING_HTML;
     }
 };
 
@@ -37,4 +37,4 @@ const showLoading = () => {
 // EXPORTS
 // =============================================================================
 
-export { LOADING_DELAY, showLoading }; 
+export { showLoading, LOADING_DELAY }; 
