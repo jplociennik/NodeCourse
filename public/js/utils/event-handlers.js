@@ -18,12 +18,6 @@ const actionHandlers = new Map();
  */
 const registerActionHandler = (actionName, handler) => actionHandlers.set(actionName, handler);
 
-/**
- * Unregister an action handler
- * @param {string} actionName - The action name to remove
- */
-const unregisterActionHandler = (actionName) => actionHandlers.delete(actionName);
-
 // =============================================================================
 // MAIN EVENT DELEGATION HANDLER
 // =============================================================================
@@ -40,13 +34,9 @@ const handleUniversalActions = (e) => {
     const handler = actionHandlers.get(action);
     
     if (handler) {
-        // Call handler with element, event type, and all data attributes
-        const data = { ...target.dataset };
-        try {
-            handler(target, e.type, data, e);
-        } catch (error) {
-            console.error(`Error in action handler '${action}':`, error);
-        }
+        // Call handler with element, event type, and data attributes object
+        try { handler(target, e.type, target.dataset, e); } 
+        catch (error) { console.error(`Error in action handler '${action}':`, error); }
     } else {
         console.warn(`No handler registered for action: ${action}`);
     }
@@ -76,7 +66,7 @@ const setupTaskActions = () => {
     });
     
     // Task delete setup
-    registerActionHandler('delete-task', async (element, eventType, data) => {
+    registerActionHandler('delete-task', async (_element, eventType, data) => {
         if (eventType !== 'click') return;
         
         const { taskId, taskName } = data;
@@ -91,13 +81,13 @@ const setupTaskActions = () => {
     });
     
     // Task export
-    registerActionHandler('export-tasks', (element, eventType, data) => {
+    registerActionHandler('export-tasks', (_element, eventType) => {
         if (eventType !== 'click') return;
         exportTasks();
     });
     
     // Task export all
-    registerActionHandler('export-all-tasks', (element, eventType, data) => {
+    registerActionHandler('export-all-tasks', (_element, eventType) => {
         if (eventType !== 'click') return;
         exportAllTasks();
     });
@@ -108,7 +98,7 @@ const setupTaskActions = () => {
  */
 const setupThemeActions = () => {
     // Theme toggle
-    registerActionHandler('toggle-theme', async (element, eventType, data) => {
+    registerActionHandler('toggle-theme', async (element, eventType) => {
         if (eventType !== 'click') return;
         
         // Find theme icon within the button
@@ -128,26 +118,8 @@ const setupThemeActions = () => {
  * Filter-related action handlers
  */
 const setupFilterActions = () => {
-    // Apply filters
-    registerActionHandler('apply-filters', async (element, eventType, data) => {
-        if (eventType !== 'click') return;
-        
-        // Dynamic import for code splitting - only load when needed
-        const { applyFilters } = await import('../filtering/filters.js');
-        applyFilters();
-    });
-    
-    // Clear filters
-    registerActionHandler('clear-filters', async (element, eventType, data) => {
-        if (eventType !== 'click') return;
-        
-        // Dynamic import for code splitting - only load when needed
-        const { clearFilters } = await import('../filtering/filters.js');
-        clearFilters();
-    });
-    
     // Toggle advanced filters
-    registerActionHandler('toggle-advanced-filters', async (element, eventType, data) => {
+    registerActionHandler('toggle-advanced-filters', async (_element, eventType) => {
         if (eventType !== 'click') return;
         
         // Dynamic import for code splitting - only load when needed
@@ -156,7 +128,7 @@ const setupFilterActions = () => {
     });
     
     // Toggle date input
-    registerActionHandler('toggle-date-input', async (element, eventType, data) => {
+    registerActionHandler('toggle-date-input', async (_element, eventType, data) => {
         if (eventType !== 'change') return;
         
         const { filterId } = data;
@@ -168,12 +140,12 @@ const setupFilterActions = () => {
     });
     
     // Pagination handling
-    registerActionHandler('pagination', async (element, eventType, data) => {
+    registerActionHandler('pagination', async (element, eventType, pageName) => {
         if (eventType !== 'click') return;
         
         // Dynamic import for code splitting - only load when needed
         const { handlePaginationAction } = await import('../filtering/filter-ajax.js');
-        handlePaginationAction(element, eventType, data);
+        handlePaginationAction(element, eventType, pageName);
     });
     
     // Limit selector handling

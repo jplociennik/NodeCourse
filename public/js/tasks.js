@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { d, setText, setClass, setStyle, apiPost, onReady } from './utils/helpers.js';
-import { StatisticsUtils } from './utils/statistics.js';
+import { showErrorModal } from './utils/alert-utils.js';
 
 // =============================================================================
 // CONSTANTS & CONFIGURATION
@@ -19,7 +19,6 @@ const MESSAGES = {
     NETWORK_ERROR: 'Błąd połączenia z serwerem'
 };
 
-
 const CSS_CLASSES = {
     BADGE_SUCCESS: 'badge task-status bg-success',
     BADGE_WARNING: 'badge task-status bg-warning',
@@ -31,6 +30,12 @@ const SELECTORS = {
     TASK_ICON_BY_ID: (taskId) => `[data-task-icon="${taskId}"]`,
     INCOMPLETE_TASK_ICONS: '[data-task-icon]',
     FIRST_CHECKBOX: '[data-action="toggle-status"]'
+};
+
+// Export selectors for content updater
+export const TASK_SELECTORS = {
+    CONTAINER: '#tasksContainer',
+    COUNT: '#taskCount'
 };
 
 // =============================================================================
@@ -56,31 +61,12 @@ const setTaskTitleColor = (titleElement, isIncomplete) => {
     
     if (isIncomplete) {
         // Set turkusowy color for incomplete tasks
-        setStyle(titleElement, 'color', '#369992', 'important');
+        setStyle(titleElement, 'color', 'var(--turquoise)', 'important');    
         titleElement.classList.add('task-incomplete');
     } else {
         // Remove custom color and class for completed tasks
         titleElement.style.removeProperty('color');
         titleElement.classList.remove('task-incomplete');
-    }
-};
-
-
-/**
- * Shows an error message to the user using Bootstrap modal
- * @param {string} message - The error message to display
- * @param {string} title - Optional title for the error modal
- */
-const showErrorMessage = (message, title = 'Błąd') => {
-    const errorModal = d.querySelector('#errorModal');
-    const errorTitle = d.querySelector('#errorModalTitle');
-    const errorMessage = d.querySelector('#errorModalMessage');
-    
-    if (errorModal && setText(errorTitle, title) && setText(errorMessage, message)) {
-        new bootstrap.Modal(errorModal).show();
-    } else {
-        console.error('Error modal elements not found, falling back to alert');
-        alert(`${title}: ${message}`);
     }
 };
 
@@ -140,7 +126,7 @@ const toggleTaskStatus = async (taskId, checkbox) => {
         console.error('Error toggling task status:', error);
         
         checkbox.checked = !originalState;               
-        showErrorMessage(error.message.includes('Failed to fetch') ? MESSAGES.NETWORK_ERROR : MESSAGES.ERROR);
+        showErrorModal(error.message.includes('Failed to fetch') ? MESSAGES.NETWORK_ERROR : MESSAGES.ERROR);
     }
 };
 
@@ -149,8 +135,7 @@ const toggleTaskStatus = async (taskId, checkbox) => {
  * @param {string} taskId - The ID of the task
  * @param {boolean} isDone - Whether the task is completed
  */
-const updateTaskUI = (taskId, isDone) => {
-
+const updateTaskUI = async (taskId, isDone) => {
     const statusBadge = d.querySelector(`#status-${taskId}`);
     if (statusBadge) {
         setText(statusBadge, isDone ? 'Wykonane' : 'Do wykonania');
@@ -165,7 +150,16 @@ const updateTaskUI = (taskId, isDone) => {
         setTaskTitleColor(titleElement, !isDone);
     }
     
-    StatisticsUtils.updateStatistics();
+    // Update statistics from backend after task status change
+    try {
+        const form = d.querySelector('#filterForm');
+        if (form) {
+            const { submitFormWithDelay } = await import('./filtering/ajax-requests.js');
+            await submitFormWithDelay(form, 'tasks');
+        }
+    } catch (error) {
+        console.error('Error updating statistics after task status change:', error);
+    }
 };
 
 // =============================================================================
@@ -190,7 +184,6 @@ const handleKeyboardShortcuts = (e) => {
  * Handles initial page setup and event listeners when DOM is ready
  */
 const handleDOMContentLoaded = () => {
-    
     setInitialTaskColors();
     d.addEventListener('keydown', handleKeyboardShortcuts);   
 };

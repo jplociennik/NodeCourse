@@ -1,8 +1,8 @@
 // Task export functions
-function exportTasks() {
+const exportTasks = () => {
     window.location.href = '/zadania/user/export';
 }
 
-function exportAllTasks() {
+const exportAllTasks = () => {
     window.location.href = '/zadania/user/export/all';
 } 

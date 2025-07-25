@@ -1,13 +1,4 @@
-// =============================================================================
-// TASK CONTROLLER CONFIGURATION
-// =============================================================================
-
 const FilterConfigService = require('../../services/filter-config-service.js');
-
-/**
- * Configuration functions for task controller
- * Contains all configuration-related logic separated from main controller
- */
 
 const TaskControllerConfig = {
 
@@ -15,8 +6,10 @@ const TaskControllerConfig = {
    * Gets sort options for tasks
    * @returns {Array} Array of sort options
    */
-  getSortOptions: async () => {
-    return [
+  getSortOptions: () => {
+    return {
+      label: 'Sortuj według',
+      options: [
       { value: '', text: 'Domyślne', field: null, direction: null },
       { value: 'taskName|asc', text: 'Nazwa A-Z', field: 'taskName', direction: 'asc' },
       { value: 'taskName|desc', text: 'Nazwa Z-A', field: 'taskName', direction: 'desc' },
@@ -24,27 +17,25 @@ const TaskControllerConfig = {
       { value: 'dateFrom|desc', text: 'Data od najnowszej', field: 'dateFrom', direction: 'desc' },
       { value: 'isDone|asc', text: 'Nie wykonane najpierw', field: 'isDone', direction: 'asc' },
       { value: 'isDone|desc', text: 'Wykonane najpierw', field: 'isDone', direction: 'desc' }
-    ];
+    ]};
   },
 
   /**
    * Gets sort fields configuration for tasks
    * @returns {Object} Sort fields configuration
    */
-  getSortFieldsConfig: async () => {
-    return FilterConfigService.createSortFieldsConfig({
-      taskName: 'text',
-      dateFrom: 'date',
-      isDone: 'checkbox'
-    });
+  getSortFieldsConfig: () => {
+    return TaskControllerConfig.getSortOptions();
   },
 
   /**
    * Gets filter options for tasks
    * @returns {Array} Array of filter options
    */
-  getFilterOptions: async () => {
-    return [
+    getFilterConfig: () => {
+    return {
+      label: 'Filtry zaawansowane',
+      options: [
       {
         id: 'status',
         label: 'Status zadania',
@@ -68,22 +59,25 @@ const TaskControllerConfig = {
         field: 'dateTo',
         placeholder: 'Wybierz datę do'
       }
-    ];
+    ]};
   },
 
   /**
    * Gets complete filter configuration for tasks
    * @returns {Object} Complete filter configuration
    */
-  getFilterConfig: async () => {
+  getMainFilterConfig: () => {
     return FilterConfigService.createFilterConfig({
-      formAction: '/zadania/user',
-      sortOptions: await TaskControllerConfig.getSortOptions(),
-      filterOptions: await TaskControllerConfig.getFilterOptions(),
+      formAction: '/zadania/user',  
+      title: 'Wyszukiwanie i sortowanie',
+      icon: 'bi bi-funnel',
       searchConfig: {
-        placeholder: 'Wpisz nazwę zadania...',
+        placeholder: 'Szukaj zadań...',
         label: 'Szukaj zadań'
-      }
+      },
+      sortConfig: TaskControllerConfig.getSortFieldsConfig(),
+      filterConfig: TaskControllerConfig.getFilterConfig(),
+      features: ['search', 'sort', 'advancedFilters', 'pagination']
     });
   },
 

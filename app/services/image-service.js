@@ -25,8 +25,21 @@ const createImageUpload = () => {
   const storage = multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, path.join(__dirname, '../../public/uploads/tasks')),
     filename: (_req, file, cb) => {
-      const safeName = file.originalname.normalize('NFD').replace(/[^ -\w.\-]/g, '_');
-      cb(null, Date.now() + '-' + safeName);
+      // Zachowaj polskie znaki - usuń tylko niebezpieczne znaki systemu plików
+      const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+      const extension = path.extname(originalName);
+      const nameWithoutExt = path.basename(originalName, extension);
+      
+      // Usuń tylko niebezpieczne znaki, zachowaj polskie litery
+      const safeName = nameWithoutExt
+        .replace(/[<>:"/\\|?*]/g, '_') // Usuń niebezpieczne znaki systemu plików
+        .replace(/\s+/g, '_') // Zamień spacje na podkreślenia
+        .trim();
+      
+      const timestamp = Date.now();
+      const finalName = `${timestamp}-${safeName}${extension}`;
+      
+      cb(null, finalName);
     }
   });
 

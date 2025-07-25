@@ -89,17 +89,17 @@
 
 /* Turkusowy kolor dla ikon niewykonanych zadań */
 .bi-check-circle.text-muted {
-    color: #369992 !important;
+    color: var(--turquoise) !important;
 }
 
 /* Turkusowy kolor dla nazw niewykonanych zadań - nadpisanie Bootstrap */
 .task-card .card-title.text-success:has(.bi-check-circle.text-muted) {
-    color: #369992 !important;
+    color: var(--turquoise) !important;
 }
 
 /* Fallback dla przeglądarek bez :has() */
 .task-card .card-title.text-success.task-incomplete {
-    color: #369992 !important;
+    color: var(--turquoise) !important;
 }
 
 .task-meta {
@@ -129,7 +129,7 @@
 }
 
 .task-status.bg-warning {
-    background-color: #369992 !important;
+    background-color: var(--turquoise) !important;
     color: white;
 }
 
@@ -150,16 +150,16 @@
     border-color: var(--custom-green);
 }
 
-/* Nowy niebieski kolor dla zaznaczonego checkboxa zadań */
+/* Niebieski kolor dla zaznaczonego checkboxa zadań */
 .task-card .form-check-input:checked {
-    background-color: #5a9fd4 !important;
-    border-color: #5a9fd4 !important;
-    accent-color: #5a9fd4 !important;
+    background-color: var(--custom-blue) !important;
+    border-color: var(--custom-blue) !important;
+    accent-color: var(--custom-blue) !important;
 }
 
 /* Niebieski kolor dla napisu "Wykonane" gdy checkbox jest zaznaczony */
 .task-card .form-check-input:checked + .form-check-label .text-muted {
-    color: #5a9fd4 !important;
+    color: var(--custom-blue) !important;
 }
 
 /* Button improvements */
@@ -176,16 +176,16 @@
     margin-bottom: 0.5rem;
 }
 
-/* Nowy kolor dla przycisku Edytuj - stonowany niebieski */
+/* Kolor dla przycisku Edytuj - stonowany niebieski */
 .task-actions .btn-outline-primary {
-    color: #5a9fd4;
-    border-color: #5a9fd4;
+    color: var(--custom-blue);
+    border-color: var(--custom-blue);
     background-color: transparent;
 }
 
 .task-actions .btn-outline-primary:hover {
-    background-color: #5a9fd4;
-    border-color: #5a9fd4;
+    background-color: var(--custom-blue);
+    border-color: var(--custom-blue);
     color: white;
 }
 
@@ -487,6 +487,8 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
   display: block;
   margin-right: 1rem;
+  flex-shrink: 0;
+  flex-grow: 0;
 }
 
 .placeholder-image {
@@ -500,6 +502,8 @@
   align-items: center;
   justify-content: center;
   font-size: 2rem;
+  flex-shrink: 0;
+  flex-grow: 0;
 }
 
 .task-image-form-left {
@@ -525,9 +529,7 @@
   font-weight: 500;
   font-size: 0.875rem;
   padding: 0.375rem 0.75rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .btn-csv-export {
@@ -537,40 +539,10 @@
   box-shadow: 0 2px 4px rgba(54, 153, 146, 0.2);
 }
 
-.btn-csv-export::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.btn-csv-export:hover::before {
-  left: 100%;
-}
-
 .btn-csv-export:hover {
   background-color: #2d7a75 !important;
   border-color: #2d7a75 !important;
   color: white !important;
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 4px 12px rgba(54, 153, 146, 0.4);
-}
-
-.btn-csv-export:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 4px rgba(54, 153, 146, 0.3);
-}
-
-.btn-csv-export i {
-  transition: transform 0.3s ease;
-}
-
-.btn-csv-export:hover i {
-  transform: translateY(-1px);
 }
 
 .btn-csv-export-outline {
@@ -580,40 +552,10 @@
   box-shadow: 0 2px 4px rgba(54, 153, 146, 0.1);
 }
 
-.btn-csv-export-outline::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(54, 153, 146, 0.1), transparent);
-  transition: left 0.5s;
-}
-
-.btn-csv-export-outline:hover::before {
-  left: 100%;
-}
-
 .btn-csv-export-outline:hover {
   background-color: #369992 !important;
   border-color: #369992 !important;
   color: white !important;
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 4px 12px rgba(54, 153, 146, 0.4);
-}
-
-.btn-csv-export-outline:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 4px rgba(54, 153, 146, 0.3);
-}
-
-.btn-csv-export-outline i {
-  transition: transform 0.3s ease;
-}
-
-.btn-csv-export-outline:hover i {
-  transform: translateY(-1px);
 }
 
 /* Focus effects for accessibility */

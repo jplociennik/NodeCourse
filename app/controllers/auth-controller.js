@@ -1,14 +1,18 @@
 const { User } = require('../db/mongoose');
 const { ErrorController } = require('./error-controller');
-const { verifyPassword } = require('../db/extensions');
 const { createValidationError } = require('../errors');
 
 const AuthController = {
+    /**
+     * Gets form configuration for registration form
+     * @param {Object} req - Express request object
+     * @returns {Object} Registration form configuration
+     */
     getRegisterFormConfig: async (req) => {
         return {
             template: 'Pages/auth/register',
             pageTitle: 'Rejestracja',
-            pageName: 'register',
+            pageName: 'none',
             title: 'Rejestracja',
             subtitle: 'Dołącz do nas!',
             heroIcon: 'bi bi-person-plus-fill',
@@ -24,11 +28,16 @@ const AuthController = {
         };
     },
 
+    /**
+     * Gets form configuration for login form
+     * @param {Object} req - Express request object
+     * @returns {Object} Login form configuration
+     */
     getLoginFormConfig: async (req) => {
         return {
             template: 'Pages/auth/login',
             pageTitle: 'Logowanie',
-            pageName: 'login',
+            pageName: 'none',
             title: 'Logowanie',
             subtitle: 'Zaloguj się do swojego konta',
             heroIcon: 'bi bi-box-arrow-in-right',
@@ -38,11 +47,21 @@ const AuthController = {
         };
     },
 
+    /**
+     * Shows registration form to user
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
     showRegisterForm: async (req, res) => {
         const formConfig = await AuthController.getRegisterFormConfig(req);
         await res.render(formConfig.template, formConfig);
     },
 
+    /**
+     * Handles user registration process
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
     register: async (req, res) => {
         try {
             const { email, username, password, confirmPassword } = req.body;
@@ -69,11 +88,21 @@ const AuthController = {
             }
     },
 
+    /**
+     * Shows login form to user
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
     showLoginForm: async (req, res) => {
         const formConfig = await AuthController.getLoginFormConfig(req);
         await res.render(formConfig.template, formConfig);
     },
 
+    /**
+     * Handles user login process
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
     login: async (req, res) => {
         try {
             const { email, password } = req.body;
@@ -98,6 +127,11 @@ const AuthController = {
         }
     },
 
+    /**
+     * Handles user logout process
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
     logout: async (req, res) => {
         req.session.destroy((err) => {
             if (err) console.error('Błąd podczas wylogowywania:', err);
@@ -105,6 +139,11 @@ const AuthController = {
         });
     },
 
+    /**
+     * Shows user profile page
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
     showProfile: async (req, res) => {
         try {
             const user = await User.findById(req.session.userId);

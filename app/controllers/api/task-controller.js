@@ -5,7 +5,11 @@ const bcrypt = require('bcrypt');
 
 const ApiTaskController = {
   
-  // Get all tasks for current user
+  /**
+   * Gets all tasks for current user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   getTasks: async (req, res) => {
     try {
       const tasks = await Task.find({ user: req.user._id });
@@ -15,7 +19,11 @@ const ApiTaskController = {
     }
   },
 
-  // Get single task by ID
+  /**
+   * Gets single task by ID for current user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   getTask: async (req, res) => {
     try {
       const task = await Task.findOne({ _id: req.params.id, user: req.user._id });
@@ -27,7 +35,11 @@ const ApiTaskController = {
     }
   },
 
-  // Create new task
+  /**
+   * Creates new task for current user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   createTask: async (req, res) => {
     try {
       const { taskName, dateFrom, dateTo } = req.body;
@@ -40,7 +52,11 @@ const ApiTaskController = {
     }
   },
 
-  // Update task
+  /**
+   * Updates existing task by ID for current user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   updateTask: async (req, res) => {
     try {
       const { taskName, dateFrom, dateTo } = req.body;
@@ -59,7 +75,11 @@ const ApiTaskController = {
     }
   },
 
-  // Toggle task status
+  /**
+   * Toggles task completion status for current user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   toggleTask: async (req, res) => {
     try {
       const task = await Task.findOne({ _id: req.params.id, user: req.user._id });
@@ -75,7 +95,11 @@ const ApiTaskController = {
     }
   },
 
-  // Delete task
+  /**
+   * Deletes task by ID for current user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   deleteTask: async (req, res) => {
     try {
       const task = await Task.findOneAndDelete({ _id: req.params.id, user: req.user._id });
@@ -88,7 +112,11 @@ const ApiTaskController = {
     }
   },
 
-  // Login
+  /**
+   * Handles user login for API access
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   login: async (req, res) => {
     try {
       const { email, password } = req.body;

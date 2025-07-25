@@ -26,7 +26,7 @@
             </div>
         <% } %>
 
-        <form class="task-form" method="POST" action="<%= formAction ?? '/zadania' %>" enctype="multipart/form-data">
+        <form class="task-form" id="taskForm" method="POST" action="<%= formAction ?? '/zadania' %>" enctype="multipart/form-data">
             <div class="d-flex flex-row align-items-start mb-3 flex-wrap">
                 <div class="flex-grow-1 w-100">
                     <div class="row">

@@ -1,7 +1,8 @@
 const { User } = require('../app/db/mongoose')
 const { env } = require('../app/config')
 
-async function runUserDbTests(verbose = true) {
+async function runUserDbTests(verbose = true, skipTests = true) {
+    if(skipTests) return;
     if (verbose) {
         console.log('\n--- TESTY ---');
     }

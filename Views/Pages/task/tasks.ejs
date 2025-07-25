@@ -3,7 +3,7 @@
         <% 
         // Generate filter content and statistics
         const filterContent = include('../../partials/filtering/main-filter', { 
-            config: filterConfig, 
+            config: mainFilterConfig, 
             query: query, 
             tasks: tasks 
         });
@@ -15,8 +15,8 @@
         const fullContent = filterContent + statisticsContent;
         %>
         <%- include('../../partials/sidebar', { 
-            sidebarTitle: filterConfig.title,
-            sidebarIcon: filterConfig.icon,
+            sidebarTitle: mainFilterConfig.title,
+            sidebarIcon: mainFilterConfig.icon,
             useCustomContent: true,
             customContent: fullContent
         }) %>
@@ -43,9 +43,19 @@
                     <% } %>
                 </div>
                 <div class="card-body">
+                    <% if (messages.error) { %>
+                        <div class="alert alert-danger">
+                            <%= messages.error %>
+                        </div>
+                    <% } %>
+                    <% if (messages.success) { %>
+                        <div class="alert alert-success">
+                            <%= messages.success %>
+                        </div>
+                    <% } %>
                     <% if (tasks.length > 0) { %>
                         <p class="lead">Znaleziono <span class="badge task-count" id="taskCount"><%= paginationConfig.resultsCount %></span> zadań.</p>
-                        <div class="row tasks-container">
+                        <div class="row" id="tasksContainer">
                             <% tasks.forEach((task, index) => { %>
                                 <div class="col-md-6 mb-3">
                                     <div class="card h-100 task-card">
@@ -154,7 +164,7 @@
                         }) %>
                         
                     <% } else { %>
-                        <div class="text-center py-5 empty-state">
+                        <div class="text-center py-5" id="emptyState">
                             <i class="bi bi-clipboard-x display-1 text-muted"></i>
                             <h3 class="text-muted mt-3">Brak zadań</h3>
                         </div>

@@ -1,4 +1,9 @@
 const ErrorController = {
+  /**
+   * Handles general server errors
+   * @param {Object} res - Express response object
+   * @param {Error} error - Error object
+   */
   handleError: async (res, error) => {
     console.log(error.message);
 
@@ -12,7 +17,13 @@ const ErrorController = {
     });
   },
 
-    handleValidationError: async (res, error, formConfig) => {
+  /**
+   * Handles validation errors for forms
+   * @param {Object} res - Express response object
+   * @param {Error} error - Error object
+   * @param {Object} formConfig - Form configuration object
+   */
+  handleValidationError: async (res, error, formConfig) => {
       if (error.name === 'ValidationError' || error.name === 'MongoServerError') {
         return res.render(formConfig.template, {
           ...formConfig,
@@ -28,6 +39,12 @@ const ErrorController = {
     return ErrorController.handleError(res, error);
   },
 
+  /**
+   * Handles server errors with custom message
+   * @param {Object} res - Express response object
+   * @param {Error} error - Error object
+   * @param {string} message - Custom error message
+   */
   handleServerError: async (res, error, message = 'Wystąpił błąd serwera') => {
     await res.status(500).render('errors/500', {
       pageTitle: 'Błąd serwera',
@@ -39,6 +56,11 @@ const ErrorController = {
     });
   },
 
+  /**
+   * Handles 404 not found errors
+   * @param {Object} res - Express response object
+   * @param {string} path - Requested path that was not found
+   */
   handle404Error: async (res, path) => {
     await res.status(404).render('errors/404', {
       pageTitle: 'Strona nie znaleziona',
@@ -50,6 +72,11 @@ const ErrorController = {
     });
   },
 
+  /**
+   * Handles user not found errors
+   * @param {Object} res - Express response object
+   * @param {string} userId - User ID that was not found
+   */
   handleUserNotFound: async (res, userId) => {
     await res.status(404).render('errors/user-not-found', {
       pageTitle: 'Użytkownik nie znaleziony',

@@ -1,52 +1,93 @@
-/* Authentication Forms Styling */
+/* Auth Forms Styling */
+
 .auth-container {
-    max-width: 400px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background: var(--bg-primary);
-    border-radius: 8px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 2rem 2rem 1rem 2rem;
     box-shadow: 0 2px 4px var(--shadow);
+    margin-top: 2rem;
 }
 
 .auth-title {
     text-align: center;
-    margin-bottom: 2rem;
     color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 2rem;
+}
+
+.auth-form {
+    margin-bottom: 1rem;
+    max-width: 100%;
 }
 
 .auth-links {
     text-align: center;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
+}
+
+.auth-links p {
+    color: var(--text-secondary);
+    margin-bottom: 0;
 }
 
 .auth-links a {
-    color: var(--custom-green);
-    text-decoration: none;
+    color: var(--turquoise);
+    text-decoration: underline;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
 
 .auth-links a:hover {
+    color: var(--turquoise-dark);
     text-decoration: underline;
 }
 
+/* Turquoise button styles */
+.btn-green {
+    background-color: var(--custom-green);
+    border-color: var(--custom-green);
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-green:hover {
+    background-color: var(--custom-green-dark);
+    border-color: var(--custom-green-dark);
+    color: white;
+}
+
+.btn-green:focus, .btn-green:active {
+    background-color: var(--custom-green-light);
+    border-color: var(--custom-green-light);
+    color: white;
+    box-shadow: 0 0 0 0.2rem rgba(54, 153, 146, 0.25);
+}
+
 /* Wspólne style inputów dla logowania i rejestracji */
+.auth-form input[type="text"],
 .auth-form input[type="email"],
 .auth-form input[type="password"] {
-  border: 1.5px solid #444;
+  border: 1.5px solid var(--border-color);
   border-radius: 6px;
-  background: #181b1f;
-  color: #fff;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+.auth-form input[type="text"]:focus,
 .auth-form input[type="email"]:focus,
 .auth-form input[type="password"]:focus {
-  border-color: #28a745;
-  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.15);
+  border-color: var(--turquoise);
+  box-shadow: 0 0 0 2px rgba(54, 153, 146, 0.15);
   outline: none;
 }
 
+.auth-form input[type="text"]::placeholder,
 .auth-form input[type="email"]::placeholder,
 .auth-form input[type="password"]::placeholder {
-  color: #aaa;
+  color: var(--text-muted);
   opacity: 1;
 } 

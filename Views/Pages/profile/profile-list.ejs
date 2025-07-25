@@ -1,9 +1,9 @@
 <div class="row">
     <!-- Search and Sort Sidebar -->
-    <% 
+    <%
     // Generate filter content and statistics
     const filterContent = include('../../partials/filtering/main-filter', { 
-        config: filterConfig, 
+        mainFilterConfig: mainFilterConfig, 
         query: query, 
         users: users 
     });
@@ -13,8 +13,8 @@
     const fullContent = filterContent + statisticsContent;
     %>
     <%- include('../../partials/sidebar', { 
-        sidebarTitle: filterConfig.title,
-        sidebarIcon: filterConfig.icon,
+        sidebarTitle: mainFilterConfig.title,
+        sidebarIcon: mainFilterConfig.icon,
         useCustomContent: true,
         customContent: fullContent
     }) %>
@@ -27,10 +27,11 @@
                 </div>
                 <div class="card-body">
                     <!-- Profiles Grid -->
-                    <div class="profiles-container">
+                    <div id="profilesContainer" class="profiles-container">
                         <div class="row">
                             <% users.forEach((user, index) => { %>
                                 <div class="col-md-6 mb-3 profile-item" 
+                                     id="profileItem-<%= user.id %>"
                                      data-name="<%= user.name.toLowerCase() %>" 
                                      data-id="<%= user.id %>"
                                      data-created="<%= user.createdAt ? new Date(user.createdAt).toISOString() : '' %>">
@@ -80,5 +81,4 @@
         </div>
 </div>
 
-<!-- Profile-specific JavaScript -->
-<script src="/js/profile-statistics.js"></script> 
+ 

@@ -89,11 +89,6 @@
     left: 100%;
 }
 
-/* Profile-specific button styling - inherits from components/buttons.css */
-.profile-actions .btn-success {
-    /* Inherits base styles from components/buttons.css */
-}
-
 .profile-actions .btn-outline-success {
     color: var(--custom-green);
     border-color: var(--custom-green);

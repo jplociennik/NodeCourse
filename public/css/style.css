@@ -1,4 +1,5 @@
 /* Main styles */
+@import 'components/colors.css';
 @import 'main.css';
 
 /* Components */

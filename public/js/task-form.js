@@ -1,67 +1,105 @@
-// Obsługa podglądu zdjęcia w formularzu zadania
+// =============================================================================
+// TASK FORM IMAGE PREVIEW MODULE
+// =============================================================================
 
-document.addEventListener('DOMContentLoaded', function() {
-    const imageInput = document.getElementById('image');
-    const preview = document.getElementById('imagePreview');
-    const previewImg = document.getElementById('previewImg');
-    const oldImageContainer = document.getElementById('oldImageContainer');
-    const form = document.querySelector('.task-form');
+import { onReady } from './utils/helpers.js';
+import { validateFileType, handleFileValidationError, showStyledAlert } from './utils/alert-utils.js';
 
-    if (!imageInput || !preview || !previewImg) return;
+// =============================================================================
+// CONSTANTS
+// =============================================================================
 
-    imageInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file && !['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
-            showStyledAlert('Dozwolone są tylko pliki PNG, JPG i JPEG!');
-            imageInput.value = "";
-            if (preview) {
-                preview.style.display = 'none';
-                previewImg.src = "";
-            }
-            return;
-        }
-        if (oldImageContainer) oldImageContainer.style.display = file ? 'none' : '';
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImg.src = e.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            preview.style.display = 'none';
-            if (oldImageContainer) oldImageContainer.style.display = '';
-        }
-    });
+const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg'];
+const ERROR_MESSAGE = 'Dozwolone są tylko pliki {types}!';
 
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            if (!imageInput.files.length) return;
-            const file = imageInput.files[0];
-            if (file && !['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
-                e.preventDefault();
-                showStyledAlert('Dozwolone są tylko pliki PNG, JPG i JPEG!');
-            }
-        });
-    }
+// =============================================================================
+// IMAGE PREVIEW FUNCTIONS
+// =============================================================================
 
-    function showStyledAlert(message) {
-        const oldAlert = document.querySelector('.custom-upload-alert');
-        if (oldAlert) oldAlert.remove();
-
-        const div = document.createElement('div');
-        div.className = 'alert alert-danger custom-upload-alert mt-3';
-        div.innerHTML = `<i class=\"bi bi-exclamation-triangle\"></i> ${message}`;
-
-        if (form) {
-            form.parentNode.insertBefore(div, form);
-            div.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        if (imageInput) imageInput.value = "";
-        
+/**
+ * Handles image file selection and preview
+ * @param {HTMLInputElement} imageInput - File input element
+ * @param {HTMLElement} preview - Preview container
+ * @param {HTMLImageElement} previewImg - Preview image element
+ * @param {HTMLElement} oldImageContainer - Container for existing image
+ */
+const handleImageChange = (imageInput, preview, previewImg, oldImageContainer) => {
+    const file = imageInput.files[0];
+    
+    if (file && !validateFileType(file, ALLOWED_IMAGE_TYPES)) {
+        handleFileValidationError(imageInput, ERROR_MESSAGE, ['PNG', 'JPG', 'JPEG']);
         if (preview) {
             preview.style.display = 'none';
             previewImg.src = "";
         }
+        return;
     }
-}); 
+    
+    if (oldImageContainer) {
+        oldImageContainer.style.display = file ? 'none' : '';
+    }
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+        if (oldImageContainer) {
+            oldImageContainer.style.display = '';
+        }
+    }
+};
+
+/**
+ * Validates form submission for image files
+ * @param {HTMLFormElement} form - Form element
+ * @param {HTMLInputElement} imageInput - File input element
+ */
+const handleFormSubmit = (form, imageInput) => {
+    if (!imageInput.files.length) return;
+    
+    const file = imageInput.files[0];
+    if (file && !validateFileType(file, ALLOWED_IMAGE_TYPES)) {
+        event.preventDefault();
+        showStyledAlert(ERROR_MESSAGE.replace('{types}', 'PNG, JPG, JPEG'));
+    }
+};
+
+// =============================================================================
+// INITIALIZATION
+// =============================================================================
+
+/**
+ * Initializes the task form image preview functionality
+ */
+const initializeTaskForm = () => {
+    const imageInput = document.getElementById('image');
+    const preview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const oldImageContainer = document.getElementById('oldImageContainer');
+    const form = document.querySelector('#taskForm');
+
+    if (!imageInput || !preview || !previewImg) return;
+
+    // Handle image file selection
+    imageInput.addEventListener('change', () => {
+        handleImageChange(imageInput, preview, previewImg, oldImageContainer);
+    });
+
+    // Handle form submission validation
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            handleFormSubmit(form, imageInput);
+        });
+    }
+};
+
+// =============================================================================
+// MODULE INITIALIZATION
+// =============================================================================
+
+onReady(initializeTaskForm); 

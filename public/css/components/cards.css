@@ -48,6 +48,11 @@
 }
 
 .card-title {
+    color: white;
+}
+
+/* Dark theme card titles should be text-primary */
+[data-theme="dark"] .card-title {
     color: var(--text-primary);
 }
 
@@ -58,6 +63,22 @@
 /* Feature cards styling */
 .card.border-success {
     border-color: var(--custom-green) !important;
+}
+
+/* Feature icons - green color */
+.feature-card-icon {
+    color: var(--custom-green);
+    transition: transform 0.3s ease;
+}
+
+/* Feature cards - green titles for all pages */
+.card.border-success .card-title {
+    color: var(--custom-green) !important;
+}
+
+/* Dark theme feature cards - keep green titles */
+[data-theme="dark"] .card.border-success .card-title {
+    color: var(--custom-green) !important;
 }
 
 /* Mobile responsive */

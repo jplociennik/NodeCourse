@@ -15,7 +15,7 @@ const THEME = {
     },
     COLORS: {
         DARK: '#0d1117',
-        LIGHT: '#ffffff'
+        LIGHT: 'var(--bg-primary)'
     },
     ATTRIBUTE: 'data-theme',
     TRANSITION_DELAY: 150

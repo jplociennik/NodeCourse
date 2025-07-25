@@ -1,166 +1,89 @@
 // =============================================================================
-// STATISTICS UTILITY MODULE
+// STATISTICS UTILITIES MODULE
+// Centralized statistics management for all components
 // =============================================================================
 
-import { d, setText, onReady } from './helpers.js';
-import { CSS_CLASSES } from './helpers.js';
+import { d } from './helpers.js';
+
+
+
+// =============================================================================
+// CORE STATISTICS FUNCTIONS
+// =============================================================================
 
 /**
- * Statistics module for managing and updating task counters
- * Used across filtering, task management, and other modules
+ * Updates item statistics for any component
+ * @param {string} itemClass - CSS class of items to count (e.g., 'profile-item', 'task-item')
+ * @param {Object} options - Configuration options
+ * @param {string} options.totalSelector - Selector for total count element
+ * @param {string} options.visibleSelector - Selector for visible count element
+ * @param {string} options.noResultsSelector - Selector for no results message
+ * @returns {Object} Statistics object with counts
  */
+const updateItemStatistics = (itemClass, options = {}) => {
+    const {
+        totalSelector = '#totalCount',
+        visibleSelector = '#visibleCount',
+        noResultsSelector = '#noResults'
+    } = options;
 
-// =============================================================================
-// CONSTANTS & CONFIGURATION
-// =============================================================================
-
-const STATISTICS_CONFIG = {
-    SELECTORS: {
-        TODO_COUNT: '#todoCount',
-        DONE_COUNT: '#doneCount',
-        TASK_COUNT: '#taskCount',
-        DONE_PERCENTAGE: '#donePercentage',
-        DONE_PERCENTAGE_BAR: '#donePercentageBar',
-        VISIBLE_CHECKBOXES: `.${CSS_CLASSES.TASK_ITEM}:not([style*="display: none"]) ${CSS_CLASSES.TASK_CHECKBOX}`,
-        VISIBLE_CHECKED_CHECKBOXES: `.${CSS_CLASSES.TASK_ITEM}:not([style*="display: none"]) ${CSS_CLASSES.TASK_CHECKBOX}:checked`,
-        VISIBLE_TASKS: `.${CSS_CLASSES.TASK_ITEM}:not([style*="display: none"])`,
-        STATISTICS_ELEMENTS: '.statistics-row .h5, .statistics-row small'
-    },
+    const totalItems = d.querySelectorAll(`.${itemClass}`).length;
+    const visibleItems = d.querySelectorAll(`.${itemClass}:not([style*="display: none"])`).length;
     
-    TASK_ITEM_CLASS: CSS_CLASSES.TASK_ITEM
-};
-
-// =============================================================================
-// PRIVATE HELPER FUNCTIONS
-// =============================================================================
-
-/**
- * Gets all visible task checkboxes
- * @returns {NodeList} List of visible checkboxes
- */
-const getVisibleTaskCheckboxes = () => {
-    return d.querySelectorAll(STATISTICS_CONFIG.SELECTORS.VISIBLE_CHECKBOXES);
-};
-
-/**
- * Counts tasks by their completion status
- * @returns {Object} Object with todoCount and doneCount
- */
-const countTasksByStatus = () => {
-    const visibleCheckboxes = getVisibleTaskCheckboxes();
-    let todoCount = 0;
-    let doneCount = 0;
+    // Update total count
+    const totalCountEl = d.querySelector(totalSelector);
+    if (totalCountEl) totalCountEl.textContent = totalItems;
     
-    visibleCheckboxes.forEach(checkbox => {
-        if (checkbox.checked) {
-            doneCount++;
+    // Update visible count
+    const visibleCountEl = d.querySelector(visibleSelector);
+    if (visibleCountEl) visibleCountEl.textContent = visibleItems;
+    
+    // Show/hide no results message
+    const noResults = d.querySelector(noResultsSelector);
+    if (noResults) {
+        if (visibleItems === 0 && totalItems > 0) {
+            noResults.classList.remove('d-none');
         } else {
-            todoCount++;
+            noResults.classList.add('d-none');
         }
-    });
+    }
     
-    return { todoCount, doneCount };
+    return { totalItems, visibleItems };
 };
 
-// =============================================================================
-// PUBLIC API FUNCTIONS
-// =============================================================================
+/**
+ * Updates task-specific statistics
+ * @param {number} taskCount - Number of tasks
+ */
+const updateTaskCount = (taskCount) => {
+    const taskCountElement = d.querySelector('#taskCount');
+    if (taskCountElement) taskCountElement.textContent = taskCount;  
+};
 
 /**
- * Updates the statistics counters in the sidebar
- * This is the main function called by other modules
+ * Updates statistics row from HTML content
+ * @param {string} html - HTML content containing statistics
  */
-const updateStatistics = () => {
-    const todoCountElement = d.querySelector(STATISTICS_CONFIG.SELECTORS.TODO_COUNT);
-    const doneCountElement = d.querySelector(STATISTICS_CONFIG.SELECTORS.DONE_COUNT);
+const updateStatisticsFromHTML = (html) => {
+    const tempDiv = d.createElement('div');
+    tempDiv.innerHTML = html;
     
-    if (todoCountElement && doneCountElement) {
-        const { todoCount, doneCount } = countTasksByStatus();
-        
-        setText(todoCountElement, todoCount);
-        setText(doneCountElement, doneCount);
-        
-        // Also update task count if element exists
-        updateTaskCount();
+    const newStatistics = tempDiv.querySelector('#statisticsRow');
+    const currentStatisticsRow = d.querySelector('#statisticsRow');
+    
+    if (currentStatisticsRow && newStatistics) {
+        currentStatisticsRow.innerHTML = newStatistics.innerHTML;
+    } else if (currentStatisticsRow) {
+        currentStatisticsRow.innerHTML = '';
     }
 };
 
-/**
- * Updates the general task count display
- * @returns {number} Total number of visible tasks
- */
-const updateTaskCount = () => {
-    const taskCountElement = d.querySelector(STATISTICS_CONFIG.SELECTORS.TASK_COUNT);
-    
-    if (taskCountElement) {
-        const visibleTasks = d.querySelectorAll(STATISTICS_CONFIG.SELECTORS.VISIBLE_TASKS);
-        const count = visibleTasks.length;
-        setText(taskCountElement, count);
-        return count;
-    }   
-    return 0;
-};
-
-/**
- * Gets current task counts without updating the UI
- * @returns {Object} Object with todoCount, doneCount, and totalCount
- */
-const getTaskCounts = () => {
-    const { todoCount, doneCount } = countTasksByStatus();
-    const totalCount = todoCount + doneCount;
-    
-    return { todoCount, doneCount, totalCount };
-};
-
-/**
- * Updates statistics elements from server response (used in filtering)
- * @param {Document} doc - Document object containing updated statistics
- */
-const updateStatisticsFromResponse = (doc) => {
-    const newStatsElements = doc.querySelectorAll(STATISTICS_CONFIG.SELECTORS.STATISTICS_ELEMENTS);
-    const currentStatsElements = d.querySelectorAll(STATISTICS_CONFIG.SELECTORS.STATISTICS_ELEMENTS);
-    
-    // Update each statistics element with new content
-    newStatsElements.forEach((newElement, index) => {
-        if (currentStatsElements[index]) {
-            setText(currentStatsElements[index], newElement.textContent);
-        }
-    });
-};
-
-/**
- * Initializes statistics on page load
- */
-const initializeStatistics = () => {
-    // Initial statistics update
-    updateStatistics();
-};
-
 // =============================================================================
-// AUTO-INITIALIZATION
+// EXPORTS
 // =============================================================================
 
-// Auto-initialize when DOM is ready
-onReady(initializeStatistics);
-
-// =============================================================================
-// MODULE EXPORTS
-// =============================================================================
-
-// Export functions for use by other modules
-const StatisticsUtils = {
-    updateStatistics,
+export {
+    updateItemStatistics,
     updateTaskCount,
-    getTaskCounts,
-    updateStatisticsFromResponse,
-    initializeStatistics
+    updateStatisticsFromHTML
 };
-
-export { 
-    StatisticsUtils,
-    updateStatistics, 
-    updateTaskCount, 
-    getTaskCounts, 
-    updateStatisticsFromResponse, 
-    initializeStatistics 
-}; 

@@ -1,6 +1,11 @@
 const { ErrorController } = require('./error-controller');
 
 const HomeController = {
+  /**
+   * Gets home page with main content
+   * @param {Object} _req - Express request object (unused)
+   * @param {Object} res - Express response object
+   */
   getHomePage: async (_req, res) => {
     try {
       await res.render('pages/home', { 
@@ -22,6 +27,11 @@ const HomeController = {
     }
   },
 
+  /**
+   * Gets contact page with contact form
+   * @param {Object} _req - Express request object (unused)
+   * @param {Object} res - Express response object
+   */
   getContactPage: async (_req, res) => {
     try {
       await res.render('pages/contact', { 
@@ -54,6 +64,11 @@ const HomeController = {
     }
   },
 
+  /**
+   * Gets about page with company information
+   * @param {Object} _req - Express request object (unused)
+   * @param {Object} res - Express response object
+   */
   getAboutPage: async (_req, res) => {
     try {
       await res.render('pages/home', { 
