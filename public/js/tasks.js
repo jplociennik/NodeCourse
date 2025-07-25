@@ -61,7 +61,7 @@ const setTaskTitleColor = (titleElement, isIncomplete) => {
     
     if (isIncomplete) {
         // Set turkusowy color for incomplete tasks
-        setStyle(titleElement, 'color', '#369992', 'important');
+        setStyle(titleElement, 'color', 'var(--turquoise)', 'important');    
         titleElement.classList.add('task-incomplete');
     } else {
         // Remove custom color and class for completed tasks

@@ -22,7 +22,6 @@ const handlePaginationAction = async (element, eventType, _data) => {
     const link = element.closest('a[data-page]');
     if (!link) return;
     
-    const page = link.dataset.page;
     const url = link.href;
     
     try {

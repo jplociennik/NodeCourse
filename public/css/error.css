@@ -134,7 +134,7 @@ main {
 }
 
 footer {
-    background-color: var(--bg-tertiary);
+    background-color: var(--footer-bg);
     color: var(--text-secondary);
     text-align: center;
     padding: 1rem;

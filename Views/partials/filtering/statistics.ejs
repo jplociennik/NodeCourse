@@ -15,7 +15,7 @@ const showStatistics = statisticsConfig && statisticsConfig.show && statisticsCo
     <div class="row text-center" id="statisticsRow">
         <% statisticsConfig.items.forEach((item, index) => { %>
         <div class="col-<%= Math.floor(12 / statisticsConfig.items.length) %>">
-            <div class="bg-dark p-2 rounded border border-secondary statistics-card">
+            <div class="statistics-card p-2 rounded border">
                 <div class="h5 mb-0" id="<%= item.id %>">
                     <%= item.value %>
                 </div>

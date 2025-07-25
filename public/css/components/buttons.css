@@ -47,6 +47,47 @@
     color: white;
 }
 
+/* Outline secondary buttons - brązowy kolor dla jasnego motywu */
+.btn-outline-secondary {
+    color: var(--brown-accent);
+    border-color: var(--brown-accent);
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--brown-accent);
+    border-color: var(--brown-accent);
+    color: white;
+}
+
+.btn-outline-secondary:focus {
+    background-color: var(--brown-accent);
+    border-color: var(--brown-accent);
+    color: white;
+    box-shadow: 0 0 0 0.2rem rgba(139, 115, 85, 0.25);
+}
+
+/* Dark theme - przywróć szary kolor */
+[data-theme="dark"] .btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+    background-color: transparent;
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+[data-theme="dark"] .btn-outline-secondary:focus {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+}
+
 .btn-circle {
     width: 28px;
     height: 28px;

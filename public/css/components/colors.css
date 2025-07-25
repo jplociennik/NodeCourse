@@ -1,35 +1,40 @@
 /* CSS Variables and Color System */
 :root {
-    /* Light theme colors */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8f9fa;
-    --bg-tertiary: #e9ecef;
-    --text-primary: #212529;
-    --text-secondary: #6c757d;
-    --text-muted: #868e96;
-    --border-color: #dee2e6;
+    /* Light theme colors - Beige theme */
+    --bg-primary: #e9e7de;
+    --bg-secondary: #e8e3d4;
+    --bg-tertiary: #e0d9c3;
+    --text-primary: #100f0c;
+    --text-secondary: #262114;
+    --text-tertiary: #15110b;
+    --text-muted: #13663f;
+    --border-color: #13663f;
     --shadow: rgba(0, 0, 0, 0.1);
     --shadow-hover: rgba(0, 0, 0, 0.15);
     
     /* Green theme colors */
-    --custom-green: #28a745;
-    --custom-green-dark: #218838;
-    --custom-green-light: #34ce57;
-    --custom-green-bg: rgba(40, 167, 69, 0.1);
+    --custom-green: #237d53;
+    --custom-green-dark: #105938;
+    --custom-green-light: #29a245;
+    --custom-green-bg: rgba(18, 135, 80, 0.2);
     
     /* Turquoise colors */
-    --turquoise: #369992;
-    --turquoise-light: #4ab3a8;
-    --turquoise-dark: #2a7a73;
+    --turquoise: #11a193;
+    --turquoise-light: #19cfc0;
+    --turquoise-dark: #19655e;
     
     /* Blue colors */
     --custom-blue: #5a9fd4;
     --custom-blue-dark: #4a8bc2;
     
-    /* Navigation colors */
-    --nav-bg: #343a40;
-    --nav-text: #ffffff;
-    --nav-hover: #495057;
+    /* Brown accent color for light theme */
+    --brown-accent: #8b7355;
+    
+    /* Navigation and Footer colors */
+    --nav-bg: #eae4cf;
+    --nav-text: #15110b;
+    --nav-hover: #d8d0b2;
+    --footer-bg: #c4c0b1;
 }
 
 /* Dark theme colors */
@@ -49,9 +54,10 @@
     --custom-green-light: #2ea043;
     --custom-green-bg: rgba(35, 134, 54, 0.15);
     
-    --nav-bg: #010409;
+    --nav-bg: #0c0d0f;
     --nav-text: #f0f6fc;
     --nav-hover: #21262d;
+    --footer-bg: #161b22;
 }
 
 /* Utility color classes */

@@ -43,7 +43,6 @@ const getFilteredUsers = async (params) => {
         customStatistics = customStatistics
     );
 
-    console.log(statisticsConfig)
     return {
         users,
         statisticsConfig

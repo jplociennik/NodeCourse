@@ -96,11 +96,7 @@
 
 /* Home Page Custom Styles - Bootstrap Compatible */
 
-/* Feature icons - unique to home page */
-.feature-card-icon {
-    color: var(--custom-green);
-    transition: transform 0.3s ease;
-}
+/* Feature icons and cards styling moved to components/cards.css */
 
 /* Button styles moved to components/buttons.css */
 
