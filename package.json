@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon app/index.js -e js,json",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app/index.js -e -js,json",
+    "watch": "nodemon app/index.js -e -js,json",
     "debug": "nodemon --inspect app/index.js -e js,json"
   },
   "keywords": [],
