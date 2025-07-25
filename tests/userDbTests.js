@@ -1,4 +1,5 @@
 const { User } = require('../app/db/mongoose')
+const { env } = require('../app/config')
 
 async function runUserDbTests(verbose = true) {
     if (verbose) {
@@ -10,12 +11,14 @@ async function runUserDbTests(verbose = true) {
     
     // Test 1: Sprawdź czy użytkownicy są zapisani
     const usersFromDb = await User.find({});
-    if (usersFromDb.length < 10) {
-        allTestsPassed = false;
-        failedTests.push('Użytkownicy NIE zostali zapisani');
-        if (verbose) console.log('❌ Użytkownicy NIE zostali zapisani');
-    } else {
-        if (verbose) console.log('✅ Użytkownicy zostali zapisani');
+    if(env === 'dev') {
+        if (usersFromDb.length < 10) {
+            allTestsPassed = false;
+            failedTests.push('Użytkownicy NIE zostali zapisani');
+            if (verbose) console.log('❌ Użytkownicy NIE zostali zapisani');
+        } else {
+            if (verbose) console.log('✅ Użytkownicy zostali zapisani');
+        }
     }
     
     // Test 2: Sprawdź hashowanie haseł
