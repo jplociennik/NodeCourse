@@ -93,6 +93,9 @@ body {
     color: var(--text-primary);
     background-color: var(--bg-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Navigation */
@@ -159,6 +162,9 @@ main.container-fluid {
     padding: 1rem 3rem;
     max-width: 1400px;
     margin: 0 auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
@@ -178,6 +184,7 @@ main.container-fluid {
     padding: 0 3rem;
     max-width: 1400px;
     margin: 0 auto;
+    width: 100%;
 }
 
 /* Cards - basic styles moved to components/cards.css */
@@ -261,6 +268,18 @@ main.container-fluid {
 .statistics-row .col-6:last-child .statistics-card .h5,
 .statistics-row .col-6:last-child .statistics-card small {
     color: var(--custom-green) !important;
+}
+
+/* Enhanced statistics labels - bigger and bolder */
+.statistics-card small {
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: var(--text-primary) !important;
+}
+
+.statistics-card .h5 {
+    font-size: 1.5rem !important;
+    font-weight: 500 !important;
 }
 
 /* Alternative selectors for dynamic column classes */
@@ -357,6 +376,7 @@ footer {
     color: var(--text-tertiary);
     border-top: 1px solid var(--border-color);
     transition: all 0.3s ease;
+    margin-top: auto;
 }
 
 /* Dark theme footer */
