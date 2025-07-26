@@ -20,7 +20,7 @@ app.set('views', path.join(__dirname, '../views'));
 
 //Layouts
 app.use(expressEjsLayouts);
-app.set('layout', './layouts/main');
+app.set('layout', path.join(__dirname, '../views/layouts/main'));
 
 //Static Files
 app.use(express.static(path.join(__dirname, '../public')));
