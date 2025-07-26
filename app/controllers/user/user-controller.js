@@ -11,7 +11,7 @@ const UserFilterService = require('./user-filter.js');
  * @param {Object} formData - Form data object
  */
 async function renderEditProfileForm(res, user, errors = {}, formData = {}) {
-  await res.render('Pages/profile/profile-edit', {
+  await res.render('pages/profile/profile-edit', {
     pageTitle: 'Edytuj profil',
     pageName: 'profile',
     title: 'Edytuj profil',

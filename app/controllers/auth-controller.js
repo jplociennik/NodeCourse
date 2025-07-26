@@ -10,7 +10,7 @@ const AuthController = {
      */
     getRegisterFormConfig: async (req) => {
         return {
-            template: 'Pages/auth/register',
+            template: 'pages/auth/register',
             pageTitle: 'Rejestracja',
             pageName: 'none',
             title: 'Rejestracja',
@@ -35,7 +35,7 @@ const AuthController = {
      */
     getLoginFormConfig: async (req) => {
         return {
-            template: 'Pages/auth/login',
+            template: 'pages/auth/login',
             pageTitle: 'Logowanie',
             pageName: 'none',
             title: 'Logowanie',
@@ -153,7 +153,7 @@ const AuthController = {
                 return res.redirect('/');
             }
 
-            await res.render('Pages/profile/profile-details', {
+            await res.render('pages/profile/profile-details', {
                 pageTitle: 'Mój profil',
                 pageName: 'profile',
                 title: 'Mój profil',
