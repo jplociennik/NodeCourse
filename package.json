@@ -10,7 +10,7 @@
     "debug": "nodemon --inspect app/index.js -e js,json"
   },
   "keywords": [],
-  "author": "TworcaStron.pl",
+  "author": "Zbyszek Kieliszek",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
