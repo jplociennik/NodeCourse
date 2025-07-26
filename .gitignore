@@ -1,4 +1,15 @@
 ﻿node_modules
 package-lock.json
 .env
-public/uploads
+
+# Ignore files in uploads directories but keep the structure
+public/uploads/*
+!public/uploads/.gitkeep
+!public/uploads/*/
+!public/uploads/*/.gitkeep
+public/uploads/tasks/*
+!public/uploads/tasks/.gitkeep
+public/uploads/users/*
+!public/uploads/users/.gitkeep
+public/uploads/temp/*
+!public/uploads/temp/.gitkeep
